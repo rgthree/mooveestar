@@ -144,7 +144,7 @@
     destroy: function() {
       var id = this.getId();
       this._props = {};
-      this.fireEvent('destroy', this);
+      this.fireEvent('destroy', {'model':this, 'id':id});
     },
 
     validate: function(key, value) {
