@@ -124,7 +124,7 @@
 
     // Lazily set the cid here
     getId: function(){
-      var id = this.get(this.idProperty, true) || this.cid || String.uniqueID();
+      var id = this.get(this.idProperty) || this.cid || String.uniqueID();
       !this.cid && (this.cid = id);
       return id;
     },
