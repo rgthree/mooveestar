@@ -255,7 +255,7 @@
     },
 
     findFirst: function(value, keyToFind){
-      var models = this.find(value);
+      var models = this.find(value, keyToFind);
       return models.length ? models[0] : null;
     },
 
