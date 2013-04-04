@@ -1,4 +1,4 @@
-//  MooVeeStar 0.1
+//  MooVeeStar 0.1 https://github.com/rgthree/MooVeeStar
 //  (c) 2012-2013 Regis Gaughan, III
 //  MooVeeStar may be freely distributed under the MIT license.
  
@@ -249,12 +249,12 @@
     },
 
     find: function(values, keyToFind){
-      keyToFind = keyToFind || this.idProperty;
+      keyToFind = keyToFind || null;
       values = [values].flatten();
-      return this._models.filter(function(model){ return values.contains(model.get(keyToFind)); });
+      return this._models.filter(function(model){ return values.contains(keyToFind ? model.get(keyToFind) : model.getId()); });
     },
 
-    findFirst: function(value){
+    findFirst: function(value, keyToFind){
       var models = this.find(value);
       return models.length ? models[0] : null;
     },
