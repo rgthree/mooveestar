@@ -34,7 +34,8 @@
 
     init: function(model, silent){
       model = model && typeOf(model) === 'object' ? model : {};
-      this.set(Object.merge(Object.map(this.properties, function(p){ return p.initial != null ? p.initial : (p['default'] != null ? p['default'] : null); }), model), silent);
+      var initials = Object.map(Object.filter(this.properties, function(p){ return p.initial != null; }), function(p){ return p.initial; });
+      this.set(Object.merge(initials, model), silent);
       !silent && this.fireEvent('init');
       return this;
     },
