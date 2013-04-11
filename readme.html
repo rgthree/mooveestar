@@ -24,22 +24,28 @@
         padding:6px 10px;
         border-radius:3px;
       }
+
+      p.tip {
+        padding:6px 10px; font-size:13px; line-height:16px;
+        background:#DFDFEE;
+        border:1px solid rgba(0,0,0,0.08); border-radius:3px;
+      }
+      p.tip.-caution {background:#f6e8df;}
     </style>
   </head>
   <body>
 
     <h1>MooVeeStar</h1>
-    <p>MooVeeStar is a client-side MV* Framework built ontop of MooTools. It has been based off other MV* Frameworks such as Backbone.js and Epitome.</p>
+    <p>MooVeeStar is a client-side MV* Framework built ontop of MooTools. It has been based off other JavaScript MV* Frameworks such as Backbone.js and Epitome.</p>
 
     <h2>Introduction</h2>
-    <p>If you've ever created a simple web application you most likely quickly started to lose control of your interface with a jumbled mess of JavaScript.</p>
-    <p>There's no shortage of MV* frameworks out there, and many do a great job of bringing the structure needed to build a web application today. However, few harness the power of MooTools. Enter MooVeeStar, the JavaScript MV* Framework.</p>
+    <p>If you've ever created a simple web application you most likely quickly started to lose control of your interface with a jumbled mess of JavaScript. There are plenty of great frameworks out there to help you structure your code better.. and no shortage of MV* frameworks out there. However, most were built for JS libraries that don't lend themselves well to structured code in the first place, or were built to be <strike>completey</strike> <em>fairly</em> library agnostic and add unnecessary bloat. If you've been leveraging MooTools already then you've likely been writing clean and reusable code. MooVeeStar is here to further optimize your development and put your app in the spotlight.</p>
 
     <h2>Documentation</h2>
     <dl id="classes">
       <dt>MooVeeStar</dt>
       <dd>
-        MooVeeStar is the object/namespace that holds the MooVeeStar modules. However, the MooVeeStar object itself is an instantiated MooTools Events object, and can therefore be used as a global mediator as:
+        MooVeeStar is the object/namespace that holds the MooVeeStar modules. However, the MooVeeStar object itself is an instantiated MooTools Events object, and can therefore be used as a global mediator between components:
         <pre class="block">
 MooVeeStar.addEvent('someEvent', function(eventObject){ ... }));
 MooVeeStar.fireEvent('someEvent', eventObject);</pre>
@@ -60,7 +66,7 @@ MooVeeStar.fireEvent('someEvent', eventObject);</pre>
             <code>model.properties</code>
           </dt>
           <dd>
-            A configurable object with properties set Set an initial value; Override the default <code>get</code> and/or <code>set</code> methods; Define <code>validate</code> and/or <code>sanitize</code> methods for each property.
+            A configurable object with a properties hash where you can: Set an initial value; Override the default <code>get</code> and/or <code>set</code> methods; Define <code>validate</code> and/or <code>sanitize</code> methods for each property.
             <pre class="block">
 var Employee = new Class({
   Extends: MooVeeStar.Model,
@@ -86,12 +92,14 @@ var Employee = new Class({
     }
   }
 });
+
 var employee = new Employee({'ssn':'123-45-6789', 'firstname':'John','lastname':'Smith'});
 employee.addEvent('error:ssn', function(event){
   console.error(event.error);
 });
-console.log(employee.get('fullname'));
-employee.set('123456789');</pre>
+console.log(employee.get('fullname'));  // John Smith
+employee.set('ssn','123456789');        // Trigger the error
+</pre>
           </dd>
 
           <dt data-type="method">initialize/constructor
@@ -227,10 +235,203 @@ employee.set('123456789');</pre>
             <code>collection.toJSON()</code>
           </dt>
           <dd></dd>
+
         </dl>
+
+        <h3>Models Methods Pass Throughs</h3>
+        <dl>
+          <dt data-type="method">
+            set
+            <code>collection.set()</code>
+          </dt>
+          <dd>Calls <code>model.set(&lt;arguments&gt;)</code> with the arguments for each model.</dd>
+        </dl>
+
+        <h3>Array Methods</h3>
+        <p>
+          <code>forEach</code> <code>each</code> <code>every</code> <code>invoke</code> <code>filter</code> <code>map</code> <code>some</code> <code>indexOf</code> <code>contains</code> <code>getRandom</code> <code>getLast</code>
+        </p>
+      </dd>
+
+
+      <dt>MooVeeStar.View</dt>
+      <dd>
+        <p>MooVeeStar views help you take control of how your interface interacts with user input and data changes. It was built to take full power of the MooVeeStar.Templating system, but can be used with any templating library.</p>
+        <h3>Extending</h3>
+        <p>You will be creating your own, extended views by overriding some of the properties and methods. If you're using the MooVeeStar templating system then all you really need is to define a template name. Here's a simple view that renders a template, with a couple events:</p>
+        <pre>
+var EmployeeIdView = new Class({
+  Extends: MooVeeStar.View,
+  events: {
+    'model:change':'render',
+    'click:relay(button.delete)':'destroy'
+  },
+  template:'employee-id-card'
+});
+
+$(document.body).grab(new EmployeeIdView(existingEmployeeModel));</pre>
+
+        <dl>
+          <dt data-type="method">
+            constructor/initialize
+            <code>new MooVeeStar.View([model], [options])</code>
+          </dt>
+          <dd>
+            <p>The MooVeeStar.View constructor sets a few things for us upfront. As you will likely be overriding the constructor when defining your own view, the placement of your parent call could be important.</p>
+            <ul>
+              <li>Sets and merges the passed <code>options</code> object to the default options</li>
+              <li>Sets the <code>model</code> property to the passed model, if it is not previously defined</li>
+              <li>Inflates the template from the Views template and sets it to the <code>element</code> property as well as <code>elements.container</code></li>
+              <li>Attaches the events, unless <code>options.autoattach</code> is false</li>
+              <li>Calls render, unless <code>options.autorender</code> is false</li>
+            </ul>
+          </dd>
+
+
+
+          <dt data-type="property">
+            options
+            <code>view.options</code>
+          </dt>
+          <dd>
+            MooVeeStar.View implements the MooTools Options methods by default, and comes with a few options to run itself upfront, usually overriden when defining your own, extended view.
+            <pre>
+{
+  autorender: true,  // Automatically call the render function on initialization 
+  autoattach: true   // Automatically attach events on initialization
+  inflater: MooVeeStar.Templates.inflate,  // The template inflate method. Called as: "inflater(this.template, null)"
+                                           // by default when intializing the element
+  binder: MooVeeStar.Templates.bind        // The template binder method. Called as: "binder(this.element, model.toJSON())"
+                                           // by default in "this.render"
+}</pre>
+            <strong>autorender</strong>
+          </dd>
+
+          <dt data-type="property">
+            events
+            <code>model.events</code>
+          </dt>
+          <dd>
+            <p>Events are what automate your view's interface with user input, data changes, interface changes... really anything. If it can fire an event your view can listen to it. You can bind events to any property that is defined in your constructor before calling <code>this.parent()</code>. The event object is a set of string event-keys, with string function names.</p>
+            <h4>How's it work?</h4>
+            <p>The events are somewhat magical. There is a lot you can throw at it, and it will only fail when it can't find what you're trying to attach to, or the string method name doesn't exist on your view. The event string syntax can be generalized as <code>'attachmentObject:eventToListen'</code>. The <code>attachmentObject</code> should be: an existing property of the view, <code>this</code>, <code>window</code>, <code>document</code>, <code>MooVeeStar</code>, an existing element html-id, or an object on <code>window</code>. If you do not supply an <code>attachmentObject</code>, then it will attempt to use the <code>this.element</code> <em>only if the <code>eventToListen</code> is an <code>Element.NativeEvents</code></em>, otherwise it will listen to the view's own events. Here's some examples:</p>
+            <pre>
+var MyView = new Class({
+  Extends: MooVeeStar.View,
+  events: {
+    'model:change': 'render',          // Listen for 'change' events on 'this.model'
+    'this.model:change': 'render',     // (Same as above)
+    'model:change:name': 'render',     // Listen for the specific 'change:name' events on 'this.model'
+
+    'click': 'onClick',                // Listen for 'click' events on 'this.element'
+    'element:click': 'onClick',        // (Same as above)
+    'this.element:click': 'onClick',   // (Same as above)
+    'this:click': 'onFiredClick',      // Not a mouse-click! Force listening to an internal view event
+                                       // named "click" fired through 'this.fireEvent("click")'
+
+    'click:relay(button)': 'onButtonClick',   // Listen for 'click' events on button children of 'this.element'
+    'elements.button:click': 'onButtonClick', // Assuming 'this.elements.button' was set before attaching events
+                                              // this will listen for clicks on this element
+    'someProperty:some-event': 'someFn',      // Assuming 'this.someProperty' exists and has an 'addEvent' method
+    'this.someProperty:some-event': 'someFn', // (Same as above)
+
+    'window:scroll': 'onWindowScroll',        // Window Scroll event
+    'document:click': 'onWindowScroll',       // Click events on the 'document'
+
+    'MooVeeStar:some-event': 'someFn',        // Listen for 'some-event' fired through the MooVeeStar mediator
+
+    'someGlobalObject:some-event': 'someFn',  // Assuming 'window.someGlobalObject' exists and has an 'addEvent' method
+
+    'someHtmlId:keydown':'onSomeKeydown'      // Assuming an element with 'id="someHtmlId"', listen for it's keydowns
+  },
+  initialize: function(model, options){
+    // Need to define these per the above before calling this.parent
+    this.elements.button = $('aButtonsId');
+    this.someProperty = new ClassWithEvents();
+    this.parent(model, options); // Auto attaching events
+  },
+  /* the defined event callback methods from above */
+});</pre>
+            <p class="tip -caution">A view error will be thrown if: You attempt to attach events to something that does not exist or does not have a <code>addEvent</code> method; or the listeners callback method name does not exist on your view.</p>
+          </dd>
+
+          <dt data-type="property">
+            template
+            <code>view.template</code>
+          </dt>
+          <dd></dd>
+
+          <dt data-type="property">
+            model
+            <code>view.model</code>
+          </dt>
+          <dd></dd>
+          
+          <dt data-type="property">
+            element
+            <code>view.element</code>
+          </dt>
+          <dd></dd>
+          
+          <dt data-type="property">
+            elements
+            <code>view.elements</code>
+          </dt>
+          <dd></dd>
+
+          <dt data-type="method">
+            render
+            <code>view.render([data])</code>
+          </dt>
+          <dd></dd>
+
+          <dt data-type="method">
+            toElement
+            <code>view.toElement()</code>
+          </dt>
+          <dd>Returns the <code>this.element</code>. Automatically called by MooTools when the view is used as an element, like: <code>$(myView)</code> or <code>document.body.grab(myView)</code></dd>
+
+          <dt data-type="method">
+            destroy
+            <code>view.destroy([element])</code>
+          </dt>
+          <dd>
+            <p>Destroy the element, detaching all events and any child elements with view controller's events.</p>
+            <p class="tip -caution">You should ensure to destroy your views by calling <code>view.destroy()</code> and avoid removing the element directly, either through <code>this.element.destroy()</code>, or <code>someParentElement.empty()</code>, etc. Doing so will not detach all event listeners.</p>
+          </dd>
+
+          <dt data-type="method">
+            empty
+            <code>view.empty([element])</code>
+          </dt>
+          <dd></dd>
+
+          <dt data-type="method">
+            dispose
+            <code>view.dispose([element])</code>
+          </dt>
+          <dd></dd>
+
+          <dt data-type="method">
+            attach
+            <code>view.attach([element], [excludeSelf])</code>
+          </dt>
+          <dd>Attaches all the events in the <code>this.events</code> map, as well as attaching all child elements with a view controller</dd>
+
+          <dt data-type="method">
+            detach
+            <code>view.detach([element], [excludeSelf])</code>
+          </dt>
+          <dd>Detaches all the events in the <code>this.events</code> map, as well as attaching all child elements with a view controller</dd>
+
+        </dl>
+
       </dd>
 
     </dl>
 
+
+    <script src="https://ajax.googleapis.com/ajax/libs/mootools/1.4.5/mootools-yui-compressed.js"></script>
+    <script src="./mooveestar.js"></script>
   </body>
 </html>
