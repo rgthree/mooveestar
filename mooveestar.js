@@ -286,25 +286,55 @@
 
 
   MooVeeStar.View = new Class({
+
     Implements: [Events,Options],
-    events:{},
+
     options:{
-      'autorender':true,  // call render when set
-      'skipInit':false    // Skip initialization of template on inflate
+      autoattach: true,
+      autorender: true,
+      inflater: null,   // Lazily set in constructor
+      binder: null      // Lazily set in constructor
     },
-    template:null,
+    events:{},
+
+    template: null,
+    element: null,
+    elements: {},
+
     initialize: function(model, options){
+      options = options || {};
+      options.inflater = options.inflater || this.options.inflater || (MooVeeStar.Templates && MooVeeStar.Templates.inflate) || null;
+      options.binder = options.binder || this.options.binder || (MooVeeStar.Templates && MooVeeStar.Templates.init) || null;
       this.setOptions(options);
-      this.events = Object.clone(this.events || {});
-      this.model = this.model || model;
-      this.element = this.element || MooVeeStar.templates.inflate(this.template, null, true);
-      this.element.set('data-autobind', 'false');
-      this.element.set('data-has-view-controller', true);
-      this.element.store('__view', this);
-      this.elements = this.elements || {};
-      this.elements.container = this.element;
-      this.attachEvents();
+
+      this.model = this.model || model || null;
+      this.setElement();
+      this.options.autoattach && this.attachEvents();
       this.options.autorender && this.render();
+    },
+    
+    setElement: function(element){
+      if(!this.element){
+        this.element = $(element);
+        if(!this.element && this.template && this.options.inflater)
+          this.element = this.options.inflater(this.template, null, true);
+      }
+      if(this.element){
+        this.element.set('data-autobind', 'false');
+        this.element.set('data-has-view-controller', 'true');
+        this.element.store('__view', this);
+        this.elements.container = this.element;
+      }
+      return this;
+    },
+
+    toElement: function(){
+      return this.element;
+    },
+
+    render: function(data){
+      this.options.binder && this.options.binder(this.element, data || (this.model && this.model.toJSON()) || {});
+      return this;
     },
 
     // Dispose of the View
@@ -411,8 +441,12 @@
         return $(window);
       if(name === 'document')
         return $(document);
+      if('MooVeeStar')
+        return MooVeeStar;
       if($(name))
         return $(name);
+      if(root[name] && typeOf(root[name].addEvent) === 'function')
+        return root[name];
 
       names = (name||'').replace(/^this\./gi, '').split('.');
       obj = this;
@@ -430,16 +464,8 @@
         throw new Error('[VIEW ERROR] Could not attach event to this['+name.replace('.','][')+'], it does not have an addEvent method.');
       }
       return null;
-    },
-
-    render: function(data){
-      MooVeeStar.templates.init(this.element, data || (this.model && this.model.toJSON()) || {});
-      return this;
-    },
-
-    toElement: function(){
-      return this.element;
     }
+
   });
 
 
@@ -468,19 +494,9 @@
   });
 
 
-  MooVeeStar.Templates = new Class({
+  var mvstpl = {
 
-    // Initialize the Template System
-    initialize: function(){
-      // If html5 shiv, then let's shiv in <markup> (IE8- support)
-      if(window.html5 && window.html5.supportsUnknownElements === false){
-        window.html5.elements += ' markup';
-        html5.shivDocument(document);
-      }
-      document.createElement('markup');
-      this.templates = {};
-      this.scrape();
-    },
+    templates: {},
 
     cleanKey: function(key){
       return key.toLowerCase().trim().replace(/\s/g,'');
@@ -490,45 +506,45 @@
     // Overloaded to accept a register a script as second param
     register: function(key, html){
       if(typeof(html) === 'function'){
-        this.registerScript(key, html);
+        mvstpl.registerScript(key, html);
         return
       }
-      key = this.cleanKey(key);
+      key = mvstpl.cleanKey(key);
       html = html.replace(/<\!\-\-.*?\-\->/g, '').trim().replace(/\n/g,' ').replace(/\s+/g,' '); // Strip out comments
 
-      this.templates[key] = this.templates[key] || {};
-      this.templates[key].dom = new Element('markup[html="'+html+'"]');
-      this.templates[key].markup = html;
+      mvstpl.templates[key] = mvstpl.templates[key] || {};
+      mvstpl.templates[key].dom = new Element('markup[html="'+html+'"]');
+      mvstpl.templates[key].markup = html;
     },
 
     // Register a script to be called when a template is bind
     registerScript: function(key, fn){
-      key = this.cleanKey(key);
-      this.templates[key] = this.templates[key] || {};
-      this.templates[key].script = fn;
+      key = mvstpl.cleanKey(key);
+      mvstpl.templates[key] = mvstpl.templates[key] || {};
+      mvstpl.templates[key].script = fn;
     },
 
     // Return the script associated with a key
     getScript: function(key){
-      key = this.cleanKey(key);
-      if(this.templates[key] && this.templates[key].script){
-          return this.templates[key].script;
+      key = mvstpl.cleanKey(key);
+      if(mvstpl.templates[key] && mvstpl.templates[key].script){
+          return mvstpl.templates[key].script;
       }else{
-        throw new Error('Ain\'t no script for the template called '+key+' ('+typeOf(this.templates[key].script)+')');
+        throw new Error('Ain\'t no script for the template called '+key+' ('+typeOf(mvstpl.templates[key].script)+')');
         return null;
       }
     },
 
     // check for the existance of a template key
     check: function(key){
-      return !!this.templates[this.cleanKey(key)];
+      return !!mvstpl.templates[mvstpl.cleanKey(key)];
     },
 
     // Return the dom of a template
     get: function(key){
       var data, markupEl, els, childrenTemplates;
-      key = this.cleanKey(key);
-      data = this.templates[key];
+      key = mvstpl.cleanKey(key);
+      data = mvstpl.templates[key];
       if(data){
         // If html5Shiv is installed, and we need to go around cloneNode for HTML5 elements
         if(window.html5 && window.html5.supportsUnknownElements === false){
@@ -539,7 +555,7 @@
           return data.dom.clone().set('data-templateid', key);
         }       
       }else{
-        throw new Error('Ain\'t no template called '+key+' ('+typeOf(this.templates[key])+')');
+        throw new Error('Ain\'t no template called '+key+' ('+typeOf(mvstpl.templates[key])+')');
         return null;
       }
     },
@@ -548,7 +564,7 @@
     inflate: function(dom, scriptData, skipInit){
       if(typeOf(dom) === 'string'){
         // Assume a key was passed in
-        dom = this.get(dom);
+        dom = mvstpl.get(dom);
       }
       if(dom){
         var markups, children, script;
@@ -558,7 +574,7 @@
           // If there's a class name specified on the <markup> tag, add it to the children
           markupClass = child.get('class') || null;
           // If we passed in skipInit, use it, otherwise set to true assuming this pass is initializing final markup
-          tpls = this.inflate(child.get('template'), scriptData, skipInit != null ? skipInit : true);
+          tpls = mvstpl.inflate(child.get('template'), scriptData, skipInit != null ? skipInit : true);
           tpls = typeOf(tpls) !== 'array' ? [tpls] : tpls;
           tpls.reverse().each(function(tplChild){
             tplChild.inject(child, 'after');
@@ -571,7 +587,7 @@
           child.set('data-tpl', (child.get('data-tpl') || '').split(' ').include(dom.get('data-templateid')).join(' ').clean());
         }.bind(this));
         children = children.length === 1 ? children[0] : children;
-        !skipInit && this.init(children, scriptData);
+        !skipInit && mvstpl.init(children, scriptData);
         return children;
       }
       return null;
@@ -583,12 +599,12 @@
     inflateSurround: function(template, surround, scriptData, skipInit){
       var tpl, surroundData;
       scriptData = scriptData || {};
-      tpl = typeOf(template) === 'element' || typeOf(template) === 'elements'  || typeOf(template) === 'array' ? template : this.inflate(template, scriptData, skipInit);
+      tpl = typeOf(template) === 'element' || typeOf(template) === 'elements'  || typeOf(template) === 'array' ? template : mvstpl.inflate(template, scriptData, skipInit);
       if(tpl){
-        if(surround && this.check(surround)){
+        if(surround && mvstpl.check(surround)){
           surroundData = (scriptData || {})[surround] || (scriptData || {}).surround || {};
           surroundData.els = tpl;
-          return this.inflate(surround, surroundData);
+          return mvstpl.inflate(surround, surroundData);
         }else{
           throw new Error('Could not find the surround template: '+surround);
           return tpl;
@@ -617,7 +633,7 @@
       });
     },
 
-    // Bind a template to an data object
+    // Bind a template to a data object
     // This does NOT call a registered script
     bind: function(els, data){
       var self = this;
@@ -723,12 +739,20 @@
     // Scrape the dom and register any templates
     scrape: function(){
       $$('script[type="text/x-tpl"]').each(function(tpl){
-        this.register(tpl.get('id'), tpl.get('text'));
+        mvstpl.register(tpl.get('id'), tpl.get('text'));
         tpl.destroy();
       }.bind(this));
     }
-  });
+  };
 
-  MooVeeStar.templates = new MooVeeStar.Templates();
+  MooVeeStar.Templates = mvstpl;
+
+  // If html5 shiv, then let's shiv in <markup> (IE8- support)
+  if(window && window.html5 && window.html5.supportsUnknownElements === false){
+    window.html5.elements += ' markup';
+    html5.shivDocument(document);
+  }
+  document.createElement('markup');
+  MooVeeStar.Templates.scrape();
 
 })(this);
