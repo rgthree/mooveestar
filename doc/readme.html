@@ -43,14 +43,14 @@
       }
 
       body > header > p {
-        position:absolute; height:300px; width:50px; bottom:0px; left:50%; margin-left:-25%; z-index:1;
+        position:absolute; height:300px; width:50px; bottom:0px; left:50%; margin-left:-250px; z-index:1;
         background:rgba(255,255,255,0.2);
         -webkit-transform:rotate(-15deg);
         -webkit-transform-origin:center bottom;
         -webkit-animation:spotlight-left 5.5s ease-in-out 0s infinite alternate;
       }
       body > header > p + p {
-        margin-left:20%;
+        margin-left:190px;
         -webkit-transform:rotate(20deg);
         -webkit-animation:spotlight-right 8.3s ease-in-out 0s infinite alternate;
       }
@@ -89,10 +89,12 @@
       @media (max-width:860px) {
         body > header > h1 {
           width:auto;
-          left:-100px;
-          right:-100px;
+          left:-18%;
+          right:-18%;
           background-size:contain;
         }
+        body > header > p {margin-left:-25%;}
+        body > header > p + p{margin-left:20%;}
       }
 
 
