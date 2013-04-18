@@ -143,9 +143,11 @@
     },
 
     destroy: function() {
-      var id = this.getId();
+      var props, id;
+      id = this.getId();
+      props = Object.clone(this.toJSON());
       this._props = {};
-      this.fireEvent('destroy', {'model':this, 'id':id});
+      this.fireEvent('destroy', {'model':this, 'properties':props, 'id':id});
     },
 
     validate: function(key, value) {
@@ -193,7 +195,7 @@
 
     _onModelEvent: function(e){
       if(e.event === 'destroy'){
-        this.remove(e.message);
+        this.remove(e.message.model);
       }
       this.fireEvent(e.event, e.message);
     },
