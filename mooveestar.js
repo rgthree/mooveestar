@@ -189,7 +189,7 @@
       this._onModelEvent = this._onModelEvent.bind(this);
       this.cid = (options && options.id) || String.uniqueID();
       if(items){
-        this.add(items, true);
+        this.add(items, { silent:true });
       }
     },
 
@@ -200,19 +200,24 @@
       this.fireEvent(e.event, e.message);
     },
 
-    add: function(items, silent){
+    add: function(items, options){
       var models;
+      options = options || {};
       models = [];
-      items = [items].flatten();
-      items.each(function(item){
+      // Prep and de-dupe existing models
+      Array.forEach([items].flatten(), function(item){
         var model = this.model ? ((item instanceof this.model) ? item : new this.model(item)) : item;
-        if(!this.findFirst(model.getId())){
-          this._models.include(model);
-          models.include(model);
-          model.addEvent('*', this._onModelEvent);
-        }
+        !this.findFirst(model.getId()) && models.push(model);
       }.bind(this));
-      !silent && models.length && this.fireEvent('add', {'models':models});
+      if(models.length){
+        if(options.at != null){
+          // Can't user Array.splice b/c splice takes araguments, not an array. Need to use apply
+          Array.prototype.splice.apply(this._models, [options.at, 0].concat(models));
+        }else{
+          Array.combine(this._models, models);
+        }
+      }
+      !options.silent && models.length && this.fireEvent('add', { models:models, options:options });
     },
 
     remove: function(items, silent){
@@ -228,7 +233,7 @@
           this._models.erase(model);
         }
       }.bind(this));
-      !silent && models.length && this.fireEvent('remove', {'models':models});
+      !silent && models.length && this.fireEvent('remove', { models:models });
     },
 
     getId: function(){
