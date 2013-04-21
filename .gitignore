@@ -1,3 +1,4 @@
+.DS*
 .sass-cache
 config.rb
 *.sublime*
