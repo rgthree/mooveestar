@@ -1,16 +1,17 @@
-//  MooVeeStar 0.1 https://github.com/rgthree/MooVeeStar
+//  MooVeeStar 0.0.1 https://github.com/rgthree/mooveestar
 //  (c) 2012-2013 Regis Gaughan, III
 //  MooVeeStar may be freely distributed under the MIT license.
- 
+
+/* jshint mootools:true, expr:true, eqnull:true */
 ;(function(root){
   
   "use strict";
 
-  var MooVeeStar = root.MooVeeStar = {};
+  var MooVeeStar = root.MooVeeStar = new Events();
 
   MooVeeStar.Model = new Class({
 
-    Implements: [Events],
+    Implements: [Events, Options],
 
     // The key to identify a passed-map by. If doesn't exist, creates one locally with String.uniqueID()
     idProperty:'id',
@@ -21,23 +22,27 @@
     // Properties hash, accessed through get/set
     _props:{},
 
-    // Recieves the Model, and clones it into properties
-    // Gives it a unique key, if it does not exist
-    initialize: function(model, options){
-      model && this.init(model);
+    options: {
+      autoinit:true
     },
 
-    fireEvent: function(type, message){
-      Events.prototype.fireEvent.call(this, type, message);
-      Events.prototype.fireEvent.call(this, '*', {'event':type, 'message':message});
+    // Recieves the Model, and clones it into properties
+    initialize: function(model, options){
+      this.setOptions(options);
+      this.options.autoinit === true && this.init(model);
     },
 
     init: function(model, silent){
       model = model && typeOf(model) === 'object' ? model : {};
       var initials = Object.map(Object.filter(this.properties, function(p){ return p.initial != null; }), function(p){ return p.initial; });
       this.set(Object.merge(initials, model), silent);
-      !silent && this.fireEvent('init');
+      !silent && this.fireEvent('ready');
       return this;
+    },
+
+    fireEvent: function(type, message){
+      Events.prototype.fireEvent.call(this, type, message);
+      Events.prototype.fireEvent.call(this, '*', {'event':type, 'message':message});
     },
 
     // Overloaded set method. Will accept: (key, value[, silent]), or ({k:v,...}[, silent])
@@ -53,8 +58,10 @@
         silent = !!arguments[2];
         this._set.apply(this, arguments);
       }
-      !silent && this.changed.length && this.fireEvent('change', this.get(this.changed));
-      !silent && this.errors.length && this.fireEvent('error', this.errors);
+      if(!silent){
+        this.changed.length && this.fireEvent('change', this.get(this.changed));
+        this.errors.length && this.fireEvent('error', this.errors);
+      }
 
       return this;
     },
@@ -66,13 +73,13 @@
       }
 
       // Sanitize the value, if so
-      if(value !== null && this.properties[key] && this.properties[key]['sanitize']){
-        value = this.properties[key]['sanitize'](value);
+      if(value !== null && this.properties[key] && this.properties[key].sanitize){
+        value = this.properties[key].sanitize(value);
       }
 
       // If we have a custom setter, call it.
-      if(this.properties[key] && this.properties[key]['set']){
-        this.properties[key]['set'].call(this, value, key);
+      if(this.properties[key] && this.properties[key].set){
+        this.properties[key].set.call(this, value, key);
       }else{
         // No change? Then abandon
         if(this._props[key] && this._props[key] === value){
@@ -81,7 +88,7 @@
 
         // basic validator support
         var valid = this.validate(key, value);
-        if(this.properties[key] && this.properties[key]['validate'] && valid !== true){
+        if(this.properties[key] && this.properties[key].validate && valid !== true){
           var error = {key:key, value:value, error:valid};
           this.errors.push(error);
           this.fireEvent('error:'+key, error);
@@ -113,8 +120,8 @@
     },
 
     _get: function(key, raw) {
-      if(!raw && this.properties[key] && this.properties[key]['get']){
-        return this.properties[key]['get'].apply(this, arguments);
+      if(!raw && this.properties[key] && this.properties[key].get){
+        return this.properties[key].get.apply(this, arguments);
       }
       if(key === 'cid'){
         return this.cid || this.getId();
@@ -151,7 +158,7 @@
     },
 
     validate: function(key, value) {
-      return (this.properties[key] && this.properties[key]['validate']) ? this.properties[key]['validate'].call(this, value) : true;
+      return (this.properties[key] && this.properties[key].validate) ? this.properties[key].validate.call(this, value) : true;
     },
 
     toJSON: function(){
@@ -348,7 +355,7 @@
     // Detach all events from itself and any children that have a view controller
     // Dispose/destroy itself
     _doDomManipulation: function(fn, el){
-      var fn = fn || 'dispose'; 
+      fn = fn || 'dispose'; 
       this.detach(el, fn === 'empty');
       (el || this.element)[fn]();
       this.fireEvent(fn);
@@ -462,9 +469,8 @@
           obj = obj[names[i]];
         }else{
           throw new Error('[VIEW ERROR] Could not attach event to this["'+name.replace('.','"]["')+'"]. "'+names[i]+'" is undefined.');
-          return null;
         }
-      };
+      }
       if(obj && typeOf(obj.addEvent) === 'function'){
         return obj;
       }else if(!obj || typeOf(obj.addEvent) !== 'function'){
@@ -514,7 +520,7 @@
     register: function(key, html){
       if(typeof(html) === 'function'){
         mvstpl.registerScript(key, html);
-        return
+        return;
       }
       key = mvstpl.cleanKey(key);
       html = html.replace(/<\!\-\-.*?\-\->/g, '').trim().replace(/\n/g,' ').replace(/\s+/g,' '); // Strip out comments
@@ -535,10 +541,9 @@
     getScript: function(key){
       key = mvstpl.cleanKey(key);
       if(mvstpl.templates[key] && mvstpl.templates[key].script){
-          return mvstpl.templates[key].script;
+        return mvstpl.templates[key].script;
       }else{
         throw new Error('Ain\'t no script for the template called '+key+' ('+typeOf(mvstpl.templates[key].script)+')');
-        return null;
       }
     },
 
@@ -563,7 +568,6 @@
         }       
       }else{
         throw new Error('Ain\'t no template called '+key+' ('+typeOf(mvstpl.templates[key])+')');
-        return null;
       }
     },
 
@@ -601,7 +605,7 @@
     },
 
     // Inflate a template and pass it's elements to another.
-    // Usefule when wanting to inflate a template inside another
+    // Useful when wanting to inflate a template inside another
     // generic template (like a dialog/popup/etc).
     inflateSurround: function(template, surround, scriptData, skipInit){
       var tpl, surroundData;
@@ -614,7 +618,6 @@
           return mvstpl.inflate(surround, surroundData);
         }else{
           throw new Error('Could not find the surround template: '+surround);
-          return tpl;
         }
       }
     },
@@ -659,7 +662,7 @@
         }
         if(toBindEls.length){
           // Exclude any els that are in their own data-tpl (which will follow)
-          var innerBinds = el.getElements('*[data-tpl] *[data-bind]');
+          innerBinds = el.getElements('*[data-tpl] *[data-bind]');
           toBindEls = toBindEls.filter(function(maybeBind){ return !innerBinds.contains(maybeBind); });
           toBindEls.each(function(child){
             var bindings;
@@ -704,8 +707,8 @@
                   child.empty().grab(value);
                 }else if(field === 'default'){
                   field = /input|textarea|select/.test(child.get('tag')) ? 'value' : 'html';
-                  child.set(field, value != null ? value : '');
-                }else if(value != null){
+                  child.set(field, value !== null ? value : '');
+                }else if(value !== null){
                   child.set(field, value);
                 }else{
                   child.removeProperty(field, value);

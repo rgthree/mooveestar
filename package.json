@@ -1,12 +1,10 @@
 {
-  "name": "mooveestar",
+  "name": "MooVeeStar",
   "version": "0.0.1",
   "description": "MooTools MV* Framework",
-  "main": "mooveestar.js",
-  "devDependencies": {
-    "grunt":"latest",
-    "grunt-contrib-jshint":"latest"
-  },
+  "homepage": "http://rgthree.github.io/mooveestar/",
+  "author": "Regis Gaughan, III <regis.gaughan@gmail.com>",
+  "main": "./src/mooveestar.js",
   "directories": {
     "test": "test"
   },
@@ -17,8 +15,13 @@
     "type": "git",
     "url": "git://github.com/rgthree/mooveestar.git"
   },
-  "author": "",
-  "license": "BSD",
+  "license": "MIT",
   "readmeFilename": "README.md",
-  "gitHead": "4ed92672bf743646bb85854649a6564174e6c754"
+  "devDependencies": {
+    "grunt":"latest",
+    "grunt-contrib-jshint":"latest",
+    "grunt-contrib-uglify":"latest",
+    "grunt-mocha-phantomjs":"latest",
+    "chai":"latest"
+  }
 }
