@@ -134,4 +134,117 @@
 
   });
 
+
+  describe('MooVeeStar.Collection', function(){
+
+    var Animal = new Class({
+      Extends: MooVeeStar.Model
+    });
+
+    var Zoo = new Class({
+      Extends: MooVeeStar.Collection,
+      model: Animal
+    });
+
+    var collection = new Zoo([new Animal({ id:145, type:'monkey' }), { id:146, type:'zebra' }]);
+
+    it('should be instantiated w/ Events & Options', function(){
+      assert.instanceOf(collection, MooVeeStar.Collection);
+      assert.typeOf(collection.addEvent, 'function');
+      assert.typeOf(collection.setOptions, 'function');
+    });
+
+    it('should accept models initially', function(){
+      // New local collection to test this specifically
+      assert.equal(collection.getLength(), 2);
+      assert.equal(collection._models.length, 2);
+      assert.equal(collection._models[0].get('type'), 'monkey');
+      assert.equal(collection._models[1].get('type'), 'zebra');
+    });
+
+
+    describe('.add(...)', function(){
+      it('should add single or array of and inflate items', function(){
+        collection.add({ id:147, type:'monkey' });
+        collection.add([{ id:148, type:'monkey' },{ id:149, type:'gorilla' },{ id:150, type:'zebra' }]);
+        assert.equal(collection.getLength(), 6);
+        assert.equal(collection._models.length, 6);
+        assert.equal(collection._models[0].get('type'), 'monkey');
+        assert.equal(collection._models[1].get('type'), 'zebra');
+        assert.equal(collection._models[2].get('type'), 'monkey');
+        assert.equal(collection._models[3].get('type'), 'monkey');
+        assert.equal(collection._models[4].get('type'), 'gorilla');
+        assert.equal(collection._models[5].get('type'), 'zebra');
+      });
+
+      it('should accept an options.at to splice', function(){
+        collection.add([{ id:600, type:'parrot' },{ id:601, type:'panda' }], { at:3 });
+        assert.equal(collection._models[3].get('type'), 'parrot');
+        assert.equal(collection._models[4].get('type'), 'panda');
+      });
+    });
+
+    describe('.at(index)', function(){
+      it('should return the model at the index', function(){
+        assert.equal(collection.at(0), collection._models[0]);
+        assert.equal(collection.at(1), collection._models[1]);
+      });
+    });
+
+    describe('.get(...)', function(){
+      it('should return all models if no arguments', function(){
+        assert.equal(collection.get(), collection._models);
+        assert.equal(collection.get(), collection.getAll());
+      });
+
+      it('should findFirst(key) if exists', function(){
+        assert.equal(collection.get(145), collection.get(0));
+        assert.equal(collection.get(146), collection.get(1));
+      });
+
+      it('should at(int) if a number that is not found by findFirst', function(){
+        assert.equal(collection.at(0), collection.get(0));
+        assert.equal(collection.at(1), collection.get(1));
+      });
+
+      it('should at(int) if a number that is not found by findFirst', function(){
+        assert.equal(collection.at(0), collection.get(0));
+        assert.equal(collection.at(1), collection.get(1));
+      });
+    });
+
+    describe('.find(...)', function(){
+      it('should find specific items by the model\'s id', function(){
+        assert.equal(collection.find(148)[0].get('type'), 'monkey');
+        assert.equal(collection.find(149)[0].get('type'), 'gorilla');
+        assert.equal(collection.find(150)[0].get('type'), 'zebra');
+      });
+
+      it('should find specific items by a filter by a certain key', function(){
+        assert.equal(collection.find('monkey', 'type').length, 3);
+        assert.equal(collection.find('zebra', 'type').length, 2);
+        assert.equal(collection.find('gorilla', 'type').length, 1);
+      });
+
+      it('should return an empty array when not found', function(){
+        assert.equal(collection.find('peacock', 'type').length, 0);
+      });
+    });
+
+    describe('.findFirst(...)', function(){
+      it('should return the first item from a .find()', function(){
+        assert.equal(collection.findFirst('monkey', 'type'), collection.find('monkey', 'type')[0]);
+        assert.equal(collection.findFirst(148), collection.find(148)[0]);
+      });
+
+      it('should return null when not found', function(){
+        assert.equal(collection.findFirst('peacock', 'type'), null);
+      });
+    });
+
+
+
+
+  });
+
 }).call(this);

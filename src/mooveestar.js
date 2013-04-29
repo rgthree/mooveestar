@@ -23,7 +23,7 @@
     _props:{},
 
     options: {
-      autoinit:true
+      autoinit: true
     },
 
     // Recieves the Model, and clones it into properties
@@ -184,7 +184,7 @@
 
   MooVeeStar.Collection = new Class({
 
-    Implements: [Events],
+    Implements: [Events, Options],
 
     model: null, // The model class to define. Should define in Collection Class
 
@@ -256,11 +256,11 @@
     },
 
     get: function(key){
-      return key == null ? this._models : (typeof(key) === 'number' ? this.at(key) : this.findById(key));
+      return key == null ? this.getAll() : (this.findFirst(key) || (typeof(key) === 'number' && this.at(key)));
     },
 
-    getModels: function(){
-      return this.get();
+    getAll: function(){
+      return this._models;
     },
 
     find: function(values, keyToFind){
@@ -301,7 +301,7 @@
 
   MooVeeStar.View = new Class({
 
-    Implements: [Events,Options],
+    Implements: [Events, Options],
 
     options:{
       autoattach: true,
@@ -321,6 +321,7 @@
       options.binder = options.binder || this.options.binder || (MooVeeStar.Templates && MooVeeStar.Templates.init) || null;
       this.setOptions(options);
 
+      this.events = Object.clone(this.events || {});
       this.model = this.model || model || null;
       this.setElement();
       this.options.autoattach && this.attachEvents();
@@ -455,7 +456,7 @@
         return $(window);
       if(name === 'document')
         return $(document);
-      if('MooVeeStar')
+      if(name === 'MooVeeStar')
         return MooVeeStar;
       if($(name))
         return $(name);
@@ -590,13 +591,13 @@
           tpls.reverse().each(function(tplChild){
             tplChild.inject(child, 'after');
             markupClass && tplChild.addClass(markupClass);
-          }.bind(this));    
+          });    
           child.destroy();
-        }.bind(this));
+        });
         children = dom.getChildren();
         children.each(function(child){
           child.set('data-tpl', (child.get('data-tpl') || '').split(' ').include(dom.get('data-templateid')).join(' ').clean());
-        }.bind(this));
+        });
         children = children.length === 1 ? children[0] : children;
         !skipInit && mvstpl.init(children, scriptData);
         return children;
@@ -626,19 +627,18 @@
     // Different than bind in that it will check for a registered script
     // and call that (bind simply binds the data to data-bind fields)
     init: function(els, data){
-      var self = this;
       (!els ? [] : (typeOf(els) === 'element' ? [els] : els)).each(function(el){
         if(el.get('data-tpl')){
           var tpls = el.get('data-tpl').split(' ');
           tpls.each(function(tpl){
-            if(self.templates[tpl].script){
-              self.templates[tpl].script(el, (data && (data[tpl] || data[tpl.replace('tpl:','')])) || data);
+            if(mvstpl.templates[tpl].script){
+              mvstpl.templates[tpl].script(el, (data && (data[tpl] || data[tpl.replace('tpl:','')])) || data);
             }else{
-              self.bind(el, data);
+              mvstpl.bind(el, data);
             }
           });
         }else{
-          self.bind(el, data);
+          mvstpl.bind(el, data);
         }
       });
     },
@@ -646,7 +646,6 @@
     // Bind a template to a data object
     // This does NOT call a registered script
     bind: function(els, data){
-      var self = this;
       data = data || {};
       // If we only have one empty element, no data-bind set, and out passed data was a string, set it to the el
       if(typeOf(data) === 'string' && typeOf(els) === 'element' && els.getChildren().length === 0 && !els.get('data-bind')){
@@ -682,7 +681,7 @@
                   child.setStyle(field.replace('style:',''), value);
 
                 // tpl:[array] will inflate the specified template for each item
-                }else if(field.indexOf('tpl:') === 0 && self.check(field.replace('tpl:',''))){
+                }else if(field.indexOf('tpl:') === 0 && mvstpl.check(field.replace('tpl:',''))){
                   child.empty();
                   if(typeOf(value) === 'array'){
                     var frag = document.createDocumentFragment();
@@ -690,13 +689,13 @@
                       // Inflate each template passing in item and have them init (force false skipInit)
                       // Then, remove data-tpl b/c we just inflated it (and, presumably, it's data is
                       // already set so we don't want to set it again below).
-                      var tpl = self.inflate(field.replace('tpl:',''), item, false);
+                      var tpl = mvstpl.inflate(field.replace('tpl:',''), item, false);
                       tpl.removeProperty('data-tpl').getElements('*[data-tpl]').removeProperty('data-tpl');
                       frag.appendChild(tpl);
                     });
                     child.empty().appendChild(frag);
                   }else if(value){
-                    child.grab(self.inflate(field.replace('tpl:',''), value));
+                    child.grab(mvstpl.inflate(field.replace('tpl:',''), value));
                   }
 
                 // TODO: Revert previously bound classes?
@@ -740,7 +739,7 @@
           }); 
           toInitEls.each(function(tplEl){
             var tplKey = tplEl.get('data-tpl');
-            self.init(tplEl, (data && (data[tplKey] || data[tplKey.replace('tpl:','')])) || data);
+            mvstpl.init(tplEl, (data && (data[tplKey] || data[tplKey.replace('tpl:','')])) || data);
           });
         }
       });
@@ -751,7 +750,7 @@
       $$('script[type="text/x-tpl"]').each(function(tpl){
         mvstpl.register(tpl.get('id'), tpl.get('text'));
         tpl.destroy();
-      }.bind(this));
+      });
     }
   };
 
