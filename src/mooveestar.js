@@ -186,7 +186,7 @@
 
     Implements: [Events, Options],
 
-    model: null, // The model class to define. Should define in Collection Class
+    model: MooVeeStar.Model, // The model class to define. Should define in Collection Class
 
      // The models
     _models: [],
@@ -218,17 +218,21 @@
       }.bind(this));
       if(models.length){
         if(options.at != null){
-          // Can't user Array.splice b/c splice takes araguments, not an array. Need to use apply
+          // Can't user Array.splice b/c splice takes arguments, not an array. Need to use apply
           Array.prototype.splice.apply(this._models, [options.at, 0].concat(models));
         }else{
           Array.combine(this._models, models);
         }
       }
-      !options.silent && models.length && this.fireEvent('add', { models:models, options:options });
+      if(!options.silent && models.length){
+        this.fireEvent('change', { event:'add', models:models, options:options });
+        this.fireEvent('add', { models:models, options:options });
+      }
     },
 
-    remove: function(items, silent){
+    remove: function(items, options){
       var models = [];
+      options = options || {};
       if( /number|string/.test(typeof(items)) )
         items = this.get(items);
       items = [items].flatten();
@@ -240,7 +244,28 @@
           this._models.erase(model);
         }
       }.bind(this));
-      !silent && models.length && this.fireEvent('remove', { models:models });
+      if(!options.silent && models.length){
+        this.fireEvent('change', {  event:'remove', models:models, options:options });
+        this.fireEvent('remove', { models:models, options:options });
+      }
+    },
+
+    // Moves a model or number of models to a new index
+    move: function(model, to, options){
+      var index;
+      options = options || {};
+      model = (model instanceof this.model) ? model : this.get(model);
+      index = this.indexOf(model);      
+
+      if(to == null || to > this.getLength()){
+        Array.push(this._models, Array.splice(this._models, index, 1)[0])
+      }else{
+        Array.splice(this._models, to, 0, Array.splice(this._models, index, 1)[0]);
+      }
+      if(!options.silent){
+        this.fireEvent('change', { event:'move', model:model, from:index, to:this.indexOf(model), options:options });
+        this.fireEvent('move', { model:model, from:index, to:this.indexOf(model), options:options });
+      }
     },
 
     getId: function(){

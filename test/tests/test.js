@@ -242,6 +242,78 @@
       });
     });
 
+    describe('.move(...)', function(){
+      it('should move the model passed to the index passed', function(){
+        var first, second, third, fourth, fifth;
+        first = collection.at(0);
+        second = collection.at(1);
+        third = collection.at(2);
+        fourth = collection.at(3);
+        fifth = collection.at(4);
+        collection.move(fourth, 1);
+        assert.equal(collection.indexOf(first), 0);
+        assert.equal(collection.indexOf(second), 2);
+        assert.equal(collection.indexOf(third), 3);
+        assert.equal(collection.indexOf(fourth), 1);
+        assert.equal(collection.indexOf(fifth), 4);
+        first = collection.at(0);
+        second = collection.at(1);
+        third = collection.at(2);
+        fourth = collection.at(3);
+        fifth = collection.at(4);
+        collection.move(first, 3);
+        assert.equal(collection.indexOf(first), 3);
+        assert.equal(collection.indexOf(second), 0);
+        assert.equal(collection.indexOf(third), 1);
+        assert.equal(collection.indexOf(fourth), 2);
+        assert.equal(collection.indexOf(fifth), 4);
+      });
+
+    });
+
+    describe('.remove(...)', function(){
+      it('should remove the model passed', function(){
+        var first, second, third;
+        first = collection.at(0);
+        second = collection.at(1);
+        third = collection.at(2);
+        collection.remove(second); 
+        assert.equal(collection.indexOf(first), 0);
+        assert.equal(collection.indexOf(second), -1);
+        assert.equal(collection.indexOf(third), 1);
+      });
+
+      it('should remove the models passed', function(){
+        var first, second, third, fourth, fifth;
+        first = collection.at(0);
+        second = collection.at(1);
+        third = collection.at(2);
+        fourth = collection.at(3);
+        fifth = collection.at(4);
+        collection.remove([second, fourth]);
+        assert.equal(collection.indexOf(first), 0);
+        assert.equal(collection.indexOf(second), -1);
+        assert.equal(collection.indexOf(third), 1);
+        assert.equal(collection.indexOf(fourth), -1);
+        assert.equal(collection.indexOf(fifth), 2);
+      });
+
+      it('should remove the models passed', function(){
+        var first, second, third, fourth, fifth;
+        first = collection.at(0);
+        second = collection.at(1);
+        third = collection.at(2);
+        fourth = collection.at(3);
+        fifth = collection.at(4);
+        collection.remove([second, fourth]);
+        assert.equal(collection.indexOf(first), 0);
+        assert.equal(collection.indexOf(second), -1);
+        assert.equal(collection.indexOf(third), 1);
+        assert.equal(collection.indexOf(fourth), -1);
+        assert.equal(collection.indexOf(fifth), 2);
+      });
+    });
+
 
 
 
