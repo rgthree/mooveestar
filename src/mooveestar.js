@@ -624,6 +624,16 @@
       }
     },
 
+    // Same as inflate, but removes bindings after inflating
+    inflateOnce: function(dom, scriptData, skipInit){
+      var r = mvstpl.inflate(dom, scriptData, skipInit);
+      [(r || [])].flatten().each(function(el){
+        el.removeProperty('data-bind');
+        el.getElements('[data-bind]').removeProperty('data-bind');
+      })
+      return r;
+    },
+    
     // Inflate a template
     inflate: function(dom, scriptData, skipInit){
       if(typeOf(dom) === 'string'){
