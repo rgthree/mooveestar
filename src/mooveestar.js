@@ -188,13 +188,21 @@
 
     model: MooVeeStar.Model, // The model class to define. Should define in Collection Class
 
+    options: {
+      silent:false
+    },
+
      // The models
     _models: [],
 
     initialize: function(items, options){
+      options = options || {};
       // Bind the onModelEvent passthrough so it can be removed
       this._onModelEvent = this._onModelEvent.bind(this);
-      this.cid = (options && options.id) || String.uniqueID();
+      this.cid = (options.id) || String.uniqueID();
+      delete options.id;
+      this.setOptions(options);
+      this.silent = !!options.silent;
       if(items){
         this.add(items, { silent:true });
       }
@@ -207,6 +215,22 @@
       this.fireEvent(e.event, e.message);
     },
 
+    // Call w/o arguments to set .silent true
+    // Call w/ boolean to set .silent
+    // Call w/ a synchronous fn to run while silent
+    silence: function(){
+      if(typeof arguments[0] === 'boolean'){
+        this.silent = arguments[0];
+      }else if(typeof arguments[0] === 'function'){
+        this.silent = true;
+        arguments[0]();
+        this.silent = false;
+      }else if(arguments.length == 0){
+        this.silent = true;
+      }
+      return this;
+    },
+
     add: function(items, options){
       var models;
       options = options || {};
@@ -214,7 +238,10 @@
       // Prep and de-dupe existing models
       Array.forEach([items].flatten(), function(item){
         var model = this.model ? ((item instanceof this.model) ? item : new this.model(item)) : item;
-        !this.findFirst(model.getId()) && models.push(model);
+        if(!this.findFirst(model.getId())){
+          model.addEvent('*', this._onModelEvent);
+          models.push(model);
+        }
       }.bind(this));
       if(models.length){
         if(options.at != null){
@@ -224,7 +251,7 @@
           Array.combine(this._models, models);
         }
       }
-      if(!options.silent && models.length){
+      if(!this.silent && !options.silent && models.length){
         this.fireEvent('change', { event:'add', models:models, options:options });
         this.fireEvent('add', { models:models, options:options });
       }
@@ -244,7 +271,7 @@
           this._models.erase(model);
         }
       }.bind(this));
-      if(!options.silent && models.length){
+      if(!this.silent && !options.silent && models.length){
         this.fireEvent('change', {  event:'remove', models:models, options:options });
         this.fireEvent('remove', { models:models, options:options });
       }
@@ -262,7 +289,7 @@
       }else{
         Array.splice(this._models, to, 0, Array.splice(this._models, index, 1)[0]);
       }
-      if(!options.silent){
+      if(!this.silent && !options.silent){
         this.fireEvent('change', { event:'move', model:model, from:index, to:this.indexOf(model), options:options });
         this.fireEvent('move', { model:model, from:index, to:this.indexOf(model), options:options });
       }
