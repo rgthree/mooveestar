@@ -34,8 +34,17 @@
 
     init: function(model, silent){
       model = model && typeOf(model) === 'object' ? model : {};
-      var initials = Object.map(Object.filter(this.properties, function(p){ return p.initial != null; }), function(p){ return p.initial; });
-      this.set(Object.merge(initials, model), silent);
+
+      // Set the properties taking any thing in the properties map for initials, defaults or the first possibles
+      this.set(Object.merge(Object.map(this.properties, function(p){
+        if(p.initial != null)
+          return p.initial;
+        if(p['default'] != null)
+          return p['default'];
+        if(p.possible && p.possible.length)
+          return p.possible[0];
+        return null;
+      }), model), silent);
       !silent && this.fireEvent('ready');
       return this;
     },
@@ -88,7 +97,7 @@
 
         // basic validator support
         var valid = this.validate(key, value);
-        if(this.properties[key] && this.properties[key].validate && valid !== true){
+        if(this.properties[key] && (this.properties[key].validate || this.properties[key].possible) && valid !== true){
           var error = {key:key, value:value, error:valid};
           this.errors.push(error);
           this.fireEvent('error:'+key, error);
@@ -123,9 +132,8 @@
       if(!raw && this.properties[key] && this.properties[key].get){
         return this.properties[key].get.apply(this, arguments);
       }
-      if(key === 'cid'){
+      if(key === 'cid')
         return this.cid || this.getId();
-      }
 
       return (key && typeof(this._props[key]) !== 'undefined') ? this._props[key] : null;
     },
@@ -158,7 +166,14 @@
     },
 
     validate: function(key, value) {
-      return (this.properties[key] && this.properties[key].validate) ? this.properties[key].validate.call(this, value) : true;
+      var prop = this.properties[key];
+      if(prop){
+        if(typeof prop.validate === 'function')
+          return prop.validate.call(this, value);
+        if(typeOf(prop.possible) === 'array')
+          return prop.possible.contains(value) || ('"'+value+'" is not a valid value for "'+key+'"');
+      }
+      return true;
     },
 
     toJSON: function(){
@@ -369,8 +384,8 @@
 
     initialize: function(model, options){
       options = options || {};
-      options.inflater = options.inflater || this.options.inflater || (MooVeeStar.Templates && MooVeeStar.Templates.inflate) || null;
-      options.binder = options.binder || this.options.binder || (MooVeeStar.Templates && MooVeeStar.Templates.init) || null;
+      options.inflater = options.inflater || this.options.inflater || (MooVeeStar.templates && MooVeeStar.templates.inflate) || null;
+      options.binder = options.binder || this.options.binder || (MooVeeStar.templates && MooVeeStar.templates.init) || null;
       this.setOptions(options);
 
       this.events = Object.clone(this.events || {});
@@ -816,7 +831,7 @@
     }
   };
 
-  MooVeeStar.Templates = mvstpl;
+  MooVeeStar.templates = mvstpl;
 
   // If html5 shiv, then let's shiv in <markup> (IE8- support)
   if(window && window.html5 && window.html5.supportsUnknownElements === false){
@@ -824,6 +839,6 @@
     html5.shivDocument(document);
   }
   document.createElement('markup');
-  MooVeeStar.Templates.scrape();
+  MooVeeStar.templates.scrape();
 
 })(this);
