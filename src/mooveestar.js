@@ -45,6 +45,7 @@
           return p.possible[0];
         return null;
       }), model), silent);
+      this.changed = [];
       !silent && this.fireEvent('ready');
       return this;
     },
@@ -82,9 +83,8 @@
       }
 
       // Sanitize the value, if so
-      if(value !== null && this.properties[key] && this.properties[key].sanitize){
-        value = this.properties[key].sanitize(value);
-      }
+      if(value !== null && this.properties[key] && this.properties[key].sanitize)
+        value = this.properties[key].sanitize.call(this, value);
 
       // If we have a custom setter, call it.
       if(this.properties[key] && this.properties[key].set){
@@ -247,15 +247,18 @@
     },
 
     add: function(items, options){
-      var models;
+      var models, errors;
       options = options || {};
       models = [];
+      errors = [];
       // Prep and de-dupe existing models
       Array.forEach([items].flatten(), function(item){
         var model = this.model ? ((item instanceof this.model) ? item : new this.model(item)) : item;
         if(!this.findFirst(model.getId())){
           model.addEvent('*', this._onModelEvent);
           models.push(model);
+          if(model.errors.length)
+            errors.push({ model:model, errors:model.errors });
         }
       }.bind(this));
       if(models.length){
@@ -266,9 +269,10 @@
           Array.combine(this._models, models);
         }
       }
-      if(!this.silent && !options.silent && models.length){
-        this.fireEvent('change', { event:'add', models:models, options:options });
-        this.fireEvent('add', { models:models, options:options });
+      if(!this.silent && !options.silent){
+        models.length && this.fireEvent('change', { event:'add', models:models, options:options });
+        models.length && this.fireEvent('add', { models:models, options:options });
+        errors.length && this.fireEvent('error', { data:errors, options:options });
       }
     },
 
