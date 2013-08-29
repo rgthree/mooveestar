@@ -1,0 +1,28 @@
+<html>
+  <head>
+    <title>Many Tests</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="../node_modules/grunt-mocha-phantomjs/node_modules/mocha-phantomjs/node_modules/mocha/mocha.css" />
+  </head>
+  <body>
+    <div id="mocha"></div>
+    <script src="../node_modules/grunt-mocha-phantomjs/node_modules/mocha-phantomjs/node_modules/mocha/mocha.js"></script>
+    <script src="../node_modules/chai/chai.js"></script>
+    <script>
+      mocha.ui('bdd'); 
+      mocha.reporter('html');
+      var expect, assert;
+      expect = chai.expect;
+      assert = chai.assert;
+    </script>
+
+
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/mootools/1.4.5/mootools-yui-compressed.js"></script>
+    <script src="../src/mooveestar.js"></script>
+    
+    <script src="tests/test.js"></script>
+
+
+    <script>(window.mochaPhantomJS || window.mocha).run();</script>
+  </body>
+</html>

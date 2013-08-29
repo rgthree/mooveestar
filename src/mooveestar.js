@@ -1,16 +1,28 @@
-//  MooVeeStar 0.1 https://github.com/rgthree/MooVeeStar
+//  MooVeeStar 0.0.1 https://github.com/rgthree/mooveestar
 //  (c) 2012-2013 Regis Gaughan, III
 //  MooVeeStar may be freely distributed under the MIT license.
- 
+
+/* jshint mootools:true, expr:true, eqnull:true */
 ;(function(root){
   
   "use strict";
 
-  var MooVeeStar = root.MooVeeStar = {};
+  var MooVeeStar = root.MooVeeStar = new Events();
+
+  // An Event class that wraps objects called internally with fireEvent
+  MooVeeStar.Events = new Class({
+    Implements: [Events],
+
+    fireEvent: function(type, message){
+      Events.prototype.fireEvent.call(this, type, message);
+      Events.prototype.fireEvent.call(this, '*', {'event':type, 'message':message});
+    }
+
+  });
 
   MooVeeStar.Model = new Class({
 
-    Implements: [Events],
+    Implements: [MooVeeStar.Events, Options],
 
     // The key to identify a passed-map by. If doesn't exist, creates one locally with String.uniqueID()
     idProperty:'id',
@@ -21,21 +33,31 @@
     // Properties hash, accessed through get/set
     _props:{},
 
-    // Recieves the Model, and clones it into properties
-    // Gives it a unique key, if it does not exist
-    initialize: function(model, options){
-      model && this.init(model);
+    options: {
+      autoinit: true
     },
 
-    fireEvent: function(type, message){
-      Events.prototype.fireEvent.call(this, type, message);
-      Events.prototype.fireEvent.call(this, '*', {'event':type, 'message':message});
+    // Recieves the Model, and clones it into properties
+    initialize: function(model, options){
+      this.setOptions(options);
+      this.options.autoinit === true && this.init(model);
     },
 
     init: function(model, silent){
       model = model && typeOf(model) === 'object' ? model : {};
-      this.set(Object.merge(Object.map(this.properties, function(p){ return p.initial != null ? p.initial : (p['default'] != null ? p['default'] : null); }), model), silent);
-      !silent && this.fireEvent('init');
+
+      // Set the properties taking any thing in the properties map for initials, defaults or the first possibles
+      this.set(Object.merge(Object.map(this.properties, function(p){
+        if(p.initial != null)
+          return p.initial;
+        if(p['default'] != null)
+          return p['default'];
+        if(p.possible && p.possible.length)
+          return p.possible[0];
+        return null;
+      }), model), silent);
+      this.changed = [];
+      !silent && this.fireEvent('ready');
       return this;
     },
 
@@ -52,8 +74,10 @@
         silent = !!arguments[2];
         this._set.apply(this, arguments);
       }
-      !silent && this.changed.length && this.fireEvent('change', this.get(this.changed));
-      !silent && this.errors.length && this.fireEvent('error', this.errors);
+      if(!silent){
+        this.changed.length && this.fireEvent('change', this.get(this.changed));
+        this.errors.length && this.fireEvent('error', this.errors);
+      }
 
       return this;
     },
@@ -65,13 +89,12 @@
       }
 
       // Sanitize the value, if so
-      if(value !== null && this.properties[key] && this.properties[key]['sanitize']){
-        value = this.properties[key]['sanitize'](value);
-      }
+      if(value !== null && this.properties[key] && this.properties[key].sanitize)
+        value = this.properties[key].sanitize.call(this, value);     
 
       // If we have a custom setter, call it.
-      if(this.properties[key] && this.properties[key]['set']){
-        this.properties[key]['set'].call(this, value, key);
+      if(this.properties[key] && this.properties[key].set){
+        this.properties[key].set.call(this, value, key);
       }else{
         // No change? Then abandon
         if(this._props[key] && this._props[key] === value){
@@ -80,7 +103,7 @@
 
         // basic validator support
         var valid = this.validate(key, value);
-        if(this.properties[key] && this.properties[key]['validate'] && valid !== true){
+        if(this.properties[key] && (this.properties[key].validate || this.properties[key].possible) && valid !== true){
           var error = {key:key, value:value, error:valid};
           this.errors.push(error);
           this.fireEvent('error:'+key, error);
@@ -112,12 +135,11 @@
     },
 
     _get: function(key, raw) {
-      if(!raw && this.properties[key] && this.properties[key]['get']){
-        return this.properties[key]['get'].apply(this, arguments);
+      if(!raw && this.properties[key] && this.properties[key].get){
+        return this.properties[key].get.apply(this, arguments);
       }
-      if(key === 'cid'){
+      if(key === 'cid')
         return this.cid || this.getId();
-      }
 
       return (key && typeof(this._props[key]) !== 'undefined') ? this._props[key] : null;
     },
@@ -131,7 +153,7 @@
 
     unset: function(keys, silent){
       // Map of nulls to pass set()
-      keys = [keys].flatten().clean();
+      keys = Array.from(keys).clean();
 
       if(!keys.length)
         return this;
@@ -142,13 +164,22 @@
     },
 
     destroy: function() {
-      var id = this.getId();
+      var props, id;
+      id = this.getId();
+      props = Object.clone(this.toJSON());
       this._props = {};
-      this.fireEvent('destroy', {'model':this, 'id':id});
+      this.fireEvent('destroy', { model:this, properties:props, id:id, cid:this.cid });
     },
 
     validate: function(key, value) {
-      return (this.properties[key] && this.properties[key]['validate']) ? this.properties[key]['validate'].call(this, value) : true;
+      var prop = this.properties[key];
+      if(prop){
+        if(typeof prop.validate === 'function')
+          return prop.validate.call(this, value);
+        if(typeOf(prop.possible) === 'array')
+          return prop.possible.contains(value) || ('"'+value+'" is not a valid value for "'+key+'"');
+      }
+      return true;
     },
 
     toJSON: function(){
@@ -174,49 +205,89 @@
 
   MooVeeStar.Collection = new Class({
 
-    Implements: [Events],
+    Implements: [MooVeeStar.Events, Options],
 
-    model: null, // The model class to define. Should define in Collection Class
+    model: MooVeeStar.Model, // The model class to define. Should define in Collection Class
+
+    options: {
+      silent:false
+    },
 
      // The models
     _models: [],
 
     initialize: function(items, options){
+      options = options || {};
       // Bind the onModelEvent passthrough so it can be removed
       this._onModelEvent = this._onModelEvent.bind(this);
-      this.cid = (options && options.id) || String.uniqueID();
+      this.cid = (options.id) || String.uniqueID();
+      delete options.id;
+      this.setOptions(options);
+      this.silent = !!options.silent;
       if(items){
-        this.add(items, true);
+        this.add(items, { silent:true });
       }
     },
 
     _onModelEvent: function(e){
       if(e.event === 'destroy'){
-        this.remove(e.message);
+        this.remove(e.message.model);
       }
       this.fireEvent(e.event, e.message);
     },
 
-    add: function(items, silent){
-      var models;
-      models = [];
-      items = [items].flatten();
-      items.each(function(item){
-        var model = this.model ? ((item instanceof this.model) ? item : new this.model(item)) : item;
-        if(!this.findFirst(model.getId())){
-          this._models.include(model);
-          models.include(model);
-          model.addEvent('*', this._onModelEvent);
-        }
-      }.bind(this));
-      !silent && models.length && this.fireEvent('add', {'models':models});
+    // Call w/o arguments to set .silent true
+    // Call w/ boolean to set .silent
+    // Call w/ a synchronous fn to run while silent
+    silence: function(){
+      if(typeof arguments[0] === 'boolean'){
+        this.silent = arguments[0];
+      }else if(typeof arguments[0] === 'function'){
+        this.silent = true;
+        arguments[0]();
+        this.silent = false;
+      }else if(arguments.length === 0){
+        this.silent = true;
+      }
+      return this;
     },
 
-    remove: function(items, silent){
+    add: function(items, options){
+      var models, errors;
+      options = options || {};
+      models = [];
+      errors = [];
+      // Prep and de-dupe existing models
+      Array.forEach([items].flatten(), function(item){
+        var model = this.model ? ((item instanceof this.model) ? item : new this.model(item)) : item;
+        if(!this.findFirst(model.getId())){
+          model.addEvent('*', this._onModelEvent);
+          models.push(model);
+          if(model.errors.length)
+            errors.push({ model:model, errors:model.errors });
+        }
+      }.bind(this));
+      if(models.length){
+        if(options.at != null){
+          // Can't user Array.splice b/c splice takes arguments, not an array. Need to use apply
+          Array.prototype.splice.apply(this._models, [options.at, 0].concat(models));
+        }else{
+          Array.combine(this._models, models);
+        }
+      }
+      if(!this.silent && !options.silent){
+        models.length && this.fireEvent('change', { event:'add', models:models, options:options });
+        models.length && this.fireEvent('add', { models:models, options:options });
+        errors.length && this.fireEvent('error', { data:errors, options:options });
+      }
+    },
+
+    remove: function(items, options){
       var models = [];
+      options = options || {};
       if( /number|string/.test(typeof(items)) )
         items = this.get(items);
-      items = [items].flatten();
+      items = Array.from(items);
       items.each(function(model){
         model = typeof(model) === 'string' ? this.findFirst(model) : model;
         if(this._models.contains(model)){
@@ -225,7 +296,28 @@
           this._models.erase(model);
         }
       }.bind(this));
-      !silent && models.length && this.fireEvent('remove', {'models':models});
+      if(!this.silent && !options.silent && models.length){
+        this.fireEvent('change', {  event:'remove', models:models, options:options });
+        this.fireEvent('remove', { models:models, options:options });
+      }
+    },
+
+    // Moves a model or number of models to a new index
+    move: function(model, to, options){
+      var index;
+      options = options || {};
+      model = (model instanceof this.model) ? model : this.get(model);
+      index = this.indexOf(model);      
+
+      if(to == null || to > this.getLength()){
+        Array.push(this._models, Array.splice(this._models, index, 1)[0]);
+      }else{
+        Array.splice(this._models, to, 0, Array.splice(this._models, index, 1)[0]);
+      }
+      if(!this.silent && !options.silent){
+        this.fireEvent('change', { event:'move', model:model, from:index, to:this.indexOf(model), options:options });
+        this.fireEvent('move', { model:model, from:index, to:this.indexOf(model), options:options });
+      }
     },
 
     getId: function(){
@@ -241,16 +333,16 @@
     },
 
     get: function(key){
-      return key == null ? this._models : (typeof(key) === 'number' ? this.at(key) : this.findById(key));
+      return key == null ? this.getAll() : (this.findFirst(key) || (typeof(key) === 'number' && this.at(key)));
     },
 
-    getModels: function(){
-      return this.get();
+    getAll: function(){
+      return this._models;
     },
 
     find: function(values, keyToFind){
       keyToFind = keyToFind || null;
-      values = [values].flatten();
+      values = Array.from(values);
       return this._models.filter(function(model){ return values.contains(keyToFind ? model.get(keyToFind) : model.getId()); });
     },
 
@@ -285,34 +377,68 @@
 
 
   MooVeeStar.View = new Class({
-    Implements: [Events,Options],
-    events:{},
+
+    Implements: [MooVeeStar.Events, Options],
+
     options:{
-      'autorender':true,  // call render when set
-      'skipInit':false    // Skip initialization of template on inflate
+      autoattach: true,
+      autorender: true,
+      inflater: null,   // Lazily set in constructor
+      binder: null      // Lazily set in constructor
     },
-    template:null,
+    events:{},
+
+    template: null,
+    element: null,
+    elements: {},
+
     initialize: function(model, options){
+      options = options || {};
+      options.inflater = options.inflater || this.options.inflater || (MooVeeStar.templates && MooVeeStar.templates.inflate) || null;
+      options.binder = options.binder || this.options.binder || (MooVeeStar.templates && MooVeeStar.templates.init) || null;
       this.setOptions(options);
+
       this.events = Object.clone(this.events || {});
-      this.model = this.model || model;
-      this.element = this.element || MooVeeStar.templates.inflate(this.template, null, true);
-      this.element.set('data-autobind', 'false');
-      this.element.set('data-has-view-controller', true);
-      this.element.store('__view', this);
-      this.elements = this.elements || {};
-      this.elements.container = this.element;
-      this.attachEvents();
+      this.model = this.model || model || null;
+      this.setElement();
+      this.options.autoattach && this.attachEvents();
       this.options.autorender && this.render();
+    },
+    
+    setElement: function(element){
+      if(!this.element){
+        this.element = $(element);
+        if(!this.element && this.template && this.options.inflater)
+          this.element = this.options.inflater(this.template, null, true);
+      }
+      if(this.element){
+        this.element.set('data-autobind', 'false');
+        this.element.set('data-has-view-controller', 'true');
+        this.element.store('__view', this);
+        this.elements.container = this.element;
+      }
+      return this;
+    },
+
+    toElement: function(){
+      return this.element;
+    },
+
+    render: function(data){
+      this.options.binder && this.options.binder(this.element, data || (this.model && this.model.toJSON()) || {});
+      return this;
     },
 
     // Dispose of the View
     // Detach all events from itself and any children that have a view controller
     // Dispose/destroy itself
     _doDomManipulation: function(fn, el){
-      var fn = fn || 'dispose'; 
+      fn = fn || 'dispose'; 
+      el = el || this.element;
+      // Dispose can be called through, but empty or destroy should call destroy through
+      this._doNestedViewsCall(fn === 'empty' ? 'destroy' : fn, el);
       this.detach(el, fn === 'empty');
-      (el || this.element)[fn]();
+      el[fn]();
       this.fireEvent(fn);
       return this;
     },
@@ -329,17 +455,38 @@
       return this._doDomManipulation('empty', el);
     },
 
+    // Finds all nested view controllers and calls a method on them
+    _doNestedViewsCall: function(methods, element){
+      var views;
+      element = element || this.element;
+      methods = Array.from(methods);
+      views = element.getElements('*[data-has-view-controller]').clean().reverse();
+      views.forEach(function(el){
+        var controller = el.retrieve('__view');
+        methods.forEach(function(method){
+          if(controller && typeof(controller[method]) === 'function')
+            controller[method]();
+        });
+      });
+    },
+
     // Attaches or detach it's events and all children views as well as rendering
     _doAttachDetach: function(operation, element, excludeSelf){
+      var self, methods;
+      self = this;
       element = element || this.element;
       operation = (operation || 'attach');
-      Array.each(Array.combine([excludeSelf === true ? null : element], element.getElements('*[data-has-view-controller]')).clean(), function(el){
-        var controller = el.retrieve('__view');
-        if(controller){
-          controller[operation+'Events']();
-          operation === 'attach' && controller.render();
-        }
-      });
+      methods = [operation+'Events'];
+      if(operation === 'attach')
+        methods.push('render');
+
+      this._doNestedViewsCall(methods, element);
+
+      if(!excludeSelf){
+        methods.forEach(function(method){
+          self[method]();
+        });
+      }
       return this;
     },
 
@@ -410,8 +557,12 @@
         return $(window);
       if(name === 'document')
         return $(document);
+      if(name === 'MooVeeStar')
+        return MooVeeStar;
       if($(name))
         return $(name);
+      if(root[name] && typeOf(root[name].addEvent) === 'function')
+        return root[name];
 
       names = (name||'').replace(/^this\./gi, '').split('.');
       obj = this;
@@ -420,25 +571,16 @@
           obj = obj[names[i]];
         }else{
           throw new Error('[VIEW ERROR] Could not attach event to this["'+name.replace('.','"]["')+'"]. "'+names[i]+'" is undefined.');
-          return null;
         }
-      };
+      }
       if(obj && typeOf(obj.addEvent) === 'function'){
         return obj;
       }else if(!obj || typeOf(obj.addEvent) !== 'function'){
         throw new Error('[VIEW ERROR] Could not attach event to this['+name.replace('.','][')+'], it does not have an addEvent method.');
       }
       return null;
-    },
-
-    render: function(data){
-      MooVeeStar.templates.init(this.element, data || (this.model && this.model.toJSON()) || {});
-      return this;
-    },
-
-    toElement: function(){
-      return this.element;
     }
+
   });
 
 
@@ -467,19 +609,9 @@
   });
 
 
-  MooVeeStar.Templates = new Class({
+  var mvstpl = {
 
-    // Initialize the Template System
-    initialize: function(){
-      // If html5 shiv, then let's shiv in <markup> (IE8- support)
-      if(window.html5 && window.html5.supportsUnknownElements === false){
-        window.html5.elements += ' markup';
-        html5.shivDocument(document);
-      }
-      document.createElement('markup');
-      this.templates = {};
-      this.scrape();
-    },
+    templates: {},
 
     cleanKey: function(key){
       return key.toLowerCase().trim().replace(/\s/g,'');
@@ -489,45 +621,44 @@
     // Overloaded to accept a register a script as second param
     register: function(key, html){
       if(typeof(html) === 'function'){
-        this.registerScript(key, html);
-        return
+        mvstpl.registerScript(key, html);
+        return;
       }
-      key = this.cleanKey(key);
+      key = mvstpl.cleanKey(key);
       html = html.replace(/<\!\-\-.*?\-\->/g, '').trim().replace(/\n/g,' ').replace(/\s+/g,' '); // Strip out comments
 
-      this.templates[key] = this.templates[key] || {};
-      this.templates[key].dom = new Element('markup[html="'+html+'"]');
-      this.templates[key].markup = html;
+      mvstpl.templates[key] = mvstpl.templates[key] || {};
+      mvstpl.templates[key].dom = new Element('markup[html="'+html+'"]');
+      mvstpl.templates[key].markup = html;
     },
 
     // Register a script to be called when a template is bind
     registerScript: function(key, fn){
-      key = this.cleanKey(key);
-      this.templates[key] = this.templates[key] || {};
-      this.templates[key].script = fn;
+      key = mvstpl.cleanKey(key);
+      mvstpl.templates[key] = mvstpl.templates[key] || {};
+      mvstpl.templates[key].script = fn;
     },
 
     // Return the script associated with a key
     getScript: function(key){
-      key = this.cleanKey(key);
-      if(this.templates[key] && this.templates[key].script){
-          return this.templates[key].script;
+      key = mvstpl.cleanKey(key);
+      if(mvstpl.templates[key] && mvstpl.templates[key].script){
+        return mvstpl.templates[key].script;
       }else{
-        throw new Error('Ain\'t no script for the template called '+key+' ('+typeOf(this.templates[key].script)+')');
-        return null;
+        throw new Error('Ain\'t no script for the template called '+key+' ('+typeOf(mvstpl.templates[key].script)+')');
       }
     },
 
     // check for the existance of a template key
     check: function(key){
-      return !!this.templates[this.cleanKey(key)];
+      return !!mvstpl.templates[mvstpl.cleanKey(key)];
     },
 
     // Return the dom of a template
     get: function(key){
       var data, markupEl, els, childrenTemplates;
-      key = this.cleanKey(key);
-      data = this.templates[key];
+      key = mvstpl.cleanKey(key);
+      data = mvstpl.templates[key];
       if(data){
         // If html5Shiv is installed, and we need to go around cloneNode for HTML5 elements
         if(window.html5 && window.html5.supportsUnknownElements === false){
@@ -538,16 +669,25 @@
           return data.dom.clone().set('data-templateid', key);
         }       
       }else{
-        throw new Error('Ain\'t no template called '+key+' ('+typeOf(this.templates[key])+')');
-        return null;
+        throw new Error('Ain\'t no template called '+key+' ('+typeOf(mvstpl.templates[key])+')');
       }
     },
 
+    // Same as inflate, but removes bindings after inflating
+    inflateOnce: function(dom, scriptData, skipInit){
+      var r = mvstpl.inflate(dom, scriptData, skipInit);
+      [(r || [])].flatten().each(function(el){
+        el.removeProperty('data-bind');
+        el.getElements('[data-bind]').removeProperty('data-bind');
+      });
+      return r;
+    },
+    
     // Inflate a template
     inflate: function(dom, scriptData, skipInit){
       if(typeOf(dom) === 'string'){
         // Assume a key was passed in
-        dom = this.get(dom);
+        dom = mvstpl.get(dom);
       }
       if(dom){
         var markups, children, script;
@@ -557,40 +697,39 @@
           // If there's a class name specified on the <markup> tag, add it to the children
           markupClass = child.get('class') || null;
           // If we passed in skipInit, use it, otherwise set to true assuming this pass is initializing final markup
-          tpls = this.inflate(child.get('template'), scriptData, skipInit != null ? skipInit : true);
+          tpls = mvstpl.inflate(child.get('template'), scriptData, skipInit != null ? skipInit : true);
           tpls = typeOf(tpls) !== 'array' ? [tpls] : tpls;
           tpls.reverse().each(function(tplChild){
             tplChild.inject(child, 'after');
             markupClass && tplChild.addClass(markupClass);
-          }.bind(this));    
+          });    
           child.destroy();
-        }.bind(this));
+        });
         children = dom.getChildren();
         children.each(function(child){
           child.set('data-tpl', (child.get('data-tpl') || '').split(' ').include(dom.get('data-templateid')).join(' ').clean());
-        }.bind(this));
+        });
         children = children.length === 1 ? children[0] : children;
-        !skipInit && this.init(children, scriptData);
+        !skipInit && mvstpl.init(children, scriptData);
         return children;
       }
       return null;
     },
 
     // Inflate a template and pass it's elements to another.
-    // Usefule when wanting to inflate a template inside another
+    // Useful when wanting to inflate a template inside another
     // generic template (like a dialog/popup/etc).
     inflateSurround: function(template, surround, scriptData, skipInit){
       var tpl, surroundData;
       scriptData = scriptData || {};
-      tpl = typeOf(template) === 'element' || typeOf(template) === 'elements'  || typeOf(template) === 'array' ? template : this.inflate(template, scriptData, skipInit);
+      tpl = typeOf(template) === 'element' || typeOf(template) === 'elements'  || typeOf(template) === 'array' ? template : mvstpl.inflate(template, scriptData, skipInit);
       if(tpl){
-        if(surround && this.check(surround)){
+        if(surround && mvstpl.check(surround)){
           surroundData = (scriptData || {})[surround] || (scriptData || {}).surround || {};
           surroundData.els = tpl;
-          return this.inflate(surround, surroundData);
+          return mvstpl.inflate(surround, surroundData);
         }else{
           throw new Error('Could not find the surround template: '+surround);
-          return tpl;
         }
       }
     },
@@ -599,27 +738,25 @@
     // Different than bind in that it will check for a registered script
     // and call that (bind simply binds the data to data-bind fields)
     init: function(els, data){
-      var self = this;
       (!els ? [] : (typeOf(els) === 'element' ? [els] : els)).each(function(el){
         if(el.get('data-tpl')){
           var tpls = el.get('data-tpl').split(' ');
           tpls.each(function(tpl){
-            if(self.templates[tpl].script){
-              self.templates[tpl].script(el, (data && (data[tpl] || data[tpl.replace('tpl:','')])) || data);
+            if(mvstpl.templates[tpl].script){
+              mvstpl.templates[tpl].script(el, (data && (data[tpl] || data[tpl.replace('tpl:','')])) || data);
             }else{
-              self.bind(el, data);
+              mvstpl.bind(el, data);
             }
           });
         }else{
-          self.bind(el, data);
+          mvstpl.bind(el, data);
         }
       });
     },
 
-    // Bind a template to an data object
+    // Bind a template to a data object
     // This does NOT call a registered script
     bind: function(els, data){
-      var self = this;
       data = data || {};
       // If we only have one empty element, no data-bind set, and out passed data was a string, set it to the el
       if(typeOf(data) === 'string' && typeOf(els) === 'element' && els.getChildren().length === 0 && !els.get('data-bind')){
@@ -635,7 +772,7 @@
         }
         if(toBindEls.length){
           // Exclude any els that are in their own data-tpl (which will follow)
-          var innerBinds = el.getElements('*[data-tpl] *[data-bind]');
+          innerBinds = el.getElements('*[data-tpl] *[data-bind]');
           toBindEls = toBindEls.filter(function(maybeBind){ return !innerBinds.contains(maybeBind); });
           toBindEls.each(function(child){
             var bindings;
@@ -655,7 +792,7 @@
                   child.setStyle(field.replace('style:',''), value);
 
                 // tpl:[array] will inflate the specified template for each item
-                }else if(field.indexOf('tpl:') === 0 && self.check(field.replace('tpl:',''))){
+                }else if(field.indexOf('tpl:') === 0 && mvstpl.check(field.replace('tpl:',''))){
                   child.empty();
                   if(typeOf(value) === 'array'){
                     var frag = document.createDocumentFragment();
@@ -663,13 +800,13 @@
                       // Inflate each template passing in item and have them init (force false skipInit)
                       // Then, remove data-tpl b/c we just inflated it (and, presumably, it's data is
                       // already set so we don't want to set it again below).
-                      var tpl = self.inflate(field.replace('tpl:',''), item, false);
+                      var tpl = mvstpl.inflate(field.replace('tpl:',''), item, false);
                       tpl.removeProperty('data-tpl').getElements('*[data-tpl]').removeProperty('data-tpl');
                       frag.appendChild(tpl);
                     });
                     child.empty().appendChild(frag);
                   }else if(value){
-                    child.grab(self.inflate(field.replace('tpl:',''), value));
+                    child.grab(mvstpl.inflate(field.replace('tpl:',''), value));
                   }
 
                 // TODO: Revert previously bound classes?
@@ -680,8 +817,8 @@
                   child.empty().grab(value);
                 }else if(field === 'default'){
                   field = /input|textarea|select/.test(child.get('tag')) ? 'value' : 'html';
-                  child.set(field, value != null ? value : '');
-                }else if(value != null){
+                  child.set(field, value !== null ? value : '');
+                }else if(value !== null){
                   child.set(field, value);
                 }else{
                   child.removeProperty(field, value);
@@ -713,7 +850,7 @@
           }); 
           toInitEls.each(function(tplEl){
             var tplKey = tplEl.get('data-tpl');
-            self.init(tplEl, (data && (data[tplKey] || data[tplKey.replace('tpl:','')])) || data);
+            mvstpl.init(tplEl, (data && (data[tplKey] || data[tplKey.replace('tpl:','')])) || data);
           });
         }
       });
@@ -722,12 +859,20 @@
     // Scrape the dom and register any templates
     scrape: function(){
       $$('script[type="text/x-tpl"]').each(function(tpl){
-        this.register(tpl.get('id'), tpl.get('text'));
+        mvstpl.register(tpl.get('id'), tpl.get('text'));
         tpl.destroy();
-      }.bind(this));
+      });
     }
-  });
+  };
 
-  MooVeeStar.templates = new MooVeeStar.Templates();
+  MooVeeStar.templates = mvstpl;
+
+  // If html5 shiv, then let's shiv in <markup> (IE8- support)
+  if(window && window.html5 && window.html5.supportsUnknownElements === false){
+    window.html5.elements += ' markup';
+    html5.shivDocument(document);
+  }
+  document.createElement('markup');
+  MooVeeStar.templates.scrape();
 
 })(this);
