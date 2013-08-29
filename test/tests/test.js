@@ -22,6 +22,7 @@
 
   describe('MooVeeStar.Model', function(){
 
+    // A test model, a Zebra
     var Zebra = new Class({
       Extends: MooVeeStar.Model,
 
@@ -47,9 +48,7 @@
             return this.get('fgColor')+' and '+this.get('bgColor');
           }
         }
-
       }
-
     });
 
     it('should be instantiated w/ Events & Options', function(){

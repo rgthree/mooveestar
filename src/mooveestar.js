@@ -225,7 +225,7 @@
         this.silent = true;
         arguments[0]();
         this.silent = false;
-      }else if(arguments.length == 0){
+      }else if(arguments.length === 0){
         this.silent = true;
       }
       return this;
@@ -285,7 +285,7 @@
       index = this.indexOf(model);      
 
       if(to == null || to > this.getLength()){
-        Array.push(this._models, Array.splice(this._models, index, 1)[0])
+        Array.push(this._models, Array.splice(this._models, index, 1)[0]);
       }else{
         Array.splice(this._models, to, 0, Array.splice(this._models, index, 1)[0]);
       }
@@ -630,7 +630,7 @@
       [(r || [])].flatten().each(function(el){
         el.removeProperty('data-bind');
         el.getElements('[data-bind]').removeProperty('data-bind');
-      })
+      });
       return r;
     },
     
