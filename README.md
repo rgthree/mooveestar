@@ -11,8 +11,8 @@ See the documentation at [http://rgthree.github.io/mooveestar/](http://rgthree.g
 
 ## Source
 
-- The minified file of MooVeeStar is at `/mooveestar-min.js`
-- The full source file of MooVeeStar is at `/src/mooveestar.js`
+- The minified file of MooVeeStar is at /[mooveestar-min.js](mooveestar-min.js)
+- The full source file of MooVeeStar is at /[src/mooveestar.js](src/mooveestar.js)
 
 
 ## Development
