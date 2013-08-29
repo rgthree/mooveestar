@@ -1,0 +1,27 @@
+{
+  "name": "MooVeeStar",
+  "version": "0.0.1",
+  "description": "MooTools MV* Framework",
+  "homepage": "http://rgthree.github.io/mooveestar/",
+  "author": "Regis Gaughan, III <regis.gaughan@gmail.com>",
+  "main": "./src/mooveestar.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/rgthree/mooveestar.git"
+  },
+  "license": "MIT",
+  "readmeFilename": "README.md",
+  "devDependencies": {
+    "grunt":"latest",
+    "grunt-contrib-jshint":"latest",
+    "grunt-contrib-uglify":"latest",
+    "grunt-mocha-phantomjs":"latest",
+    "chai":"latest"
+  }
+}
