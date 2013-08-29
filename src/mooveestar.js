@@ -9,9 +9,20 @@
 
   var MooVeeStar = root.MooVeeStar = new Events();
 
+  // An Event class that wraps objects called internally with fireEvent
+  MooVeeStar.Events = new Class({
+    Implements: [Events],
+
+    fireEvent: function(type, message){
+      Events.prototype.fireEvent.call(this, type, message);
+      Events.prototype.fireEvent.call(this, '*', {'event':type, 'message':message});
+    }
+
+  });
+
   MooVeeStar.Model = new Class({
 
-    Implements: [Events, Options],
+    Implements: [MooVeeStar.Events, Options],
 
     // The key to identify a passed-map by. If doesn't exist, creates one locally with String.uniqueID()
     idProperty:'id',
@@ -50,11 +61,6 @@
       return this;
     },
 
-    fireEvent: function(type, message){
-      Events.prototype.fireEvent.call(this, type, message);
-      Events.prototype.fireEvent.call(this, '*', {'event':type, 'message':message});
-    },
-
     // Overloaded set method. Will accept: (key, value[, silent]), or ({k:v,...}[, silent])
     set: function(){
       var silent;
@@ -84,7 +90,7 @@
 
       // Sanitize the value, if so
       if(value !== null && this.properties[key] && this.properties[key].sanitize)
-        value = this.properties[key].sanitize.call(this, value);
+        value = this.properties[key].sanitize.call(this, value);     
 
       // If we have a custom setter, call it.
       if(this.properties[key] && this.properties[key].set){
@@ -147,7 +153,7 @@
 
     unset: function(keys, silent){
       // Map of nulls to pass set()
-      keys = [keys].flatten().clean();
+      keys = Array.from(keys).clean();
 
       if(!keys.length)
         return this;
@@ -162,7 +168,7 @@
       id = this.getId();
       props = Object.clone(this.toJSON());
       this._props = {};
-      this.fireEvent('destroy', {'model':this, 'properties':props, 'id':id});
+      this.fireEvent('destroy', { model:this, properties:props, id:id, cid:this.cid });
     },
 
     validate: function(key, value) {
@@ -199,7 +205,7 @@
 
   MooVeeStar.Collection = new Class({
 
-    Implements: [Events, Options],
+    Implements: [MooVeeStar.Events, Options],
 
     model: MooVeeStar.Model, // The model class to define. Should define in Collection Class
 
@@ -281,7 +287,7 @@
       options = options || {};
       if( /number|string/.test(typeof(items)) )
         items = this.get(items);
-      items = [items].flatten();
+      items = Array.from(items);
       items.each(function(model){
         model = typeof(model) === 'string' ? this.findFirst(model) : model;
         if(this._models.contains(model)){
@@ -336,7 +342,7 @@
 
     find: function(values, keyToFind){
       keyToFind = keyToFind || null;
-      values = [values].flatten();
+      values = Array.from(values);
       return this._models.filter(function(model){ return values.contains(keyToFind ? model.get(keyToFind) : model.getId()); });
     },
 
@@ -372,7 +378,7 @@
 
   MooVeeStar.View = new Class({
 
-    Implements: [Events, Options],
+    Implements: [MooVeeStar.Events, Options],
 
     options:{
       autoattach: true,
@@ -428,8 +434,11 @@
     // Dispose/destroy itself
     _doDomManipulation: function(fn, el){
       fn = fn || 'dispose'; 
+      el = el || this.element;
+      // Dispose can be called through, but empty or destroy should call destroy through
+      this._doNestedViewsCall(fn === 'empty' ? 'destroy' : fn, el);
       this.detach(el, fn === 'empty');
-      (el || this.element)[fn]();
+      el[fn]();
       this.fireEvent(fn);
       return this;
     },
@@ -446,17 +455,38 @@
       return this._doDomManipulation('empty', el);
     },
 
+    // Finds all nested view controllers and calls a method on them
+    _doNestedViewsCall: function(methods, element){
+      var views;
+      element = element || this.element;
+      methods = Array.from(methods);
+      views = element.getElements('*[data-has-view-controller]').clean().reverse();
+      views.forEach(function(el){
+        var controller = el.retrieve('__view');
+        methods.forEach(function(method){
+          if(controller && typeof(controller[method]) === 'function')
+            controller[method]();
+        });
+      });
+    },
+
     // Attaches or detach it's events and all children views as well as rendering
     _doAttachDetach: function(operation, element, excludeSelf){
+      var self, methods;
+      self = this;
       element = element || this.element;
       operation = (operation || 'attach');
-      Array.each(Array.combine([excludeSelf === true ? null : element], element.getElements('*[data-has-view-controller]')).clean(), function(el){
-        var controller = el.retrieve('__view');
-        if(controller){
-          controller[operation+'Events']();
-          operation === 'attach' && controller.render();
-        }
-      });
+      methods = [operation+'Events'];
+      if(operation === 'attach')
+        methods.push('render');
+
+      this._doNestedViewsCall(methods, element);
+
+      if(!excludeSelf){
+        methods.forEach(function(method){
+          self[method]();
+        });
+      }
       return this;
     },
 
