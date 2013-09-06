@@ -1,6 +1,6 @@
-//  MooVeeStar 0.0.1 https://github.com/rgthree/mooveestar
-//  (c) 2012-2013 Regis Gaughan, III
-//  MooVeeStar may be freely distributed under the MIT license.
+// MooVeeStar v0.0.1 #20130905 - https://rgthree.github.io/mooveestar/
+// by Regis Gaughan, III <regis.gaughan@gmail.com>
+// MooVeeStar may be freely distributed under the MIT license.
 
 /* jshint mootools:true, expr:true, eqnull:true */
 ;(function(root){
@@ -280,26 +280,40 @@
         models.length && this.fireEvent('add', { models:models, options:options });
         errors.length && this.fireEvent('error', { data:errors, options:options });
       }
+      return this;
     },
 
     remove: function(items, options){
-      var models = [];
+      var self, i,l, models, model;
+      self = this;
       options = options || {};
+      models = [];
       if( /number|string/.test(typeof(items)) )
         items = this.get(items);
       items = Array.from(items);
-      items.each(function(model){
-        model = typeof(model) === 'string' ? this.findFirst(model) : model;
+
+      // Loop over inversely so we do not mess with order if items === this._model when removeAll()
+      for(i = items.length-1, l = 0; i >= 0; i--){
+        model = typeof(items[i]) === 'string' ? this.findFirst(items[i]) : items[i];
         if(this._models.contains(model)){
           model.removeEvent('*', this._onModelEvent);
           models.include(model);
           this._models.erase(model);
         }
-      }.bind(this));
+      }
       if(!this.silent && !options.silent && models.length){
-        this.fireEvent('change', {  event:'remove', models:models, options:options });
+        this.fireEvent('change', { event:'remove', models:models, options:options });
         this.fireEvent('remove', { models:models, options:options });
       }
+      return this;
+    },
+
+    // Empties the collection through remove()
+    empty: function(options){
+      this.remove(this.getAll(), options);
+      this.fireEvent('change', { event:'empty', options:options });  
+      this.fireEvent('empty', { options:options });
+      return this;
     },
 
     // Moves a model or number of models to a new index
@@ -318,6 +332,7 @@
         this.fireEvent('change', { event:'move', model:model, from:index, to:this.indexOf(model), options:options });
         this.fireEvent('move', { model:model, from:index, to:this.indexOf(model), options:options });
       }
+      return this;
     },
 
     getId: function(){
@@ -363,6 +378,7 @@
       Array.forEach(this._models, function(model){
         model.set.apply(model, args);
       });
+      return this;
     }
 
 
