@@ -6,27 +6,40 @@ module.exports = function(grunt) {
     jshint: {
       all: ['Gruntfile.js', 'src/**/*.js', 'test/**/*.js']
     },
+    mocha_phantomjs: {
+      all: ['test/**/*.html']
+    },
     uglify: {
-      options: {
-        banner: '//  <%= pkg.name %> <%= pkg.version %>.<%= grunt.template.today("yyyymmdd") %> <%= pkg.homepage %>\n'+
-                '//  by <%= pkg.author %>\n\n'
-      },
       build: {
         src: 'src/<%= pkg.name.toLowerCase() %>.js',
         dest: '<%= pkg.name.toLowerCase() %>-min.js'
       }
     },
-    mocha_phantomjs: {
-      all: ['test/**/*.html']
+    concat: {
+      options: {
+        stripBanners: { block:false, line:true },        
+        banner: '// <%= pkg.name %> v<%= pkg.version %> #<%= grunt.template.today("yyyymmdd") %> - <%= pkg.homepage %>\n'+
+                '// by <%= pkg.author.name %> <<%= pkg.author.email %>>\n'+
+                '// <%= pkg.name %> may be freely distributed under the <%= pkg.license %> license.\n\n'
+      },
+      source: {
+        src: ['src/<%= pkg.name.toLowerCase() %>.js'],
+        dest: 'src/<%= pkg.name.toLowerCase() %>.js',
+      },
+      min: {
+        src: ['<%= pkg.name.toLowerCase() %>-min.js'],
+        dest: '<%= pkg.name.toLowerCase() %>-min.js',
+      }
     }
   });
 
   // Load the plugin that provides the "uglify" task.
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-jshint');
+  grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-mocha-phantomjs');
 
-  // Default task(s).
-  grunt.registerTask('default', ['jshint','mocha_phantomjs','uglify']);
+  grunt.registerTask('default', ['jshint','mocha_phantomjs','uglify','concat']);
+  grunt.registerTask('test', ['mocha_phantomjs']);
 
 };
