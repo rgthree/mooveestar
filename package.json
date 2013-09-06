@@ -2,9 +2,17 @@
   "name": "MooVeeStar",
   "version": "0.0.1",
   "description": "MooTools MV* Framework",
-  "homepage": "http://rgthree.github.io/mooveestar/",
-  "author": "Regis Gaughan, III <regis.gaughan@gmail.com>",
+  "homepage": "https://rgthree.github.io/mooveestar/",
+  "author": {
+    "name": "Regis Gaughan, III",
+    "email": "regis.gaughan@gmail.com",
+    "url": "http://regisgaughan.com"
+  },
+  "bugs": {
+    "url": "https://github.com/rgthree/mooveestar/issues"
+  },
   "main": "./src/mooveestar.js",
+  "license": "MIT",
   "directories": {
     "test": "test"
   },
@@ -22,6 +30,7 @@
     "grunt-contrib-jshint":"latest",
     "grunt-contrib-uglify":"latest",
     "grunt-mocha-phantomjs":"latest",
+    "grunt-contrib-concat":"latest",
     "chai":"latest"
   }
 }
