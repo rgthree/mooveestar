@@ -1,6 +1,6 @@
-//  MooVeeStar 0.0.1 https://github.com/rgthree/mooveestar
-//  (c) 2012-2013 Regis Gaughan, III
-//  MooVeeStar may be freely distributed under the MIT license.
+// MooVeeStar v0.0.1 #20130905 - https://rgthree.github.io/mooveestar/
+// by Regis Gaughan, III <regis.gaughan@gmail.com>
+// MooVeeStar may be freely distributed under the MIT license.
 
 /* jshint mootools:true, expr:true, eqnull:true */
 ;(function(root){
@@ -280,6 +280,7 @@
         models.length && this.fireEvent('add', { models:models, options:options });
         errors.length && this.fireEvent('error', { data:errors, options:options });
       }
+      return this;
     },
 
     remove: function(items, options){
@@ -331,6 +332,7 @@
         this.fireEvent('change', { event:'move', model:model, from:index, to:this.indexOf(model), options:options });
         this.fireEvent('move', { model:model, from:index, to:this.indexOf(model), options:options });
       }
+      return this;
     },
 
     getId: function(){
@@ -376,6 +378,7 @@
       Array.forEach(this._models, function(model){
         model.set.apply(model, args);
       });
+      return this;
     }
 
 
