@@ -283,23 +283,36 @@
     },
 
     remove: function(items, options){
-      var models = [];
+      var self, i,l, models, model;
+      self = this;
       options = options || {};
+      models = [];
       if( /number|string/.test(typeof(items)) )
         items = this.get(items);
       items = Array.from(items);
-      items.each(function(model){
-        model = typeof(model) === 'string' ? this.findFirst(model) : model;
+
+      // Loop over inversely so we do not mess with order if items === this._model when removeAll()
+      for(i = items.length-1, l = 0; i >= 0; i--){
+        model = typeof(items[i]) === 'string' ? this.findFirst(items[i]) : items[i];
         if(this._models.contains(model)){
           model.removeEvent('*', this._onModelEvent);
           models.include(model);
           this._models.erase(model);
         }
-      }.bind(this));
+      }
       if(!this.silent && !options.silent && models.length){
-        this.fireEvent('change', {  event:'remove', models:models, options:options });
+        this.fireEvent('change', { event:'remove', models:models, options:options });
         this.fireEvent('remove', { models:models, options:options });
       }
+      return this;
+    },
+
+    // Empties the collection through remove()
+    empty: function(options){
+      this.remove(this.getAll(), options);
+      this.fireEvent('change', { event:'empty', options:options });  
+      this.fireEvent('empty', { options:options });
+      return this;
     },
 
     // Moves a model or number of models to a new index

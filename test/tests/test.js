@@ -296,25 +296,19 @@
         assert.equal(collection.indexOf(fourth), -1);
         assert.equal(collection.indexOf(fifth), 2);
       });
-
-      it('should remove the models passed', function(){
-        var first, second, third, fourth, fifth;
-        first = collection.at(0);
-        second = collection.at(1);
-        third = collection.at(2);
-        fourth = collection.at(3);
-        fifth = collection.at(4);
-        collection.remove([second, fourth]);
-        assert.equal(collection.indexOf(first), 0);
-        assert.equal(collection.indexOf(second), -1);
-        assert.equal(collection.indexOf(third), 1);
-        assert.equal(collection.indexOf(fourth), -1);
-        assert.equal(collection.indexOf(fifth), 2);
-      });
     });
 
-
-
+    describe('.empty()', function(){
+      it('should remove all the models', function(){
+        var i,l, collection;
+        collection = new MooVeeStar.Collection();
+        for(i = 0; i < 50; i++)
+          collection.add(new MooVeeStar.Model({ id:i }));
+        assert.equal(collection.getLength(), 50);
+        collection.empty(collection.getAll());
+        assert.equal(collection.getLength(), 0);
+      });
+    });
 
   });
 
