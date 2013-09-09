@@ -451,8 +451,10 @@
     _doDomManipulation: function(fn, el){
       fn = fn || 'dispose'; 
       el = el || this.element;
-      // Dispose can be called through, but empty or destroy should call destroy through
-      this._doNestedViewsCall(fn === 'empty' ? 'destroy' : fn, el);
+      // If we're destroying or emptying an element, then destroy all views underneath.
+      // // (dispose shouldn't touch view's elements underneath, except to detach them)
+      if(fn === 'destroy' || fn == 'empty')
+        this._doNestedViewsCall('destroy', el);
       this.detach(el, fn === 'empty');
       el[fn]();
       this.fireEvent(fn);
