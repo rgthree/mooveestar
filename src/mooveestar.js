@@ -806,7 +806,7 @@
               fields.each(function bindField(field){
                 // If it's a style binding
                 if(field.indexOf('style:') === 0){
-                  value = value && value.indexOf('http') === 0 ? 'url('+value+')' : value;
+                  value = value && String(value).indexOf('http') === 0 ? 'url('+value+')' : value;
                   child.setStyle(field.replace('style:',''), value);
 
                 // tpl:[array] will inflate the specified template for each item
