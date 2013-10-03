@@ -181,7 +181,49 @@
         assert.equal(collection._models[3].get('type'), 'parrot');
         assert.equal(collection._models[4].get('type'), 'panda');
       });
+
+      it('should not allow duplicates', function(){
+        var m1, m2, m3;
+        m1 = new Animal({ id:148, type:'monkey' });
+        m2 = new Animal({ id:149, type:'gorilla' });
+        m3 = new Animal({ id:150, type:'zebra' });
+        var c = new Zoo([m1,m2,m3,m1,m2,m3]);
+        assert.equal(c.getLength(), 3);
+        assert.equal(c.at(0).get('type'), 'monkey');
+        assert.equal(c.at(1).get('type'), 'gorilla');
+        assert.equal(c.at(2).get('type'), 'zebra');
+        assert.equal(c.at(3), null);
+        assert.equal(c.at(4), null);
+        assert.equal(c.at(5), null);
+        c.remove([149,150]);
+        assert.equal(c.getLength(), 1);
+        c.empty();
+        assert.equal(c.getLength(), 0);
+      });
+
+      it('should allow duplicates', function(){
+        var m1, m2, m3;
+        m1 = new Animal({ id:148, type:'monkey' });
+        m2 = new Animal({ id:149, type:'gorilla' });
+        m3 = new Animal({ id:150, type:'zebra' });
+        var c = new Zoo([m1,m2,m3,m1,m2,m3], { allowDuplicates:true });
+        assert.equal(c.getLength(), 6);
+        assert.equal(c.at(0).get('type'), 'monkey');
+        assert.equal(c.at(1).get('type'), 'gorilla');
+        assert.equal(c.at(2).get('type'), 'zebra');
+        assert.equal(c.at(3).get('type'), 'monkey');
+        assert.equal(c.at(4).get('type'), 'gorilla');
+        assert.equal(c.at(5).get('type'), 'zebra');
+        assert.equal(c.at(0), c.at(3));
+        assert.equal(c.at(1), c.at(4));
+        assert.equal(c.at(2), c.at(5));
+        c.remove([149,150]);
+        assert.equal(c.getLength(), 2);
+        c.empty();
+        assert.equal(c.getLength(), 0);
+      });
     });
+
 
     describe('.at(index)', function(){
       it('should return the model at the index', function(){
