@@ -347,8 +347,31 @@
         for(i = 0; i < 50; i++)
           collection.add(new MooVeeStar.Model({ id:i }));
         assert.equal(collection.getLength(), 50);
-        collection.empty(collection.getAll());
+        collection.empty();
         assert.equal(collection.getLength(), 0);
+      });
+    });
+
+    describe('.destroy()', function(){
+      it('should silenty remove all the models fire a destroy', function(){
+        var i,l, collection, firedChange, firedRemove, firedEmpty, firedDestroy;
+        collection = new MooVeeStar.Collection();
+        for(i = 0; i < 50; i++)
+          collection.add(new MooVeeStar.Model({ id:i }));
+
+        firedChange = firedRemove = firedDestroy = firedEmpty = false;
+        collection.addEvent('change', function(){ firedChange = true; });
+        collection.addEvent('remove', function(){ firedRemove = true; });
+        collection.addEvent('empty', function(){ firedEmpty = true; });
+        collection.addEvent('destroy', function(){ firedDestroy = true; });
+
+        assert.equal(collection.getLength(), 50);
+        collection.destroy();
+        assert.equal(collection.getLength(), 0);
+        assert.isFalse(firedChange);
+        assert.isFalse(firedRemove);
+        assert.isFalse(firedEmpty);
+        assert.isTrue(firedDestroy);
       });
     });
 
