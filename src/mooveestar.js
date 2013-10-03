@@ -295,26 +295,29 @@
 
       // Loop over inversely so we do not mess with order if items === this._model when removeAll()
       for(i = items.length-1, l = 0; i >= 0; i--){
-        model = typeof(items[i]) !== 'object' ? this.findFirst(items[i]) : items[i];
-        if(this._models.contains(model)){
-          model.removeEvent('*', this._onModelEvent);
+        model = typeof(items[i]) !== 'object' ? self.findFirst(items[i]) : items[i];
+        if(self._models.contains(model)){
+          model.removeEvent('*', self._onModelEvent);
           models.include(model);
           // Array.erase removes all isntances of the object. Handy for allowDuplicates
-          this._models.erase(model);
+          self._models.erase(model);
         }
       }
-      if(!this.silent && !options.silent && models.length){
-        this.fireEvent('change', { event:'remove', models:models, options:options });
-        this.fireEvent('remove', { models:models, options:options });
+      if(!self.silent && !options.silent && models.length){
+        self.fireEvent('change', { event:'remove', models:models, options:options });
+        self.fireEvent('remove', { models:models, options:options });
       }
-      return this;
+      return self;
     },
 
     // Empties the collection through remove()
     empty: function(options){
+      options = options || {};
       this.remove(this.getAll(), options);
-      this.fireEvent('change', { event:'empty', options:options });  
-      this.fireEvent('empty', { options:options });
+      if(!this.silent && !options.silent){
+        this.fireEvent('change', { event:'empty', options:options });  
+        this.fireEvent('empty', { options:options });
+      }
       return this;
     },
 
@@ -370,6 +373,19 @@
 
     toJSON: function() {
       return Array.map(this._models, function(model){ return model.toJSON(); });
+    },
+
+    /**
+     * Silently empties the list and fires a destroy message
+     * @return {[type]} [description]
+     */
+    destroy: function(options){
+      options = options || {};
+      this.empty(Object.merge({}, options, { silent:true }));
+      if(!this.silent && !options.silent){  
+        this.fireEvent('destroy', { collection:this, options:options });
+      }
+      return this;
     },
 
     // Model Methods
