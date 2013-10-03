@@ -265,7 +265,7 @@
         var model = self.model ? ((item instanceof self.model) ? item : new self.model(item)) : item;
         if(!self.findFirst(model.getId()) || self.options.allowDuplicates){
           model.addEvent('*', self._onModelEvent);
-          added.include(model);
+          added.push(model);
           if(options.at != null)
             self._models.splice(options.at+addedCount, 0, model);
           else
