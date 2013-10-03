@@ -1,4 +1,4 @@
-// MooVeeStar v0.0.1 #20130905 - https://rgthree.github.io/mooveestar/
+// MooVeeStar v0.0.1 #20131003 - https://rgthree.github.io/mooveestar/
 // by Regis Gaughan, III <regis.gaughan@gmail.com>
 // MooVeeStar may be freely distributed under the MIT license.
 
@@ -210,6 +210,7 @@
     model: MooVeeStar.Model, // The model class to define. Should define in Collection Class
 
     options: {
+      allowDuplicates: false,  // Allow duplicates in the collection
       silent:false
     },
 
@@ -253,34 +254,34 @@
     },
 
     add: function(items, options){
-      var models, errors;
+      var self, added, errors, addedCount;
+      self = this;
       options = options || {};
-      models = [];
+      added = [];
       errors = [];
+      addedCount = 0;
       // Prep and de-dupe existing models
       Array.forEach([items].flatten(), function(item){
-        var model = this.model ? ((item instanceof this.model) ? item : new this.model(item)) : item;
-        if(!this.findFirst(model.getId())){
-          model.addEvent('*', this._onModelEvent);
-          models.push(model);
+        var model = self.model ? ((item instanceof self.model) ? item : new self.model(item)) : item;
+        if(!self.findFirst(model.getId()) || self.options.allowDuplicates){
+          model.addEvent('*', self._onModelEvent);
+          added.include(model);
+          if(options.at != null)
+            self._models.splice(options.at+addedCount, 0, model);
+          else
+            self._models.push(model);
+          addedCount++;
           if(model.errors.length)
             errors.push({ model:model, errors:model.errors });
         }
-      }.bind(this));
-      if(models.length){
-        if(options.at != null){
-          // Can't user Array.splice b/c splice takes arguments, not an array. Need to use apply
-          Array.prototype.splice.apply(this._models, [options.at, 0].concat(models));
-        }else{
-          Array.combine(this._models, models);
-        }
+      });
+      
+      if(!self.silent && !options.silent){
+        added.length && self.fireEvent('change', { event:'add', models:added, options:options });
+        added.length && self.fireEvent('add', { models:added, options:options });
+        errors.length && self.fireEvent('error', { data:errors, options:options });
       }
-      if(!this.silent && !options.silent){
-        models.length && this.fireEvent('change', { event:'add', models:models, options:options });
-        models.length && this.fireEvent('add', { models:models, options:options });
-        errors.length && this.fireEvent('error', { data:errors, options:options });
-      }
-      return this;
+      return self;
     },
 
     remove: function(items, options){
@@ -294,10 +295,11 @@
 
       // Loop over inversely so we do not mess with order if items === this._model when removeAll()
       for(i = items.length-1, l = 0; i >= 0; i--){
-        model = typeof(items[i]) === 'string' ? this.findFirst(items[i]) : items[i];
+        model = typeof(items[i]) !== 'object' ? this.findFirst(items[i]) : items[i];
         if(this._models.contains(model)){
           model.removeEvent('*', this._onModelEvent);
           models.include(model);
+          // Array.erase removes all isntances of the object. Handy for allowDuplicates
           this._models.erase(model);
         }
       }
