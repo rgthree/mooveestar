@@ -1,4 +1,4 @@
-// MooVeeStar v0.0.1 #20131003 - https://rgthree.github.io/mooveestar/
+// MooVeeStar v0.0.1 #20131005 - https://rgthree.github.io/mooveestar/
 // by Regis Gaughan, III <regis.gaughan@gmail.com>
 // MooVeeStar may be freely distributed under the MIT license.
 
@@ -707,6 +707,7 @@
       }else{
         throw new Error('Ain\'t no template called '+key+' ('+typeOf(mvstpl.templates[key])+')');
       }
+      return null;
     },
 
     // Same as inflate, but removes bindings after inflating
@@ -849,8 +850,12 @@
                 }else if(field === 'class' || (binding === 'class' && field === 'default')){
                   value && child.addClass(value);
 
-                }else if((field === 'html' || field === 'default') && typeOf(value) === 'element'){
-                  child.empty().grab(value);
+                }else if((field === 'html' || field === 'default') && /^element/.test(typeOf(value))) {
+                  child.empty();
+                  Array.from(value).forEach(function(val){
+                    child.grab(val);
+                  });
+                   
                 }else if(field === 'default'){
                   field = /input|textarea|select/.test(child.get('tag')) ? 'value' : 'html';
                   child.set(field, value !== null ? value : '');
