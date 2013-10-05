@@ -377,4 +377,112 @@
 
   });
 
+
+
+  describe('MooVeeStar.templates', function(){
+    
+    var sectionHtml = '<section data-bind="class id" data-bind-id="data-id" data-bind-class="class"><h1 data-bind="title"></h1><ul data-bind="items" data-bind-items="tpl:item"></ul></section>';
+    var listHtml = '<ul data-bind="items" data-bind-items="tpl:item"></ul>';
+    var itemHtml = '  <li>  <!-- cool list item! --> \n\n    </li> \n\t ';
+
+    describe('.register()', function(){
+      it('should register a template html to a key', function(){
+
+        MooVeeStar.templates.register('section-tpl', sectionHtml);
+        MooVeeStar.templates.register('list-tpl', listHtml);
+
+        assert.isNotNull(MooVeeStar.templates.templates['section-tpl']);
+        assert.equal(MooVeeStar.templates.templates['section-tpl'].markup, sectionHtml);
+
+        assert.isNotNull(MooVeeStar.templates.templates['list-tpl']);
+        assert.equal(MooVeeStar.templates.templates['list-tpl'].markup, listHtml);
+
+      });
+
+      it('should strip out comment, newlines, and excess whitespace', function(){
+
+        MooVeeStar.templates.register('item-tpl', itemHtml);
+
+        assert.isNotNull(MooVeeStar.templates.templates['item-tpl']);
+        assert.equal(MooVeeStar.templates.templates['item-tpl'].markup, '<li> </li>');
+      });
+
+    });
+
+
+
+    describe('.inflate()', function(){
+
+      it('should bind the data correctly', function(){
+
+        var el = MooVeeStar.templates.inflate('section-tpl', { id:123, 'class':'box red', title:'My Title' });
+
+        assert.equal(el.get('data-id'), '123');
+        assert.equal(el.get('class'), 'box red');
+        assert.equal(el.getElement('[data-bind*="title"]').get('text'), 'My Title');
+
+      });
+
+      it('should set html as default, or when set to html', function(){
+
+        MooVeeStar.templates.register('test-inflate-html', '<h1 data-bind="title"></h1>');
+        var el = MooVeeStar.templates.inflate('test-inflate-html', { title:'<strong>My Title</strong>' });
+
+        assert.equal(el.getChildren().length, 1);
+        assert.equal(el.getFirst().get('tag'), 'strong');
+        assert.equal(el.getFirst().get('text'), 'My Title');
+
+        MooVeeStar.templates.register('test-inflate-html2', '<h1 data-bind="title" data-bind-title="html"></h1>');
+        var el2 = MooVeeStar.templates.inflate('test-inflate-html2', { title:'<strong>My Title</strong>' });
+
+        assert.equal(el2.getChildren().length, 1);
+        assert.equal(el2.getFirst().get('tag'), 'strong');
+        assert.equal(el2.getFirst().get('text'), 'My Title');
+        
+      });
+
+      it('should strip text when value is text', function(){
+
+        MooVeeStar.templates.register('test-inflate-text', '<h1 data-bind="title" data-bind-title="text"></h1>');
+        var el = MooVeeStar.templates.inflate('test-inflate-text', { title:'<strong>My Title</strong>' });
+
+        assert.equal(el.getChildren().length, 0);
+        assert.equal(el.get('text'), '<strong>My Title</strong>');
+        assert.equal(el.get('html'), '&lt;strong&gt;My Title&lt;/strong&gt;');
+        
+      });
+
+      it('should empty and grab an element', function(){
+
+        MooVeeStar.templates.register('test-inflate-text2', '<h1 data-bind="title"><span>gone</span></h1>');
+        var el = MooVeeStar.templates.inflate('test-inflate-text2', { title:new Element('strong[text="My Title"]') });
+
+        assert.equal(el.getChildren().length, 1);
+        assert.equal(el.getFirst().get('tag'), 'strong');
+        assert.equal(el.getFirst().get('text'), 'My Title');
+        
+      });
+
+      it('should empty and grab all Elements collection', function(){
+
+        MooVeeStar.templates.register('test-inflate-html3', '<h1 data-bind="title"><span>gone</span></h1>');
+        var els, el;
+        els = new Elements();
+        els.include(new Element('strong[text="My Title"]'));
+        els.include(new Element('aside[text="Subtitle"]'));
+
+        el = MooVeeStar.templates.inflate('test-inflate-html3', { title:els });
+
+        assert.equal(el.getChildren().length, 2);
+        assert.equal(el.getFirst().get('tag'), 'strong');
+        assert.equal(el.getFirst().get('text'), 'My Title');
+        assert.equal(el.getLast().get('tag'), 'aside');
+        assert.equal(el.getLast().get('text'), 'Subtitle');
+        
+      });
+
+    });
+
+  });
+
 }).call(this);
