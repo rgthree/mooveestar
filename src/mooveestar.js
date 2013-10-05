@@ -473,7 +473,7 @@
       this._doNestedViewsCall(fn === 'empty' ? 'destroy' : fn, el);
       this.detach(el, fn === 'empty');
       el[fn]();
-      this.fireEvent(fn);
+      this.fireEvent(fn, { view:this });
       return this;
     },
 
