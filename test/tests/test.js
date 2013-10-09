@@ -375,6 +375,95 @@
       });
     });
 
+    describe('.addEvent()', function(){
+      var i, l, collection, Model, firedChange, firedAdd, firedRemove, firedModelChange, firedModelChangeId, firedModelDestroy, firedModelError, firedModelErrorId, firedModelArbitrary, firedModelArbitraryRemove;
+      collection = new MooVeeStar.Collection();
+      Model = new Class({
+        Extends: MooVeeStar.Model,
+        properties: {
+          id: {
+            validate: function(value){
+              if(typeof(value) === 'number')
+                return true;
+              return 'Error: id must be numeric';
+            }
+          }
+        },
+        remove: function(){
+          this.fireEvent('remove');
+        }
+      });
+
+      for(i = 0; i < 10; i++)
+        collection.add(new Model({ id:i }));
+
+      collection.addEvent('add', function(){ firedAdd = true; });
+      collection.addEvent('remove', function(){ firedRemove = true; });
+      collection.addEvent('change', function(){ firedChange = true; });
+
+      collection.addEvent('model:change', function(){ firedModelChange = true; });
+      collection.addEvent('model:change:id', function(){ firedModelChangeId = true; });
+      collection.addEvent('model:destroy', function(){ firedModelDestroy = true; });
+      collection.addEvent('model:error', function(){ firedModelError = true; });
+      collection.addEvent('model:error:id', function(){ firedModelErrorId = true; });
+      collection.addEvent('model:arbitrary', function(){ firedModelArbitrary = true; });
+      collection.addEvent('model:remove', function(){ firedModelArbitraryRemove = true; });
+
+      it('should fire events add & change events for adding', function(){
+        // Fire Collection Add & Change
+        firedChange = firedAdd = false;
+        collection.add(new MooVeeStar.Model({ id:11 }));
+        assert.isTrue(firedAdd);
+        assert.isTrue(firedChange);
+      });
+
+      it('should fire events remove & change events for removing', function(){
+        // Fire Collection Add & Remove
+        firedChange = firedRemove = false;
+        collection.remove(10);
+        assert.isTrue(firedRemove);
+        assert.isTrue(firedChange);
+      });
+
+      it('should fire events model change events for adding', function(){
+        // Fire Model Change, Change:Id, Destroy, Collection:Remove
+        firedModelChange = firedModelChangeId = firedChange = false;
+        collection.at(8).set('id', 500);
+        assert.isTrue(firedModelChange);
+        assert.isTrue(firedModelChangeId);
+        assert.isFalse(firedChange);
+      });
+
+      it('should fire model events for destroy, as well as removing from collection', function(){
+        firedModelDestroy = firedRemove = firedChange = false;
+        collection.at(8).destroy();
+        assert.isTrue(firedModelDestroy);
+        assert.isTrue(firedRemove);
+        assert.isTrue(firedChange);
+      });
+
+      it('should fire model error events', function(){
+        // Fire Model Change, Change:Id, Destroy, Collection:Remove
+        firedChange = firedModelChange = firedModelChangeId = firedModelError = firedModelErrorId = false;
+        collection.at(1).set('id', '501');
+        assert.isTrue(firedModelError);
+        assert.isTrue(firedModelErrorId);
+        assert.isFalse(firedChange);
+        assert.isFalse(firedModelChange);
+        assert.isFalse(firedModelChangeId);
+      });
+
+      it('should fire arbitrary model events', function(){
+        // Fire Model Change, Change:Id, Destroy, Collection:Remove
+        firedModelArbitrary = firedModelArbitraryRemove = false;
+        collection.at(1).fireEvent('arbitrary');
+        assert.isTrue(firedModelArbitrary);
+        collection.at(1).remove();
+        assert.isTrue(firedModelArbitraryRemove);
+      });
+
+    });
+
   });
 
 
