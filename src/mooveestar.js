@@ -1,4 +1,4 @@
-// MooVeeStar v0.0.1 #20131005 - https://rgthree.github.io/mooveestar/
+// MooVeeStar v0.0.1 #20131009 - https://rgthree.github.io/mooveestar/
 // by Regis Gaughan, III <regis.gaughan@gmail.com>
 // MooVeeStar may be freely distributed under the MIT license.
 
@@ -234,7 +234,7 @@
       if(e.event === 'destroy'){
         this.remove(e.message.model);
       }
-      this.fireEvent(e.event, e.message);
+      this.fireEvent('model:'+e.event, e.message);
     },
 
     // Call w/o arguments to set .silent true
