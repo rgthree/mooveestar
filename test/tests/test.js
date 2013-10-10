@@ -80,25 +80,25 @@
         var error, errorFgColor;
         error = errorFgColor = false;
         model.addEvent('error', function(e){
-          if(e.key === 'fgColor'){
+          if(e.model === model && e.errors.fgColor && e.errors.fgColor.value && e.errors.fgColor.from && e.errors.fgColor.error)
             error = true;
-          }
         });
         model.addEvent('error:fgColor', function(e){
-          errorFgColor = true;
+          if(e.model === model && e.key === 'fgColor' && e.value && e.from && e.error)
+            errorFgColor = true;
         });
 
         // Try setting our fgColor to the background color
         model.set('fgColor', 'brown');
-        assert.equal(error, true);
-        assert.equal(errorFgColor, true);
+        assert.isTrue(error);
+        assert.isTrue(errorFgColor);
         assert.equal(model.get('fgColor'), 'black');
 
         // Try setting bgColor, then fgColor to the same color
         error = errorFgColor = false;
         model.set({ bgColor:'red', fgColor:'red' });
-        assert.equal(error, true);
-        assert.equal(errorFgColor, true);
+        assert.isTrue(error);
+        assert.isTrue(errorFgColor);
         assert.equal(model.get('bgColor'), 'red');
         assert.equal(model.get('fgColor'), 'black');
 
@@ -106,8 +106,8 @@
         // foreground according to our model's validate
         error = errorFgColor = false;
         model.set({ fgColor:'green', bgColor:'green' });
-        assert.equal(error, false);
-        assert.equal(errorFgColor, false);
+        assert.isFalse(error);
+        assert.isFalse(errorFgColor);
         assert.equal(model.get('bgColor'), 'green');
         assert.equal(model.get('fgColor'), 'green');
       });

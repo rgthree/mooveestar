@@ -57,7 +57,7 @@
         return null;
       }), model), silent);
       this.changed = [];
-      !silent && this.fireEvent('ready');
+      !silent && this.fireEvent('ready', { model:this });
       return this;
     },
 
@@ -75,8 +75,8 @@
         this._set.apply(this, arguments);
       }
       if(!silent){
-        this.changed.length && this.fireEvent('change', this.get(this.changed));
-        this.errors.length && this.fireEvent('error', this.errors);
+        this.changed.length && this.fireEvent('change', { model: this, changed: this.changed.associate(this.changed.map(function(change){ return change.key; })) });
+        this.errors.length && this.fireEvent('error', { model: this, errors: this.errors.associate(this.errors.map(function(error){ return error.key; })) });
       }
 
       return this;
@@ -84,9 +84,11 @@
 
     _set: function(key, value, silent){
       // needs to be bound the the instance.
-      if(!key || typeof(value) === 'undefined'){
+      if(!key || typeof(value) === 'undefined')
         return this;
-      }
+      
+      // Get the raw from value
+      var from = this._props[key];
 
       // Sanitize the value, if so
       if(value !== null && this.properties[key] && this.properties[key].sanitize)
@@ -104,9 +106,9 @@
         // basic validator support
         var valid = this.validate(key, value);
         if(this.properties[key] && (this.properties[key].validate || this.properties[key].possible) && valid !== true){
-          var error = {key:key, value:value, error:valid};
+          var error = {key:key, value:value, error:valid, from:from,};
           this.errors.push(error);
-          this.fireEvent('error:'+key, error);
+          this.fireEvent('error:'+key, Object.merge({ model:this }, error));
           return this;
         }
 
@@ -117,9 +119,10 @@
         }
       }
 
-      this.changed.push(key);
+      var obj = { key:key, from:from, value:value };
+      this.changed.push(obj);
 
-      !silent && this.fireEvent('change:'+key, value);
+      !silent && this.fireEvent('change:'+key, Object.merge({ model:this }, obj));
       return this;
     },
 
