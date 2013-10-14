@@ -472,8 +472,10 @@
     _doDomManipulation: function(fn, el){
       fn = fn || 'dispose'; 
       el = el || this.element;
-      // Dispose can be called through, but empty or destroy should call destroy through
-      this._doNestedViewsCall(fn === 'empty' ? 'destroy' : fn, el);
+      // If we're destroying or emptying an element, then destroy all views underneath.
+      // // (dispose shouldn't touch view's elements underneath, except to detach them)
+      if(fn === 'destroy' || fn == 'empty')
+        this._doNestedViewsCall('destroy', el);
       this.detach(el, fn === 'empty');
       el[fn]();
       this.fireEvent(fn, { view:this });
@@ -826,7 +828,7 @@
               fields.each(function bindField(field){
                 // If it's a style binding
                 if(field.indexOf('style:') === 0){
-                  value = value && value.indexOf('http') === 0 ? 'url('+value+')' : value;
+                  value = value && String(value).indexOf('http') === 0 ? 'url('+value+')' : value;
                   child.setStyle(field.replace('style:',''), value);
 
                 // tpl:[array] will inflate the specified template for each item
