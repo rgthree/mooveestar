@@ -284,7 +284,21 @@
     });
 
     describe('.move(...)', function(){
-      it('should move the model passed to the index passed', function(){
+      it('should move the model passed backward', function(){
+        first = collection.at(0);
+        second = collection.at(1);
+        third = collection.at(2);
+        fourth = collection.at(3);
+        fifth = collection.at(4);
+        collection.move(first, 3);
+        assert.equal(collection.indexOf(first), 3);
+        assert.equal(collection.indexOf(second), 0);
+        assert.equal(collection.indexOf(third), 1);
+        assert.equal(collection.indexOf(fourth), 2);
+        assert.equal(collection.indexOf(fifth), 4);
+      });
+
+      it('should move the model passed forward', function(){
         var first, second, third, fourth, fifth;
         first = collection.at(0);
         second = collection.at(1);
@@ -297,16 +311,34 @@
         assert.equal(collection.indexOf(third), 3);
         assert.equal(collection.indexOf(fourth), 1);
         assert.equal(collection.indexOf(fifth), 4);
+      });
+
+      it('should move the model at an index passed backward', function(){
         first = collection.at(0);
         second = collection.at(1);
         third = collection.at(2);
         fourth = collection.at(3);
         fifth = collection.at(4);
-        collection.move(first, 3);
+        collection.move(0, 3);
         assert.equal(collection.indexOf(first), 3);
         assert.equal(collection.indexOf(second), 0);
         assert.equal(collection.indexOf(third), 1);
         assert.equal(collection.indexOf(fourth), 2);
+        assert.equal(collection.indexOf(fifth), 4);
+      });
+
+      it('should move the model at an index passed forward', function(){
+        var first, second, third, fourth, fifth;
+        first = collection.at(0);
+        second = collection.at(1);
+        third = collection.at(2);
+        fourth = collection.at(3);
+        fifth = collection.at(4);
+        collection.move(3, 1);
+        assert.equal(collection.indexOf(first), 0);
+        assert.equal(collection.indexOf(second), 2);
+        assert.equal(collection.indexOf(third), 3);
+        assert.equal(collection.indexOf(fourth), 1);
         assert.equal(collection.indexOf(fifth), 4);
       });
 
@@ -338,6 +370,24 @@
         assert.equal(collection.indexOf(fourth), -1);
         assert.equal(collection.indexOf(fifth), 2);
       });
+
+
+      it('should remove just the model at the index', function(){
+        var m1, m2, m3;
+        m1 = new Animal({ id:148, type:'monkey' });
+        m2 = new Animal({ id:149, type:'gorilla' });
+        m3 = new Animal({ id:150, type:'zebra' });
+        var collection = new Zoo([m1,m2,m3,m1,m2,m3], { allowDuplicates:true });
+        assert.equal(collection.getLength(), 6);
+        collection.remove(1);
+        assert.equal(collection.getLength(), 5);
+        assert.equal(collection.indexOf(m1), 0);
+        assert.equal(collection.indexOf(m2), 3);
+        assert.equal(collection.indexOf(m3), 1);
+        assert.equal(collection.indexOf(m1, 1), 2);
+        assert.equal(collection.indexOf(m3, 2), 4);
+      });
+
     });
 
     describe('.empty()', function(){
