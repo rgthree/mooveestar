@@ -1,4 +1,4 @@
-// MooVeeStar v0.0.1 #20131009 - https://rgthree.github.io/mooveestar/
+// MooVeeStar v0.0.1 #20131114 - https://rgthree.github.io/mooveestar/
 // by Regis Gaughan, III <regis.gaughan@gmail.com>
 // MooVeeStar may be freely distributed under the MIT license.
 
@@ -57,7 +57,7 @@
         return null;
       }), model), silent);
       this.changed = [];
-      !silent && this.fireEvent('ready');
+      !silent && this.fireEvent('ready', { model:this });
       return this;
     },
 
@@ -75,8 +75,8 @@
         this._set.apply(this, arguments);
       }
       if(!silent){
-        this.changed.length && this.fireEvent('change', this.get(this.changed));
-        this.errors.length && this.fireEvent('error', this.errors);
+        this.changed.length && this.fireEvent('change', { model: this, changed: this.changed.associate(this.changed.map(function(change){ return change.key; })) });
+        this.errors.length && this.fireEvent('error', { model: this, errors: this.errors.associate(this.errors.map(function(error){ return error.key; })) });
       }
 
       return this;
@@ -84,9 +84,11 @@
 
     _set: function(key, value, silent){
       // needs to be bound the the instance.
-      if(!key || typeof(value) === 'undefined'){
+      if(!key || typeof(value) === 'undefined')
         return this;
-      }
+      
+      // Get the raw from value
+      var from = this._props[key];
 
       // Sanitize the value, if so
       if(value !== null && this.properties[key] && this.properties[key].sanitize)
@@ -104,9 +106,9 @@
         // basic validator support
         var valid = this.validate(key, value);
         if(this.properties[key] && (this.properties[key].validate || this.properties[key].possible) && valid !== true){
-          var error = {key:key, value:value, error:valid};
+          var error = {key:key, value:value, error:valid, from:from,};
           this.errors.push(error);
-          this.fireEvent('error:'+key, error);
+          this.fireEvent('error:'+key, Object.merge({ model:this }, error));
           return this;
         }
 
@@ -117,9 +119,10 @@
         }
       }
 
-      this.changed.push(key);
+      var obj = { key:key, from:from, value:value };
+      this.changed.push(obj);
 
-      !silent && this.fireEvent('change:'+key, value);
+      !silent && this.fireEvent('change:'+key, Object.merge({ model:this }, obj));
       return this;
     },
 
@@ -284,28 +287,71 @@
       return self;
     },
 
-    remove: function(items, options){
-      var self, i,l, models, model;
+
+    /**
+     * Removes a model by index or all instance of a model or array of models from the collection
+     * 
+     * @param  {(Number|String|Model|Model[])} indexOrModels The index to be removed singularly,
+     *                                                       or a string ID to get the model to remove all instances of
+     *                                                       or the model or an array of models to remove all instances of
+     * @param  {object} options An object describing any options, such as { "siltent":true }.
+     *                          Will be returned with any events fired.
+     * @fires Collection#change
+     * @fires Collection#remove
+     */
+    remove: function(indexOrModels, options){
+      var self, modelsRemoved, model;
       self = this;
       options = options || {};
-      models = [];
-      if( /number|string/.test(typeof(items)) )
-        items = this.get(items);
-      items = Array.from(items);
+      modelsRemoved = []; // The models that were successfully removed
 
-      // Loop over inversely so we do not mess with order if items === this._model when removeAll()
-      for(i = items.length-1, l = 0; i >= 0; i--){
-        model = typeof(items[i]) !== 'object' ? self.findFirst(items[i]) : items[i];
+      // If we passed a number in, then handle as an index and remove only the item at that index      
+      // even if that model exists elsewhere
+      if(typeof(indexOrModels) === 'number'){
+        model = self.at(indexOrModels);
         if(self._models.contains(model)){
-          model.removeEvent('*', self._onModelEvent);
-          models.include(model);
-          // Array.erase removes all isntances of the object. Handy for allowDuplicates
-          self._models.erase(model);
+          modelsRemoved.include(model);
+          Array.splice(self._models, indexOrModels, 1);
+          // Only remove the event listener when there's no more instances of the model in the collection
+          if(!self._models.contains(model))
+            model.removeEvent('*', self._onModelEvent);
+        }
+
+      // Otherwise, remove all occurrences of the model(s) passed in
+      }else{
+        indexOrModels = Array.from(indexOrModels);
+        // Loop over inversely so we do not mess with order if indexOrModels === this._model when removeAll()
+        for(var i = indexOrModels.length-1, l = 0; i >= 0; i--){
+          model = typeof(indexOrModels[i]) !== 'object' ? self.findFirst(indexOrModels[i]) : indexOrModels[i];
+          if(self._models.contains(model)){
+            model.removeEvent('*', self._onModelEvent);
+            modelsRemoved.include(model);
+            // Array.erase removes all instances of the object. Handy for allowDuplicates
+            self._models.erase(model);
+          }
         }
       }
-      if(!self.silent && !options.silent && models.length){
-        self.fireEvent('change', { event:'remove', models:models, options:options });
-        self.fireEvent('remove', { models:models, options:options });
+      if(!self.silent && !options.silent && modelsRemoved.length){
+        /**
+         * Change event
+         *
+         * @event Collection#change
+         * @type {object}
+         * @property {String} event The type of change event, here 'remove'
+         * @property {Models} models An array of the models removed
+         * @property {Object} options The options object passed in, or an empty object
+         */
+        self.fireEvent('change', { event:'remove', models:modelsRemoved, options:options });
+
+        /**
+         * Remove event
+         *
+         * @event Collection#remove
+         * @type {object}
+         * @property {Models} models An array of the models removed
+         * @property {Object} options The options object passed in, or an empty object
+         */
+        self.fireEvent('remove', { models:modelsRemoved, options:options });
       }
       return self;
     },
@@ -321,21 +367,58 @@
       return this;
     },
 
-    // Moves a model or number of models to a new index
-    move: function(model, to, options){
-      var index;
-      options = options || {};
-      model = (model instanceof this.model) ? model : this.get(model);
-      index = this.indexOf(model);      
 
-      if(to == null || to > this.getLength()){
-        Array.push(this._models, Array.splice(this._models, index, 1)[0]);
+    /**
+     * Moves a model 
+     * 
+     * @param  {Number|Model} indexOrModel The index of the item to move, or the model whose first instance will be moved
+     * @param  {Number} to The destination index
+     * @param  {Object} options
+     * @fires Collection#change
+     * @fires Collection#move
+     */
+    move: function(indexOrModel, to, options){
+      var self, from;
+      self = this;
+      options = options || {};
+      from = indexOrModel;
+
+      if(typeof(from) !== 'number')
+        from = self.indexOf(self.get(from));
+
+      if(typeof(from) !== 'number' || from === -1)
+        return self;
+
+      if(to == null || to >= self.getLength()){
+        Array.push(self._models, Array.splice(self._models, from, 1)[0]);
+        to = self.getLength() - 1;
       }else{
-        Array.splice(this._models, to, 0, Array.splice(this._models, index, 1)[0]);
+        Array.splice(self._models, to, 0, Array.splice(self._models, from, 1)[0]);
       }
-      if(!this.silent && !options.silent){
-        this.fireEvent('change', { event:'move', model:model, from:index, to:this.indexOf(model), options:options });
-        this.fireEvent('move', { model:model, from:index, to:this.indexOf(model), options:options });
+
+      if(!self.silent && !options.silent){
+        /**
+         * Change event
+         *
+         * @event Collection#change
+         * @type {object}
+         * @property {String} event The type of change event, here 'move'
+         * @property {Number} from The initial index
+         * @property {Number} model The destination index
+         * @property {Object} options The options object passed in, or an empty object
+         */
+        self.fireEvent('change', { event:'move', model:self.at(to), from:from, to:to, options:options });
+
+        /**
+         * Move event
+         *
+         * @event Collection#move
+         * @type {object}
+         * @property {Number} from The initial index
+         * @property {Number} model The destination index
+         * @property {Object} options The options object passed in, or an empty object
+         */
+        self.fireEvent('move', { model:self.at(to), from:from, to:to, options:options });
       }
       return this;
     },
@@ -353,6 +436,8 @@
     },
 
     get: function(key){
+      if(key instanceof this.model)
+        return key;
       return key == null ? this.getAll() : (this.findFirst(key) || (typeof(key) === 'number' && this.at(key)));
     },
 
