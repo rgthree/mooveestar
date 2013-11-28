@@ -628,8 +628,9 @@
         if(!this._attachedEvents[k]){
           if(k && k.length && typeOf(this[v]) === 'function'){
             // Break psuedo and check if it's in Element.NativeEvents
-            var name, attach;
-            if((!k.contains(':') || /\:relay\(/gi.test(k)) && Element.NativeEvents[k.substr(0, k.indexOf(':') > 0 ? k.indexOf(':') : k.length)] != null){
+            var name, attach, nativeName;
+            nativeName = k.substr(0, k.indexOf(':') > 0 ? k.indexOf(':') : k.length);
+            if((!k.contains(':') || /\:relay\(/gi.test(k)) && (Element.NativeEvents[nativeName] || Element.Events[nativeName])){
               // Simple dom event or relay
               attach = $(this.element);
               name = k;
