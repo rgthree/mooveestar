@@ -1,4 +1,4 @@
-// MooVeeStar v0.0.1 #20131114 - https://rgthree.github.io/mooveestar/
+// MooVeeStar v0.0.1 #20131128 - https://rgthree.github.io/mooveestar/
 // by Regis Gaughan, III <regis.gaughan@gmail.com>
 // MooVeeStar may be freely distributed under the MIT license.
 
@@ -876,36 +876,53 @@
       });
     },
 
-    // Bind a template to a data object
-    // This does NOT call a registered script
-    bind: function(els, data){
+    /**
+     * Bind a template to a data object. This *does not* call a registered script
+     * 
+     * @param  {(Element|Element[])} elements  An element or array of elements to bind
+     * @param  {Object}              data      The data to bind to the element and its children
+     * @param  {Object}              [options] A maps of options passed to the template
+     * 
+     * @property {Boolean} options.onlyDefined If true, only bind the keys defined in `data`
+     *                                         ignoring other data-bind values (not unbinding them)
+     */
+    bind: function(els, data, options){
       data = data || {};
-      // If we only have one empty element, no data-bind set, and out passed data was a string, set it to the el
+      options = options || {};
+
+      // If `els` is a single empty element w/ no `[data-bind]` set _and_ `data` is a string, set it to be the value of the el
       if(typeOf(data) === 'string' && typeOf(els) === 'element' && els.getChildren().length === 0 && !els.get('data-bind')){
         els.set('data-bind','value');
-        data = {'value':data};
+        data = { value:data };
       }
+
       // Get all children to be bind that are not inner binds
-      (!els ? [] : (typeOf(els) === 'element' ? [els] : els)).each(function(el){
-        var toBindEls, innerBinds;
+      Array.from(els).each(function(el){
+        var toBindEls, innerBindsElements;
         toBindEls = el.getElements('[data-bind]');
-        if(el.get('data-bind')){
+        if(el.get('data-bind'))
           toBindEls.unshift(el);
-        }
+
         if(toBindEls.length){
           // Exclude any els that are in their own data-tpl (which will follow)
-          innerBinds = el.getElements('*[data-tpl] *[data-bind]');
-          toBindEls = toBindEls.filter(function(maybeBind){ return !innerBinds.contains(maybeBind); });
+          innerBindsElements = el.getElements('*[data-tpl] *[data-bind]');
+          toBindEls = toBindEls.filter(function(maybeBind){ return !innerBindsElements.contains(maybeBind); });
           toBindEls.each(function(child){
             var bindings;
             // Get the bindings this elements wants
             bindings = child.get('data-bind').replace(/\s+/,' ').trim().split(' ') || [];
             bindings.each(function(binding){
               var fields, value;
-              // Get the fields for this binding
               value = data[binding];
-              if(value === undefined)
-                value = null;
+              // If the value is undefined, then return if we want to ignore it (via `onlyDefined`)
+              // or set to null to unbind this binding key
+              if(value === undefined){
+                if(options.onlyDefined === true)
+                  return;
+                else
+                  value = null;
+              }
+              // Get the fields for this binding
               fields = child.get('data-bind-'+binding) ? child.get('data-bind-'+binding).split(' ') : ['default'];
               fields.each(function bindField(field){
                 // If it's a style binding
