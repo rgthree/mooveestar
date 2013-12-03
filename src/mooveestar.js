@@ -759,10 +759,8 @@
           [/\s*([^\s]+?)(?!\\):\(([^\)]+)\)/, /\s*([^\s]+?)(?!\\):([^\s]+)/].each(function(regex){
             var match;
             while((match = regex.exec(dataBind))){
-              console.log(dataBind, match);
               dataBind = dataBind.replace(match[0], ' '+match[1]);
               el.set('data-bind-'+match[1], match[2]);
-              console.log(dataBind);
             }
           });
           el.set('data-bind', dataBind);
