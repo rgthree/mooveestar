@@ -1,4 +1,4 @@
-// MooVeeStar v0.0.1 #20131128 - https://rgthree.github.io/mooveestar/
+// MooVeeStar v0.0.1 #20131203 - https://rgthree.github.io/mooveestar/
 // by Regis Gaughan, III <regis.gaughan@gmail.com>
 // MooVeeStar may be freely distributed under the MIT license.
 
@@ -739,6 +739,38 @@
       return key.toLowerCase().trim().replace(/\s/g,'');
     },
 
+    /**
+     * Parses the shorthand template style to the full template style
+     * @example
+     * // Input: <li data-bind="name uuid:data-uuid accent:class privacy:(data-private class)" data-action="choose"></li>
+     * <li data-bind="name uuid accent privacy" data-bind-uuid="data-uuid" data-bind-accent="class" data-bind-privacy="data-private class" data-action="choose"></li>
+     *
+     * @param  {[type]} str [description]
+     * @return {[type]}     [description]
+     */
+    _parseShorthand: function(element){
+      var elements = element.getElements('[data-bind]');
+      if(element.get('data-bind'))
+        elements.unshift(element);
+      elements.forEach(function(el){
+        var dataBind = el.get('data-bind');
+        if(dataBind && dataBind.contains(':')){
+          // Loop over two regex'es one with parens, one without parens
+          [/\s*([^\s]+?)(?!\\):\(([^\)]+)\)/, /\s*([^\s]+?)(?!\\):([^\s]+)/].each(function(regex){
+            var match;
+            while((match = regex.exec(dataBind))){
+              console.log(dataBind, match);
+              dataBind = dataBind.replace(match[0], ' '+match[1]);
+              el.set('data-bind-'+match[1], match[2]);
+              console.log(dataBind);
+            }
+          });
+          el.set('data-bind', dataBind);
+        }
+      });
+      return element;
+    },
+
     // Register a template to an html string and create a dom from it
     // Overloaded to accept a register a script as second param
     register: function(key, html){
@@ -747,11 +779,11 @@
         return;
       }
       key = mvstpl.cleanKey(key);
-      html = html.replace(/<\!\-\-.*?\-\->/g, '').trim().replace(/\n/g,' ').replace(/\s+/g,' '); // Strip out comments
+      html = html.replace(/<\!\-\-.*?\-\->/g, '').trim().replace(/\n/g,' ').replace(/\s+/g,' '); // Strip out comments and excess whitespace
 
       mvstpl.templates[key] = mvstpl.templates[key] || {};
-      mvstpl.templates[key].dom = new Element('markup[html="'+html+'"]');
-      mvstpl.templates[key].markup = html;
+      mvstpl.templates[key].dom = mvstpl._parseShorthand(new Element('markup[html="'+html+'"]'));
+      mvstpl.templates[key].markup = mvstpl.templates[key].dom.innerHTML;
     },
 
     // Register a script to be called when a template is bind
