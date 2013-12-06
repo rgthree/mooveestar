@@ -1,13 +1,17 @@
-// MooVeeStar v0.0.1 #20131203 - https://rgthree.github.io/mooveestar/
+// MooVeeStar v0.0.1 #20131205 - https://rgthree.github.io/mooveestar/
 // by Regis Gaughan, III <regis.gaughan@gmail.com>
 // MooVeeStar may be freely distributed under the MIT license.
 
+// **MooVeeStar** is a client-side MV\* Framework built ontop of MooTools. It has been based off other JavaScript MV\* Frameworks such as Backbone.js and Epitome.
 /* jshint mootools:true, expr:true, eqnull:true */
 ;(function(root){
   
   "use strict";
 
-  // The MooVeeStar namespace is an instantiated MooTools Events object
+  // ---
+  // ## MooVeeStar (namespace)
+  //   
+  // The **MooVeeStar** namespace is an instantiated MooTools Events object
   // allowing it to be used as a mediator.
   // 
   //     MooVeeStar.fireEvent('some-event', { /* ... */ });
@@ -15,25 +19,33 @@
   //     
   var MooVeeStar = root.MooVeeStar = new Events();
 
-  // MooVeeStar.Events
-  // -----------------
+
+  // ---
+  // ## MooVeeStar.Events
   // 
-  // An Events object that wraps `fireEvent` to fire an additional "*"
+  // An events mixin that wraps `fireEvent` to fire an additional "*"
   // Specifically, so collection add listen to all events of their models
   // to pass through. 
   MooVeeStar.Events = new Class({
     Implements: [Events],
 
+
+    // ### Events#fireEvent
+    // 
     // Wrap this instance's "fireEvent" to additionally fire a "*" event with additional information
     fireEvent: function(type, message){
       Events.prototype.fireEvent.call(this, type, message);
       Events.prototype.fireEvent.call(this, '*', { event:type, message:message });
     },
 
+
+    // ### Events#silence
+    // 
     // Overloaded method to silence an object's operations. Pass a boolean
     // to set silent, or pass a function to execute silently. For example, one or the other:
     //     
     //     model.silence(function(){ model.set('somrthing', 123); });
+    //     // or...
     //     model.silence(true).set('somrthing', 123).silence(false);
     //     
     silence: function(functionOrBoolean){
@@ -53,8 +65,8 @@
   });
 
 
-  // MooVeeStar.Model
-  // -----------------
+  // ---
+  // ## MooVeeStar.Model
   // 
   // MooVeeStar **Model**s are the stars of the framework. A model is a basic
   // data object that can be uniquely identified and have methods for manipulating
@@ -63,7 +75,7 @@
 
     Implements: [MooVeeStar.Events, Options],
 
-    // The key to identify the model by. Returned by `Model.getId()`
+    // The key to identify the model by. Returned by `Model#getId()`
     idProperty: 'id',
 
     // A client identifier for this model. Guarenteed to be unique, it will use the model's
@@ -77,12 +89,19 @@
     // Internal properties map. Accessed via get/set
     _props: {},
 
+    options: {},
+
+    // ### Model Constructor
+    //     
+    // Create a new **Model**. Merges a passed object with the **Model**'s default values in the
+    // `properties` map, looking for 'initial', 'default' or the first 'possible' value.
+    // 
+    //     var model = new MooVeeStar.Model({ id:1, name:Edward });
+    //     
     initialize: function(object, options){
       this.setOptions(options);
       object = object && typeOf(object) === 'object' ? object : {};
 
-      // Set the properties by merging the passed object along with the `properties` map, looking for 'initial'
-      // 'default' or the first 'possible' value.
       this.set(Object.merge(Object.map(this.properties, function(p){
         if(p.initial != null)
           return p.initial;
@@ -97,11 +116,14 @@
       return this;
     },
 
-    // Overloaded set method. Will accept: (key, value[, silent]), or ({k:v,...}[, silent])
-    // Set a property or properties on the model. Can be called with a single key/value, or an object
-    // with many keys/values. Options can have a silent key that, when true, supresses events.
+
+    // ### Model#set
+    // 
+    // Overloaded set method to set a property or properties on the model. Can be called with a single
+    // key/value, or an object with many keys/values. Options can have a silent key that, when true, supresses events.
     //     
     //     model.set('name', 'Edward', { silent:true });
+    //     // or...
     //     model.set({ name:'Edward' }, { silent:true });
     //     
     set: function(keyOrObject, valueOrOptions, optionsOrUndefined){
@@ -136,80 +158,118 @@
       return self;
     },
 
-    _set: function(key, value, silent){
-      // needs to be bound the the instance.
+    // ### _Model#_set_
+    //     
+    // Internal set method, called from exposed `Model#set`
+    // While `Model#set` files changed & errors events, `Model#_set` is in charge of firing seperate
+    // `chnge:_prop_` events.
+    _set: function(key, value, options){
+      var self, from, valid, error, changedPayload;
+      self = this;
+
       if(!key || typeof(value) === 'undefined')
-        return this;
+        return self;
+
+      // Backwards compatibility for a boolean silent param
+      if(typeof(options) === 'boolean')
+        options = { silent:options };
+
+      options = options || {};
       
       // Get the raw from value
-      var from = this._props[key];
+      from = self.get(key, true);
 
-      // Sanitize the value, if so
-      if(value !== null && this.properties[key] && this.properties[key].sanitize)
-        value = this.properties[key].sanitize.call(this, value);     
+      // Sanitize the value
+      if(value !== null && self.properties[key] && self.properties[key].sanitize)
+        value = self.properties[key].sanitize.call(self, value);     
 
       // If we have a custom setter, call it.
-      if(this.properties[key] && this.properties[key].set){
-        this.properties[key].set.call(this, value, key);
+      if(self.properties[key] && self.properties[key].set){
+        self.properties[key].set.call(self, value, key);
       }else{
         // No change? Then abandon
-        if(this._props[key] && this._props[key] === value){
-          return this;
+        if(from === value)
+          return self;
+
+        // Basic validator support
+        valid = self._validate(key, value);
+        if(self.properties[key] && (self.properties[key].validate || self.properties[key].possible) && valid !== true){
+          error = { key:key, value:value, error:valid, from:from };
+          self.errors.push(error);
+          self.fireEvent('error:'+key, Object.merge({ model:self }, error));
+          return self;
         }
 
-        // basic validator support
-        var valid = this.validate(key, value);
-        if(this.properties[key] && (this.properties[key].validate || this.properties[key].possible) && valid !== true){
-          var error = {key:key, value:value, error:valid, from:from,};
-          this.errors.push(error);
-          this.fireEvent('error:'+key, Object.merge({ model:this }, error));
-          return this;
-        }
-
-        if(value === null){
-          delete this._props[key];
-        }else{
-          this._props[key] = value;
-        }
+        if(value === null)
+          delete self._props[key];
+        else
+          self._props[key] = value;
       }
 
-      var obj = { key:key, from:from, value:value };
-      this.changed.push(obj);
+      changedPayload = { key:key, from:from, value:value };
+      self.changed.push(changedPayload);
 
-      !silent && this.fireEvent('change:'+key, Object.merge({ model:this }, obj));
-      return this;
+      if(!self._silent && !options.silent)
+        self.fireEvent('change:'+key, Object.merge({ model:self }, changedPayload));
+      return self;
     },
 
-    get: function(key, raw) {
-      if(typeOf(key) === 'array'){
-        var self, gets;
-        self = this;
+    // ### Model#get
+    // 
+    // Overloaded get method to get a single value, or a map of `property:_proeprtyValue_`.
+    // Passing `raw` as true will get the raw value directly as it's stored, without checking
+    // if there's a custom getter within the Model's properties
+    //     
+    //     model.get('name');
+    //     // or...
+    //     model.get(['name', 'id']);
+    //     
+    get: function(keyOrArray, raw) {
+      var self, gets;
+      self = this;
+      if(typeOf(keyOrArray) === 'array'){
         gets = {};
-        Array.forEach(key, function(k){ gets[k] = self._get(k, raw); });
+        Array.forEach(keyOrArray, function(k){ gets[k] = self._get(k, raw); });
         return gets;
       }      
-      return this._get(key, raw);
+      return self._get(keyOrArray, raw);
     },
 
+
+    // ### _Model#_get_
+    //     
+    // Returns the value of a property, or `null` if it does not exist.
+    // Passing `raw` as true will get the raw value directly as it's stored, without checking
+    // if there's a custom getter within the Model's properties
     _get: function(key, raw) {
       if(!raw && this.properties[key] && this.properties[key].get){
         return this.properties[key].get.apply(this, arguments);
       }
+      // If we asked for the cid, return it if it exists, otherwise call `getId` and return it
       if(key === 'cid')
         return this.cid || this.getId();
 
       return (key && typeof(this._props[key]) !== 'undefined') ? this._props[key] : null;
     },
 
-    // Lazily set the cid here
+
+    // ### Model#getId
+    //     
+    // Returns an id for the model. If the `idProperty` exists, it will return it, otherwise
+    // it will return a unique string.
+    // If there is no `cid` set yet, it will permenently assign it at this time.
+    // **MooVeeStar.Collection** uses this to identify models within itself.
     getId: function(){
       var id = this.get(this.idProperty) || this.cid || String.uniqueID();
       !this.cid && (this.cid = id);
       return id;
     },
 
-    unset: function(keys, silent){
-      // Map of nulls to pass set()
+
+    // ### Model#unset
+    //     
+    // Accepts a list of keys and passes them to `Model#set` with a null value.
+    unset: function(keys, options){
       keys = Array.from(keys).clean();
 
       if(!keys.length)
@@ -217,9 +277,13 @@
 
       var toUnset = {};
       keys.forEach(function(k){ toUnset[k] = null; });
-      return this.set(toUnset);
+      return this.set(toUnset, options);
     },
 
+
+    // ### Model#destroy
+    //     
+    // Destroys a model by setting it's property to an empty map and firing a destroy event
     destroy: function() {
       var props, id;
       id = this.getId();
@@ -228,7 +292,13 @@
       this.fireEvent('destroy', { model:this, properties:props, id:id, cid:this.cid });
     },
 
-    validate: function(key, value) {
+
+    // ### _Model#_validate_
+    //     
+    // Called when setting a value, it 
+    //  - calls a `validate` function set in the `Model.properties` map and returns the value
+    //  - checks the new value against a `possible` array of values in the `Model.properties` map
+    _validate: function(key, value) {
       var prop = this.properties[key];
       if(prop){
         if(typeof prop.validate === 'function')
@@ -239,20 +309,24 @@
       return true;
     },
 
+
+    // ### Model#toJSON
+    //     
+    // Returns a recursively cloned value map of the model's _raw_ properties.
     toJSON: function(){
-      var data, recurse;
+      var self, data, recurse;
+      self = this;
       recurse = function(v, k, obj){
         if(v){
-          if(v.toJSON){
+          if(v.toJSON)
             obj[k] = v.toJSON();
-          }else if(typeOf(v) === 'object'){
+          else if(typeOf(v) === 'object')
             Object.each(v, recurse);
-          }else if(typeOf(v) === 'array'){
+          else if(typeOf(v) === 'array')
             Array.each(v, recurse);
-          }
         }
-      }.bind(this);
-      data = Object.clone(this._props);
+      };
+      data = Object.clone(self._props);
       recurse(data);
       return data;
     }
@@ -260,40 +334,71 @@
   });
 
 
+  // ---
+  // ## MooVeeStar.Collection
+  //   
+  // The *MooVeeStar.Collection* is essentially an ordered list of your models.
+  // 
   MooVeeStar.Collection = new Class({
 
     Implements: [MooVeeStar.Events, Options],
 
-    model: MooVeeStar.Model, // The model class to define. Should define in Collection Class
+    // The model class to define. When a model is added, it checks to see if the object is a
+    // model and, if not, instantiates a new model of this class
+    modelClass: MooVeeStar.Model, 
 
     options: {
-      allowDuplicates: false,  // Allow duplicates in the collection
-      silent:false
+      // Does this collection allow the same model in multiple positions?
+      allowDuplicates: false
     },
 
-     // The models
+     // The internal list of models
     _models: [],
 
+
+    // ### Collection Constructor
+    //     
+    // Create a new **Collection**. Pass it a list of items to be added immediately
+    // 
+    //     new MooVeeStar.Collection([model1, model2, model3]);
+    //     
     initialize: function(items, options){
       options = options || {};
+
       // Bind the onModelEvent passthrough so it can be removed
       this._onModelEvent = this._onModelEvent.bind(this);
+
+      // Set a `cid` immediately. If `options.id` is passed, use it, otherwise assign as a unique string
       this.cid = (options.id) || String.uniqueID();
+
+      // If `options.silent` was passed in, set silent immediately
+      this.silence(!!options.silent);
+
       delete options.id;
+      delete options.silent;
       this.setOptions(options);
-      this.silent = !!options.silent;
-      if(items){
+
+      if(items)
         this.add(items, { silent:true });
-      }
     },
 
+
+    // ### _Collection#_onModelEvent_
+    //     
+    // Callback for every event fired from a model. Fires a collection event with a `'model:'` prefix.
+    // If a model fires a destroy event, we automatically remove it from the collection
     _onModelEvent: function(e){
-      if(e.event === 'destroy'){
+      if(e.event === 'destroy')
         this.remove(e.message.model);
-      }
+
       this.fireEvent('model:'+e.event, e.message);
     },
 
+
+    // ### Collection#add
+    //     
+    // Callback for every event fired from a model. Fires a collection event with a `'model:'` prefix.
+    // If a model fires a destroy event, we automatically remove it from the collection
     add: function(items, options){
       var self, added, errors, addedCount;
       self = this;
@@ -301,9 +406,14 @@
       added = [];
       errors = [];
       addedCount = 0;
-      // Prep and de-dupe existing models
-      Array.forEach([items].flatten(), function(item){
-        var model = self.model ? ((item instanceof self.model) ? item : new self.model(item)) : item;
+
+      Array.forEach(Array.from(items), function(item){
+        // If not a MooVeeStar.Model and a `modelClass` is defined, then instantiate
+        var model = item;
+        if(!(model instanceof MooVeeStar.Model) && self.modelClass)
+          model = new self.modelClass(model);
+
+        // If we don't find the model in our list already, or we allowDuplicates
         if(!self.findFirst(model.getId()) || self.options.allowDuplicates){
           model.addEvent('*', self._onModelEvent);
           added.push(model);
@@ -326,22 +436,19 @@
     },
 
 
-    /**
-     * Removes a model by index or all instance of a model or array of models from the collection
-     * 
-     * @param  {(Number|String|Model|Model[])} indexOrModels The index to be removed singularly,
-     *                                                       or a string ID to get the model to remove all instances of
-     *                                                       or the model or an array of models to remove all instances of
-     * @param  {object} options An object describing any options, such as { "siltent":true }.
-     *                          Will be returned with any events fired.
-     * @fires Collection#change
-     * @fires Collection#remove
-     */
+    // ### Collection#remove
+    //     
+    // Removes a model by index or all instance of a model or array of models from the collection. If `indexOrModels`
+    // is a number, then remove at that index; if it is a string id, then get the model and remove all instances of it;
+    // if it is a model or array of models, then remove all instances of each.
+    // 
+    // Fires `Collection#change` and `Collection#remove`
+    // 
     remove: function(indexOrModels, options){
       var self, modelsRemoved, model;
       self = this;
       options = options || {};
-      modelsRemoved = []; // The models that were successfully removed
+      modelsRemoved = [];
 
       // If we passed a number in, then handle as an index and remove only the item at that index      
       // even if that model exists elsewhere
@@ -364,37 +471,22 @@
           if(self._models.contains(model)){
             model.removeEvent('*', self._onModelEvent);
             modelsRemoved.include(model);
-            // Array.erase removes all instances of the object. Handy for allowDuplicates
+            // Array.erase removes all instances of the model
             self._models.erase(model);
           }
         }
       }
       if(!self._silent && !options.silent && modelsRemoved.length){
-        /**
-         * Change event
-         *
-         * @event Collection#change
-         * @type {object}
-         * @property {String} event The type of change event, here 'remove'
-         * @property {Models} models An array of the models removed
-         * @property {Object} options The options object passed in, or an empty object
-         */
         self.fireEvent('change', { event:'remove', models:modelsRemoved, options:options });
-
-        /**
-         * Remove event
-         *
-         * @event Collection#remove
-         * @type {object}
-         * @property {Models} models An array of the models removed
-         * @property {Object} options The options object passed in, or an empty object
-         */
         self.fireEvent('remove', { models:modelsRemoved, options:options });
       }
       return self;
     },
 
-    // Empties the collection through remove()
+    // ### Collection#empty
+    //     
+    // Empties the **Collection** by callng remove on all items
+    // 
     empty: function(options){
       options = options || {};
       this.remove(this.getAll(), options);
@@ -406,15 +498,11 @@
     },
 
 
-    /**
-     * Moves a model 
-     * 
-     * @param  {Number|Model} indexOrModel The index of the item to move, or the model whose first instance will be moved
-     * @param  {Number} to The destination index
-     * @param  {Object} options
-     * @fires Collection#change
-     * @fires Collection#move
-     */
+    // ### Collection#move
+    //     
+    // Moves a model from one index to another. If `indexOrModel` is a number, then move the model at that index.
+    // If it is a model then _only whose first instance of the model_ in the collection will be moved.
+    // 
     move: function(indexOrModel, to, options){
       var self, from;
       self = this;
@@ -435,92 +523,147 @@
       }
 
       if(!self._silent && !options.silent){
-        /**
-         * Change event
-         *
-         * @event Collection#change
-         * @type {object}
-         * @property {String} event The type of change event, here 'move'
-         * @property {Number} from The initial index
-         * @property {Number} model The destination index
-         * @property {Object} options The options object passed in, or an empty object
-         */
         self.fireEvent('change', { event:'move', model:self.at(to), from:from, to:to, options:options });
-
-        /**
-         * Move event
-         *
-         * @event Collection#move
-         * @type {object}
-         * @property {Number} from The initial index
-         * @property {Number} model The destination index
-         * @property {Object} options The options object passed in, or an empty object
-         */
         self.fireEvent('move', { model:self.at(to), from:from, to:to, options:options });
       }
       return this;
     },
 
+
+    // ### Collection#getId
+    //     
+    // Returns the `cid`.
+    // 
     getId: function(){
       return this.cid;
     },
 
+
+    // ### Collection#getId
+    //     
+    // Returns the `cid`.
+    // 
     getLength: function(){
       return this._models.length;
     },
 
+
+    // ### Collection#at
+    //     
+    // Returns the model at a specific index, if it exists.
+    // 
     at: function(index){
-      return this._models[index];
+      return this._models.length > index ? this._models[index] : null;
     },
 
+
+    // ### Collection#get
+    //     
+    // Returns the first model found from the key.
+    // If `key` is `null`, return all items;
+    // or call `Collection:findFirst` with `key`;
+    // of if `key` is numeric call `Collection:findFirst`
+    // 
     get: function(key){
-      if(key instanceof this.model)
+      if(key instanceof MooVeeStar.Model)
         return key;
-      return key == null ? this.getAll() : (this.findFirst(key) || (typeof(key) === 'number' && this.at(key)));
+      return key == null ? this.getAll() : (this.findFirst(key) || (typeof(key) === 'number' && this.at(key)) || null);
     },
 
+
+    // ### Collection#getAll
+    //     
+    // Returns the list of models
+    // 
     getAll: function(){
       return this._models;
     },
 
+
+    // ### Collection#find
+    //     
+    // Accept a value or list of values and returns any models who's `idProperty` is within the values list.
+    // Pass `keyToFind` to compare that key's value instread of `idProperty`
+    // 
     find: function(values, keyToFind){
-      keyToFind = keyToFind || null;
       values = Array.from(values);
       return this._models.filter(function(model){ return values.contains(keyToFind ? model.get(keyToFind) : model.getId()); });
     },
 
+
+    // ### Collection#findFirst
+    //     
+    // Returns the first model whos `idProperty` (or `keyToFind` value) matches the passed value
+    // 
     findFirst: function(value, keyToFind){
       var models = this.find(value, keyToFind);
       return models.length ? models[0] : null;
     },
 
+
+    // ### Collection#toJSON
+    //     
+    // Returns a new array of all of the `Models.toJSON` values
+    // 
     toJSON: function() {
       return Array.map(this._models, function(model){ return model.toJSON(); });
     },
 
-    /**
-     * Silently empties the list and fires a destroy message
-     * @return {[type]} [description]
-     */
+
+    // ### Collection#destroy
+    //     
+    // Silently empties the list and fires a destroy message
+    // 
     destroy: function(options){
       options = options || {};
       this.empty(Object.merge({}, options, { silent:true }));
-      if(!this._silent && !options.silent){  
+      if(!this._silent && !options.silent)
         this.fireEvent('destroy', { collection:this, options:options });
-      }
       return this;
     },
 
-    // Model Methods
+    // ### Collection#applyToModels
+    //     
+    // Calls a method on all models, or all models found
+    // 
+    //     // Set all models to complete
+    //     collection.applyToModels('set', ['complete', true]);
+    //     
+    //     // Set all models whos 'complete' key is === false
+    //     collection.applyToModels('set', [{ complete:true }], false, 'complete');
+    //     
+    //     // Unset 'complete' and 'due' on models whos 'complete' key is === false
+    //     collection.applyToModels('unset', [['complete','due']], collection.find(false, 'complete'));
+    // 
+    applyToModels: function(operation, opArgs, modelsOrFindValues, findKeyToFind){
+      var models;
+      if(!modelsOrFindValues)
+        models = this._models;
+      else if((modelsOrFindValues instanceof MooVeeStar.Model) || (typeOf(modelsOrFindValues) === 'array' && (modelsOrFindValues[0] instanceof MooVeeStar.Model)))
+        models = modelsOrFindValues;
+      else
+        models = this.find(modelsOrFindValues, findKeyToFind);
+      Array.forEach(Array.from(models), function(model){
+        model[operation].apply(model, Array.from(opArgs));
+      });
+      return this;
+    },
 
+
+    // ### Collection#set
+    // 
+    //   __DEPRECATED__
     // Call set on all items in the collection
+    // _Should use `applyToModels('set', ...)` instead_
+    // 
     set: function(){
       var args = arguments;
       Array.forEach(this._models, function(model){
         model.set.apply(model, args);
       });
       return this;
-    }
+    },
+
 
 
   });
@@ -533,6 +676,12 @@
   });
 
 
+  // ---
+  // ## MooVeeStar.View
+  //   
+  // The *MooVeeStar.View* helps you take control of how your interface interacts with user input and data changes.
+  // It was built to take full power of the MooVeeStar templating system, but can be used with any templating library.
+  // 
   MooVeeStar.View = new Class({
 
     Implements: [MooVeeStar.Events, Options],
