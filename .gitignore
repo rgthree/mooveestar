@@ -2,3 +2,4 @@
 .sass-cache
 config.rb
 *.sublime*
+node_modules
