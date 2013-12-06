@@ -7,46 +7,82 @@
   
   "use strict";
 
+  // The MooVeeStar namespace is an instantiated MooTools Events object
+  // allowing it to be used as a mediator.
+  // 
+  //     MooVeeStar.fireEvent('some-event', { /* ... */ });
+  //     MooVeeStar.addEvent('some-event', function(e){ /* ... */ });
+  //     
   var MooVeeStar = root.MooVeeStar = new Events();
 
-  // An Event class that wraps objects called internally with fireEvent
+  // MooVeeStar.Events
+  // -----------------
+  // 
+  // An Events object that wraps `fireEvent` to fire an additional "*"
+  // Specifically, so collection add listen to all events of their models
+  // to pass through. 
   MooVeeStar.Events = new Class({
     Implements: [Events],
 
+    // Wrap this instance's "fireEvent" to additionally fire a "*" event with additional information
     fireEvent: function(type, message){
       Events.prototype.fireEvent.call(this, type, message);
-      Events.prototype.fireEvent.call(this, '*', {'event':type, 'message':message});
+      Events.prototype.fireEvent.call(this, '*', { event:type, message:message });
+    },
+
+    // Overloaded method to silence an object's operations. Pass a boolean
+    // to set silent, or pass a function to execute silently. For example, one or the other:
+    //     
+    //     model.silence(function(){ model.set('somrthing', 123); });
+    //     model.silence(true).set('somrthing', 123).silence(false);
+    //     
+    silence: function(functionOrBoolean){
+      var currentSilence = !!this._silent;
+      if(typeof functionOrBoolean === 'boolean'){
+        this._silent = functionOrBoolean;
+      }else if(typeof functionOrBoolean === 'function'){
+        this._silent = true;
+        functionOrBoolean();
+        this._silent = currentIgnore;
+      }else if(typeof functionOrBoolean === 'undefined'){
+        this._silent = true;
+      }
+      return this;
     }
 
   });
 
+
+  // MooVeeStar.Model
+  // -----------------
+  // 
+  // MooVeeStar **Model**s are the stars of the framework. A model is a basic
+  // data object that can be uniquely identified and have methods for manipulating
+  // its data.
   MooVeeStar.Model = new Class({
 
     Implements: [MooVeeStar.Events, Options],
 
-    // The key to identify a passed-map by. If doesn't exist, creates one locally with String.uniqueID()
-    idProperty:'id',
+    // The key to identify the model by. Returned by `Model.getId()`
+    idProperty: 'id',
 
-    // Define specific properties: 'initial' value, and 'get','set','sanitize','validate' methods
-    properties:{},
+    // A client identifier for this model. Guarenteed to be unique, it will use the model's
+    // `idProperty` if it exists when it's called, otherwise it will fall back to `String.uniqueID()`
+    cid: null,
 
-    // Properties hash, accessed through get/set
-    _props:{},
+    // Define specific properties values and methods w/ the property name as the key, and a value being 
+    // a map containing: 'initial', 'possible', 'get', 'set', 'sanitize', and/ or 'validate'
+    properties: {},
 
-    options: {
-      autoinit: true
-    },
+    // Internal properties map. Accessed via get/set
+    _props: {},
 
-    // Recieves the Model, and clones it into properties
-    initialize: function(model, options){
+    initialize: function(object, options){
       this.setOptions(options);
-      this.options.autoinit === true && this.init(model);
-    },
+      object = object && typeOf(object) === 'object' ? object : {};
 
-    init: function(model, silent){
-      model = model && typeOf(model) === 'object' ? model : {};
-
-      // Set the properties taking any thing in the properties map for initials, defaults or the first possibles
+      // Set the properties by merging the passed object along with the `properties` map, looking for 'initial'
+      // 'default' or the first 'possible' value.
       this.set(Object.merge(Object.map(this.properties, function(p){
         if(p.initial != null)
           return p.initial;
@@ -55,31 +91,49 @@
         if(p.possible && p.possible.length)
           return p.possible[0];
         return null;
-      }), model), silent);
+      }), object), true);
       this.changed = [];
-      !silent && this.fireEvent('ready', { model:this });
+      this.fireEvent('ready', { model:this });
       return this;
     },
 
     // Overloaded set method. Will accept: (key, value[, silent]), or ({k:v,...}[, silent])
-    set: function(){
-      var silent;
-      this.changed = [];
-      this.errors = [];
-      // If the first argument is an object, iterate over passing silent along
-      if(typeof(arguments[0]) === 'object'){
-        silent = !!arguments[1];
-        Object.forEach(arguments[0], function(v,k){ this._set(k,v,silent); }.bind(this));
+    // Set a property or properties on the model. Can be called with a single key/value, or an object
+    // with many keys/values. Options can have a silent key that, when true, supresses events.
+    //     
+    //     model.set('name', 'Edward', { silent:true });
+    //     model.set({ name:'Edward' }, { silent:true });
+    //     
+    set: function(keyOrObject, valueOrOptions, optionsOrUndefined){
+      var self, props, options;
+      self = this;
+
+      if(!keyOrObject)
+        return self;
+
+      if(typeof(keyOrObject) === 'object'){
+        props = keyOrObject;
+        options = valueOrOptions || {};
       }else{
-        silent = !!arguments[2];
-        this._set.apply(this, arguments);
-      }
-      if(!silent){
-        this.changed.length && this.fireEvent('change', { model: this, changed: this.changed.associate(this.changed.map(function(change){ return change.key; })) });
-        this.errors.length && this.fireEvent('error', { model: this, errors: this.errors.associate(this.errors.map(function(error){ return error.key; })) });
+        (props = {})[keyOrObject] = valueOrOptions;
+        options = optionsOrUndefined || {};
       }
 
-      return this;
+      // Backwards compatibility for a boolean silent param
+      if(typeof(options) === 'boolean')
+        options = { silent:options };
+
+      self.changed = [];
+      self.errors = [];
+
+      Object.forEach(props, function(v,k){ self._set(k, v, options); });
+
+      if(!self._silent && !options.silent){
+        self.changed.length && self.fireEvent('change', { model: self, changed: self.changed.associate(self.changed.map(function(change){ return change.key; })) });
+        self.errors.length && self.fireEvent('error', { model: self, errors: self.errors.associate(self.errors.map(function(error){ return error.key; })) });
+      }
+
+      return self;
     },
 
     _set: function(key, value, silent){
@@ -240,22 +294,6 @@
       this.fireEvent('model:'+e.event, e.message);
     },
 
-    // Call w/o arguments to set .silent true
-    // Call w/ boolean to set .silent
-    // Call w/ a synchronous fn to run while silent
-    silence: function(){
-      if(typeof arguments[0] === 'boolean'){
-        this.silent = arguments[0];
-      }else if(typeof arguments[0] === 'function'){
-        this.silent = true;
-        arguments[0]();
-        this.silent = false;
-      }else if(arguments.length === 0){
-        this.silent = true;
-      }
-      return this;
-    },
-
     add: function(items, options){
       var self, added, errors, addedCount;
       self = this;
@@ -279,7 +317,7 @@
         }
       });
       
-      if(!self.silent && !options.silent){
+      if(!self._silent && !options.silent){
         added.length && self.fireEvent('change', { event:'add', models:added, options:options });
         added.length && self.fireEvent('add', { models:added, options:options });
         errors.length && self.fireEvent('error', { data:errors, options:options });
@@ -331,7 +369,7 @@
           }
         }
       }
-      if(!self.silent && !options.silent && modelsRemoved.length){
+      if(!self._silent && !options.silent && modelsRemoved.length){
         /**
          * Change event
          *
@@ -360,7 +398,7 @@
     empty: function(options){
       options = options || {};
       this.remove(this.getAll(), options);
-      if(!this.silent && !options.silent){
+      if(!this._silent && !options.silent){
         this.fireEvent('change', { event:'empty', options:options });  
         this.fireEvent('empty', { options:options });
       }
@@ -396,7 +434,7 @@
         Array.splice(self._models, to, 0, Array.splice(self._models, from, 1)[0]);
       }
 
-      if(!self.silent && !options.silent){
+      if(!self._silent && !options.silent){
         /**
          * Change event
          *
@@ -467,7 +505,7 @@
     destroy: function(options){
       options = options || {};
       this.empty(Object.merge({}, options, { silent:true }));
-      if(!this.silent && !options.silent){  
+      if(!this._silent && !options.silent){  
         this.fireEvent('destroy', { collection:this, options:options });
       }
       return this;
