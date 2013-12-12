@@ -1,5 +1,5 @@
 @charset "utf-8";
-@import url(http://fonts.googleapis.com/css?family=Source+Code+Pro:400,700);
+@import url(https://fonts.googleapis.com/css?family=Source+Code+Pro:400,700|Source+Sans+Pro:400,700);
 
 @import "compass/css3";
 
@@ -19,7 +19,7 @@
 
 body {
   font-size:14px; line-height:22px; margin:0px; padding:0px;
-  font-family:"Gill Sans", Helvetica, Arial;
+  font-family:"Source Sans Pro", "Gill Sans", Helvetica, Arial;
   background:#dddce2; color:#333; text-shadow:0px 1px 0px rgba(255,255,255,0.25);
 }
 
@@ -102,7 +102,26 @@ body > article {
   }
 }
 
-h2,h3 {font-weight:300; font-size:30px;}
+h2 {font-family:"Gill Sans", Helvetica, Arial; font-weight:300; }
+h2,h3 {font-size:30px;}
+
+section.quicklinks {
+  position:relative; margin-bottom:30px; overflow:hidden; padding-left:100px;
+  @include box-shadow(inset 0px 1px 2px rgba(0,0,0,0.25), inset 0px 0px 1px rgba(0,0,0,0.25), 0 1px 0px rgba(255,255,255,0.5));
+  @include border-radius(4px); background-color:rgba(255,255,255,0.33);
+  &::after {content:'Quick links:'; display:block; position:absolute; padding:10px 15px; left:0px; top:0px; bottom:0px; background:rgba(0,0,0,0.05); color:#888;}
+  ul, li {padding:0px; margin:0px; list-style:none;}
+  ul {
+    text-align:center;
+    li {
+      display:inline-block; vertical-align:top;
+      a {
+        display:block; padding:10px; color:inherit; text-decoration:underline;
+        &:hover {text-decoration:none; color:#000;}
+      }
+    }
+  }
+}
 
 dl#classes {
   font-size:16px;
