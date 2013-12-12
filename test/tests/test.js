@@ -80,15 +80,18 @@
         var error, errorFgColor;
         error = errorFgColor = false;
         model.addEvent('error', function(e){
+          console.log(e);
           if(e.model === model && e.errors.fgColor && e.errors.fgColor.value && e.errors.fgColor.from && e.errors.fgColor.error)
             error = true;
         });
         model.addEvent('error:fgColor', function(e){
+          console.log(e);
           if(e.model === model && e.key === 'fgColor' && e.value && e.from && e.error)
             errorFgColor = true;
         });
 
         // Try setting our fgColor to the background color
+        error = errorFgColor = false;
         model.set('fgColor', 'brown');
         assert.isTrue(error);
         assert.isTrue(errorFgColor);
@@ -530,11 +533,11 @@
         MooVeeStar.templates.register('section-tpl', sectionHtml);
         MooVeeStar.templates.register('list-tpl', listHtml);
 
-        assert.isNotNull(MooVeeStar.templates.templates['section-tpl']);
-        assert.equal(MooVeeStar.templates.templates['section-tpl'].markup, sectionHtml);
+        assert.isNotNull(MooVeeStar.templates._templates['section-tpl']);
+        assert.equal(MooVeeStar.templates._templates['section-tpl'].markup, sectionHtml);
 
-        assert.isNotNull(MooVeeStar.templates.templates['list-tpl']);
-        assert.equal(MooVeeStar.templates.templates['list-tpl'].markup, listHtml);
+        assert.isNotNull(MooVeeStar.templates._templates['list-tpl']);
+        assert.equal(MooVeeStar.templates._templates['list-tpl'].markup, listHtml);
 
       });
 
@@ -542,8 +545,8 @@
 
         MooVeeStar.templates.register('item-tpl', itemHtml);
 
-        assert.isNotNull(MooVeeStar.templates.templates['item-tpl']);
-        assert.equal(MooVeeStar.templates.templates['item-tpl'].markup, '<li> </li>');
+        assert.isNotNull(MooVeeStar.templates._templates['item-tpl']);
+        assert.equal(MooVeeStar.templates._templates['item-tpl'].markup, '<li> </li>');
       });
 
     });

@@ -1,6 +1,6 @@
-// MooVeeStar v0.0.1 #20131205 - https://rgthree.github.io/mooveestar/
-// by Regis Gaughan, III <regis.gaughan@gmail.com>
-// MooVeeStar may be freely distributed under the MIT license.
+// > MooVeeStar v0.0.1 #20131211 - https://rgthree.github.io/mooveestar/
+// > by Regis Gaughan, III <regis.gaughan@gmail.com> http://regisgaughan.com
+// > MooVeeStar may be freely distributed under the MIT license.
 
 // **MooVeeStar** is a client-side MV\* Framework built ontop of MooTools. It has been based off other JavaScript MV\* Frameworks such as Backbone.js and Epitome.
 /* jshint mootools:true, expr:true, eqnull:true */
@@ -8,11 +8,13 @@
   
   "use strict";
 
+
+
   // ---
-  // ## MooVeeStar (namespace)
+  // ## MooVeeStar (Mediator/namespace)
   //   
   // The **MooVeeStar** namespace is an instantiated MooTools Events object
-  // allowing it to be used as a mediator.
+  // allowing it to be used as a global mediator.
   // 
   //     MooVeeStar.fireEvent('some-event', { /* ... */ });
   //     MooVeeStar.addEvent('some-event', function(e){ /* ... */ });
@@ -20,10 +22,24 @@
   var MooVeeStar = root.MooVeeStar = new Events();
 
 
+
+  // ---
+  // ## MooVeeStar.Event
+  // 
+  // A Simple Object wrapper for the event payload. Useful when wanting to check instance of an object
+  MooVeeStar.Event = new Class({
+    initialize: function(obj){
+      var self = this;
+      Object.forEach(obj || {}, function(v,k){ self[k] = v; });
+    }
+  });
+
+
+
   // ---
   // ## MooVeeStar.Events
   // 
-  // An events mixin that wraps `fireEvent` to fire an additional "*"
+  // An events mixin that wraps `fireEvent` to fire an additional `*` event.
   // Specifically, so collection add listen to all events of their models
   // to pass through. 
   MooVeeStar.Events = new Class({
@@ -34,6 +50,9 @@
     // 
     // Wrap this instance's "fireEvent" to additionally fire a "*" event with additional information
     fireEvent: function(type, message){
+      if(!(message instanceof MooVeeStar.Event))
+        message = new MooVeeStar.Event(message);
+
       Events.prototype.fireEvent.call(this, type, message);
       Events.prototype.fireEvent.call(this, '*', { event:type, message:message });
     },
@@ -63,6 +82,7 @@
     }
 
   });
+
 
 
   // ---
@@ -160,9 +180,10 @@
 
     // ### _Model#_set_
     //     
-    // Internal set method, called from exposed `Model#set`
+    // _Private_. Internal set method, called from exposed `Model#set`
     // While `Model#set` files changed & errors events, `Model#_set` is in charge of firing seperate
-    // `chnge:_prop_` events.
+    // `change:_prop_` events.
+    // 
     _set: function(key, value, options){
       var self, from, valid, error, changedPayload;
       self = this;
@@ -238,13 +259,14 @@
 
     // ### _Model#_get_
     //     
-    // Returns the value of a property, or `null` if it does not exist.
+    // _Private_. Returns the value of a property, or `null` if it does not exist.
     // Passing `raw` as true will get the raw value directly as it's stored, without checking
     // if there's a custom getter within the Model's properties
+    // 
     _get: function(key, raw) {
-      if(!raw && this.properties[key] && this.properties[key].get){
+      if(!raw && this.properties[key] && this.properties[key].get)
         return this.properties[key].get.apply(this, arguments);
-      }
+
       // If we asked for the cid, return it if it exists, otherwise call `getId` and return it
       if(key === 'cid')
         return this.cid || this.getId();
@@ -259,6 +281,7 @@
     // it will return a unique string.
     // If there is no `cid` set yet, it will permenently assign it at this time.
     // **MooVeeStar.Collection** uses this to identify models within itself.
+    // 
     getId: function(){
       var id = this.get(this.idProperty) || this.cid || String.uniqueID();
       !this.cid && (this.cid = id);
@@ -269,6 +292,7 @@
     // ### Model#unset
     //     
     // Accepts a list of keys and passes them to `Model#set` with a null value.
+    // 
     unset: function(keys, options){
       keys = Array.from(keys).clean();
 
@@ -284,6 +308,7 @@
     // ### Model#destroy
     //     
     // Destroys a model by setting it's property to an empty map and firing a destroy event
+    // 
     destroy: function() {
       var props, id;
       id = this.getId();
@@ -295,9 +320,10 @@
 
     // ### _Model#_validate_
     //     
-    // Called when setting a value, it 
+    // _Private_. Called when setting a value, it 
     //  - calls a `validate` function set in the `Model.properties` map and returns the value
     //  - checks the new value against a `possible` array of values in the `Model.properties` map
+    //  
     _validate: function(key, value) {
       var prop = this.properties[key];
       if(prop){
@@ -313,6 +339,7 @@
     // ### Model#toJSON
     //     
     // Returns a recursively cloned value map of the model's _raw_ properties.
+    // 
     toJSON: function(){
       var self, data, recurse;
       self = this;
@@ -385,8 +412,9 @@
 
     // ### _Collection#_onModelEvent_
     //     
-    // Callback for every event fired from a model. Fires a collection event with a `'model:'` prefix.
+    // _Private_. Callback for every event fired from a model. Fires a collection event with a `'model:'` prefix.
     // If a model fires a destroy event, we automatically remove it from the collection
+    // 
     _onModelEvent: function(e){
       if(e.event === 'destroy')
         this.remove(e.message.model);
@@ -399,6 +427,7 @@
     //     
     // Callback for every event fired from a model. Fires a collection event with a `'model:'` prefix.
     // If a model fires a destroy event, we automatically remove it from the collection
+    // 
     add: function(items, options){
       var self, added, errors, addedCount;
       self = this;
@@ -465,7 +494,7 @@
       // Otherwise, remove all occurrences of the model(s) passed in
       }else{
         indexOrModels = Array.from(indexOrModels);
-        // Loop over inversely so we do not mess with order if indexOrModels === this._model when removeAll()
+        // Loop over inversely so we do not mess with order if `indexOrModels === this._model` when `removeAll()`
         for(var i = indexOrModels.length-1, l = 0; i >= 0; i--){
           model = typeof(indexOrModels[i]) !== 'object' ? self.findFirst(indexOrModels[i]) : indexOrModels[i];
           if(self._models.contains(model)){
@@ -679,7 +708,7 @@
   // ---
   // ## MooVeeStar.View
   //   
-  // The *MooVeeStar.View* helps you take control of how your interface interacts with user input and data changes.
+  // The **MooVeeStar.View** helps you take control of how your interface interacts with user input and data changes.
   // It was built to take full power of the MooVeeStar templating system, but can be used with any templating library.
   // 
   MooVeeStar.View = new Class({
@@ -692,25 +721,78 @@
       inflater: null,   // Lazily set in constructor
       binder: null      // Lazily set in constructor
     },
+
+    // The `events` are somewhat magical. There is a lot you can throw at it, and it will only fail
+    // when it can't find what you're trying to attach to, or the string method name doesn't exist on your view.
+    // 
+    //     'model:change': 'render',          // Listen for 'change' events on 'this.model'
+    //     'this.model:change': 'render',     // (Same as above)
+    //     'model:change:name': 'render',     // Listen for the specific 'change:name' events on 'this.model'
+    //     'click': 'onClick',                // Listen for 'click' events on 'this.element'
+    //     'element:click': 'onClick',        // (Same as above)
+    //     'this.element:click': 'onClick',   // (Same as above)
+    //     'this:click': 'onFiredClick',      // Not a mouse-click! Force listening to an internal view event
+    //                                        // named "click" fired through 'this.fireEvent("click")'
+    //
+    //     'click:relay(button)': 'onButtonClick',   // Listen for 'click' events on button children of 'this.element'
+    //     'elements.button:click': 'onButtonClick', // Assuming 'this.elements.button' was set before attaching events
+    //                                               // this will listen for clicks on this element
+    //     'someProperty:some-event': 'someFn',      // Assuming 'this.someProperty' exists and has an 'addEvent' method
+    //     'this.someProperty:some-event': 'someFn', // (Same as above)
+    //
+    //     'window:scroll': 'onWindowScroll',        // Window Scroll event
+    //     'document:click': 'onWindowScroll',       // Click events on the 'document'
+    //
+    //     'MooVeeStar:some-event': 'someFn',        // Listen for 'some-event' fired through the MooVeeStar mediator
+    //
+    //     'someGlobalObject:some-event': 'someFn',  // Assuming 'window.someGlobalObject' exists and has an 'addEvent' method
+    //
+    //     'someHtmlId:keydown':'onSomeKeydown'      // Assuming an element with 'id="someHtmlId"', listen for it's keydowns
+    //    
     events:{},
 
+    // The template string to use
     template: null,
+
+    // The element. Will be assigned to the inflated template, unless already defined before calling the MooVeeStar.View parent.
+    // Also defined as `this.elements.container`
     element: null,
+
+    // An elements map.
     elements: {},
 
-    initialize: function(model, options){
+
+    // ### View Constructor
+    //     
+    // Create a new **MooVeeStar.View**. Pass it a list of items to be added immediately
+    // 
+    //     new MooVeeStar.View();
+    //     
+    initialize: function(modelOrObject, options){
       options = options || {};
       options.inflater = options.inflater || this.options.inflater || (MooVeeStar.templates && MooVeeStar.templates.inflate) || null;
       options.binder = options.binder || this.options.binder || (MooVeeStar.templates && MooVeeStar.templates.init) || null;
       this.setOptions(options);
 
       this.events = Object.clone(this.events || {});
-      this.model = this.model || model || null;
+      this.model = this.model || modelOrObject || null;
+
+      // If we passed a plain object, inflate to a generic MooVeeStar.Model
+      if(!(this.model instanceof MooVeeStar.Model))
+        this.model = new MooVeeStar.Model(this.model);
+
       this.setElement();
       this.options.autoattach && this.attachEvents();
       this.options.autorender && this.render();
     },
     
+
+    // ### View#setElement
+    // 
+    // Sets the element property of the view to `this.element` and `this.elements.container`
+    // Also modifies the elements' dataset attributes to stop autobinding and mark as having a view controller
+    // as well as storing this view instance to the elements `__view` key.
+    // 
     setElement: function(element){
       if(!this.element){
         this.element = $(element);
@@ -726,47 +808,103 @@
       return this;
     },
 
+
+    // ### View#toElement
+    // 
+    // Returns the views element. `toElement` gets called by MooTools in most DOM manipulation methods
+    // 
     toElement: function(){
       return this.element;
     },
 
-    render: function(data){
-      this.options.binder && this.options.binder(this.element, data || (this.model && this.model.toJSON()) || {});
+
+    // ### View#render
+    // 
+    // Likely overridden and called through `parent()`, this determines the data to bind to the element. Pass a **MooVeeStar.Event**
+    // instance which contains a `changed` key, it will only rebind those changed values. Otherwise, it will use the passed argument
+    // or, more likely, call `model.toJSON`
+    // 
+    render: function(objectOrChangeEvent){
+      if(this.options.binder){
+        var data = objectOrChangeEvent;
+        // If data is an event and there's items changed, then just bind the changed values
+        if(objectOrChangeEvent instanceof MooVeeStar.Event && objectOrChangeEvent.changed){
+          data = {};
+          Object.forEach(objectOrChangeEvent.changed, function(v,k){
+            data[k] = v.value;
+          });
+        }
+        // Pass the data to the binder. First param is the element, second is the data, and third is an options map
+        // containing a boolean to tell the binder we may only want to bind the data defined (not unbind undefined fields)
+        this.options.binder(this.element, data || (this.model.toJSON && this.model.toJSON()) || this.model || {}, { onlyDefined:!!templateData });        
+      }
       return this;
     },
 
-    // Dispose of the View
-    // Detach all events from itself and any children that have a view controller
-    // Dispose/destroy itself
-    _doDomManipulation: function(fn, el){
+
+    // ### View#destroy
+    // 
+    // Destroy the passed element, or the view's `element`. Calls `view.destroy()`
+    // for all _attached_ views within the element's DOM.
+    // Fires the `View#destroy` event
+    // 
+    destroy: function(elOrUndefined){
+      this._doDomManipulation('destroy', elOrUndefined);
+      this._destroyed = true;
+      return this;
+    },
+
+
+    // ### View#empty
+    // 
+    // Empties the passed element, or the view's `element`. Calls `view.destroy()`
+    // for all _attached_ views within the element's DOM.
+    // Fires the `View#empty` event
+    // 
+    empty: function(elOrUndefined){
+      return this._doDomManipulation('empty', elOrUndefined);
+    },
+
+
+    // ### View#dispose
+    // 
+    // Disposes of an element, or the view's `element`. This _does not_ affect and
+    // attached sub views (like `destroy` and `empty`).
+    // Fires the `View#dispose` event
+    // 
+    dispose: function(elOrUndefined){
+      return this._doDomManipulation('dispose', elOrUndefined);
+    },
+
+    
+    // ### _View#_doDomManipulation_
+    // 
+    // _Private_. Manipulates the DOM under the element, or passed element. Using the `data-has-view-controller` attribute
+    // we can find the stored `__view` to cleanup any views that need to be.
+    // If we're emptying or destroying an element we call `destroy` on all elements being removed.
+    // Fires the event for the manipulation method (`destroy`, `empty`, `dispose`)
+    // 
+    _doDomManipulation: function(fn, elOrUndefined){
+      var el = elOrUndefined || this.element;
       fn = fn || 'dispose'; 
-      el = el || this.element;
       // If we're destroying or emptying an element, then destroy all views underneath.
       // // (dispose shouldn't touch view's elements underneath, except to detach them)
       if(fn === 'destroy' || fn == 'empty')
         this._doNestedViewsCall('destroy', el);
       this.detach(el, fn === 'empty');
       el[fn]();
-      this.fireEvent(fn, { view:this });
+      this.fireEvent(fn, { view:this, element:el });
       return this;
     },
 
-    dispose: function(el){
-      return this._doDomManipulation('dispose', el);
-    },
-
-    destroy: function(el){
-      return this._doDomManipulation('destroy', el);
-    },
-
-    empty: function(el){
-      return this._doDomManipulation('empty', el);
-    },
-
-    // Finds all nested view controllers and calls a method on them
-    _doNestedViewsCall: function(methods, element){
-      var views;
-      element = element || this.element;
+    
+    // ### _View#_doNestedViewsCall_
+    // 
+    // _Private_. Using the `data-has-view-controller` attribute we can find the stored `__view` to call a method on them
+    // 
+    _doNestedViewsCall: function(methods, elOrUndefined){
+      var views, element;
+      element = elOrUndefined || this.element;
       methods = Array.from(methods);
       views = element.getElements('*[data-has-view-controller]').clean().reverse();
       views.forEach(function(el){
@@ -778,17 +916,43 @@
       });
     },
 
-    // Attaches or detach it's events and all children views as well as rendering
-    _doAttachDetach: function(operation, element, excludeSelf){
-      var self, methods;
+
+    // ### View#attach
+    // 
+    // Attaches all events from the `element` or passed element and all the descendants within the DOM.
+    // `excludeSelf` will only do so for all descendants
+    // 
+    attach: function(elOrUndefined, excludeSelf){
+      return this._doAttachDetach('attach', elOrUndefined, excludeSelf);
+    },
+
+
+    // ### View#detach
+    // 
+    // Detaches all events from the `element` or passed element and all the descendants within the DOM.
+    // `excludeSelf` will only do so for all descendants
+    // 
+    detach: function(elOrUndefined, excludeSelf){
+      return this._doAttachDetach('detach', elOrUndefined, excludeSelf);
+    },
+
+
+    // ### _View#_doAttachDetach_
+    // 
+    // _Private_. Attaches or detaches its events and all children views as well as rendering
+    // 
+    _doAttachDetach: function(operation, elOrUndefined, excludeSelf){
+      var self, element, methods;
       self = this;
-      element = element || this.element;
+      element = elOrUndefined || self.element;
       operation = (operation || 'attach');
-      methods = [operation+'Events'];
+      methods = [operation+'Events']; // `View#attachEvents` or `View#detachEvents`
+
+      // If we're attaching events, call render afterwards
       if(operation === 'attach')
         methods.push('render');
 
-      this._doNestedViewsCall(methods, element);
+      self._doNestedViewsCall(methods, element);
 
       if(!excludeSelf){
         methods.forEach(function(method){
@@ -798,56 +962,69 @@
       return this;
     },
 
-    attach: function(element, excludeSelf){
-      return this._doAttachDetach('attach', element, excludeSelf);
-    },
 
-    detach: function(element, excludeSelf){
-      return this._doAttachDetach('detach', element, excludeSelf);
-    },
-
+    // ### View#attachEvents
+    // 
+    // Loops over the models events map and attaches the events
+    // 
     attachEvents: function(){
-      // Keep track of attached events && bound functions (for detaching)
-      this._attachedEvents = this._attachedEvents || {};
-      this._boundEventFns = this._boundEventFns || {};
+      var self;
+      self = this;
 
-      Object.each(this.events, function(v, k){
-        if(!this._attachedEvents[k]){
-          if(k && k.length && typeOf(this[v]) === 'function'){
-            // Break psuedo and check if it's in Element.NativeEvents
-            var name, attach, nativeName;
-            nativeName = k.substr(0, k.indexOf(':') > 0 ? k.indexOf(':') : k.length);
-            if((!k.contains(':') || /\:relay\(/gi.test(k)) && (Element.NativeEvents[nativeName] || Element.Events[nativeName])){
-              // Simple dom event or relay
-              attach = $(this.element);
-              name = k;
-            }else if(/attach\(([^\)]+)/gi.test(k)){
-              // Attach as a css fn after the event (deprecate?)
-              // click:attach(window) or click:relay():attach(this.views.evaledEl)
-              attach = /attach\(([^\)]+)/gi.exec(k);
-              name = k.replace(/:?attach\([^\)]+\)/i,'');
-              attach = attach && attach[1];
-              attach = this._getEventObj(attach) || this;
-            }else{
-              // toAttach as first : delimited list
-              // window:scroll or collection:add or this.views.block:change
-              attach = k.split(':')[0];
-              name = k.replace(attach+':','');
-              attach = this._getEventObj(attach) || this;
-            }
-            if(attach && name && attach.addEvent){
-              this._boundEventFns[v] = this._boundEventFns[v] || this[v].bind(this);
-              attach.addEvent(name, this._boundEventFns[v]);
-              this._attachedEvents[k] = {'attach':attach, 'name':name, 'fn':this._boundEventFns[v]};
-            }else{
-              throw new Error('[VIEW ERROR] Could not attach event "'+k+'". Something went awry.');
-            }
+      // Keep track of attached events && bound functions (for detaching)
+      self._attachedEvents = self._attachedEvents || {};
+      self._boundEventFns = self._boundEventFns || {};
+
+      Object.each(self.events, function(v, k){
+        // Only if we haven't attached this event and it's string value is a method name on this view instance
+        if(!self._attachedEvents[k] && typeOf(self[v]) === 'function'){
+          var name, attach, nativeName;
+
+          // 
+          nativeName = k.substr(0, k.indexOf(':') > 0 ? k.indexOf(':') : k.length);
+
+          // If we just passed in a `Element.Event` (with an optional relay) then the target is the view's element, and the event name is the item's key
+          //     
+          //     'click' // 'this.element:click'
+          //     'mousedown:relay([data-action])' // 'this.element:click:relay([data-action])'
+          //     
+          if((!k.contains(':') || /\:relay\(/gi.test(k)) && (Element.NativeEvents[nativeName] || Element.Events[nativeName])){
+            attach = $(self.element);
+            name = k;
+
+          // Otherwise, split on ':' where the first item is the attachment, the name is everything else
+          //      
+          //      'window:scroll:relay(.overflow)'
+          //      'MooVeeStar:some-event'
+          //      'model:destroy'
+          //      'model:change:id'
+          //      'collection:model:change'
+          // 
+          }else{
+            attach = k.split(':')[0];
+            name = k.replace(attach+':','');
+            attach = self._getEventObj(attach) || self;
+          }
+
+          // If we found an attachment and it has an `addEvent`, add the bound method name to it and add to `_atachedEvents`
+          if(attach && name && attach.addEvent){
+            self._boundEventFns[v] = self._boundEventFns[v] || self[v].bind(self);
+            attach.addEvent(name, self._boundEventFns[v]);
+            self._attachedEvents[k] = { attach:attach, name:name, fn:self._boundEventFns[v] };
+          }else{
+            throw new Error('[VIEW ERROR] Could not attach event "'+k+'". Something went awry.');
           }
         }
-      }.bind(this));
-      return this;
+      });
+      return self;
     },
 
+
+    // ### View#detachEvents
+    // 
+    // Loops over the `_attachedEvents` and removes them from their attached item.
+    // This gets invoked automatically if `destroy` or `empty` is called.
+    // 
     detachEvents: function(){
       Object.each(this._attachedEvents || {}, function(v){
         v.attach.removeEvent(v.name, v.fn);
@@ -856,8 +1033,11 @@
       return this;
     },
 
-    // Recurse the object via a dot-delimited string for the property that 
-    // has an event to attach
+
+    // ### _View#_getEventObj_
+    // 
+    // _Private_. Taking an attachment string, finds what the appropriate attachment target is
+    // 
     _getEventObj: function(name){
       var obj, names;
       if(name === 'this')
@@ -893,6 +1073,12 @@
   });
 
 
+
+  // ---
+  // ## MooVeeStar.Storage
+  //   
+  // A _very simple_ local storage mixin.
+  // 
   MooVeeStar.Storage = new Class({
 
     store: function(){
@@ -918,23 +1104,35 @@
   });
 
 
-  var mvstpl = {
 
-    templates: {},
+  // ---
+  // ## MooVeeStar.templates
+  //   
+  // The **MooVeeStar.templates** power the UI using _completely logicless_ templating system relying on 
+  // HTML5 mindset and technologies.
+  // 
+  var mvstpl = MooVeeStar.templates = {
 
-    cleanKey: function(key){
+    // The templates registry
+    _templates: {},
+
+
+    // ### _templates::_cleanKey_
+    // 
+    // _Private_. Cleans a key to ensure odd names are valid
+    // 
+    _cleanKey: function(key){
       return key.toLowerCase().trim().replace(/\s/g,'');
     },
 
-    /**
-     * Parses the shorthand template style to the full template style
-     * @example
-     * // Input: <li data-bind="name uuid:data-uuid accent:class privacy:(data-private class)" data-action="choose"></li>
-     * <li data-bind="name uuid accent privacy" data-bind-uuid="data-uuid" data-bind-accent="class" data-bind-privacy="data-private class" data-action="choose"></li>
-     *
-     * @param  {[type]} str [description]
-     * @return {[type]}     [description]
-     */
+
+    // ### _templates::_parseShorthand_
+    // 
+    // _Private_. Parses the shorthand template style to the full template style
+    //      
+    //      // <li data-bind="name uuid:data-uuid accent:class privacy:(data-private class)" data-action="choose"></li>
+    //      <li data-bind="name uuid accent privacy" data-bind-uuid="data-uuid" data-bind-accent="class" data-bind-privacy="data-private class" data-action="choose"></li>
+    //
     _parseShorthand: function(element){
       var elements = element.getElements('[data-bind]');
       if(element.get('data-bind'))
@@ -942,8 +1140,10 @@
       elements.forEach(function(el){
         var dataBind = el.get('data-bind');
         if(dataBind && dataBind.contains(':')){
-          // Loop over two regex'es one with parens, one without parens
-          [/\s*([^\s]+?)(?!\\):\(([^\)]+)\)/, /\s*([^\s]+?)(?!\\):([^\s]+)/].each(function(regex){
+          [
+            /\s*([^\s]+?)(?!\\):\(([^\)]+)\)/,  // Capture bindings with parens
+            /\s*([^\s]+?)(?!\\):([^\s]+)/       // Capture bdings without parens
+          ].each(function(regex){
             var match;
             while((match = regex.exec(dataBind))){
               dataBind = dataBind.replace(match[0], ' '+match[1]);
@@ -956,48 +1156,69 @@
       return element;
     },
 
+
+    // ### templates::register
+    // 
     // Register a template to an html string and create a dom from it
     // Overloaded to accept a register a script as second param
-    register: function(key, html){
-      if(typeof(html) === 'function'){
-        mvstpl.registerScript(key, html);
+    // 
+    register: function(key, htmlStringOrFunction){
+      if(typeof(htmlStringOrFunction) === 'function'){
+        mvstpl.registerScript(key, htmlStringOrFunction);
         return;
       }
-      key = mvstpl.cleanKey(key);
-      html = html.replace(/<\!\-\-.*?\-\->/g, '').trim().replace(/\n/g,' ').replace(/\s+/g,' '); // Strip out comments and excess whitespace
+      var html = htmlStringOrFunction;
+      key = mvstpl._cleanKey(key);
+      // Strip out comments and excess whitespace
+      html = html.replace(/<\!\-\-.*?\-\->/g, '').trim().replace(/\n/g,' ').replace(/\s+/g,' ');
 
-      mvstpl.templates[key] = mvstpl.templates[key] || {};
-      mvstpl.templates[key].dom = mvstpl._parseShorthand(new Element('markup[html="'+html+'"]'));
-      mvstpl.templates[key].markup = mvstpl.templates[key].dom.innerHTML;
+      mvstpl._templates[key] = mvstpl._templates[key] || {};
+      mvstpl._templates[key].dom = mvstpl._parseShorthand(new Element('markup[html="'+html+'"]'));
+      mvstpl._templates[key].markup = mvstpl._templates[key].dom.innerHTML;
     },
 
+
+    // ### templates::registerScript
+    // 
     // Register a script to be called when a template is bind
+    // 
     registerScript: function(key, fn){
-      key = mvstpl.cleanKey(key);
-      mvstpl.templates[key] = mvstpl.templates[key] || {};
-      mvstpl.templates[key].script = fn;
+      key = mvstpl._cleanKey(key);
+      mvstpl._templates[key] = mvstpl._templates[key] || {};
+      mvstpl._templates[key].script = fn;
     },
 
+
+    // ### templates::getScript
+    // 
     // Return the script associated with a key
+    // 
     getScript: function(key){
-      key = mvstpl.cleanKey(key);
-      if(mvstpl.templates[key] && mvstpl.templates[key].script){
-        return mvstpl.templates[key].script;
-      }else{
-        throw new Error('Ain\'t no script for the template called '+key+' ('+typeOf(mvstpl.templates[key].script)+')');
-      }
+      key = mvstpl._cleanKey(key);
+      if(mvstpl._templates[key] && mvstpl._templates[key].script)
+        return mvstpl._templates[key].script;
+      else
+        throw new Error('Ain\'t no script for the template called '+key+' ('+typeOf(mvstpl._templates[key].script)+')');
     },
 
+
+    // ### templates::check
+    // 
     // check for the existance of a template key
+    // 
     check: function(key){
-      return !!mvstpl.templates[mvstpl.cleanKey(key)];
+      return !!mvstpl._templates[mvstpl._cleanKey(key)];
     },
 
+
+    // ### templates::get
+    // 
     // Return the dom of a template
+    // 
     get: function(key){
       var data, markupEl, els, childrenTemplates;
-      key = mvstpl.cleanKey(key);
-      data = mvstpl.templates[key];
+      key = mvstpl._cleanKey(key);
+      data = mvstpl._templates[key];
       if(data){
         // If html5Shiv is installed, and we need to go around cloneNode for HTML5 elements
         if(window.html5 && window.html5.supportsUnknownElements === false){
@@ -1008,12 +1229,18 @@
           return data.dom.clone().set('data-templateid', key);
         }       
       }else{
-        throw new Error('Ain\'t no template called '+key+' ('+typeOf(mvstpl.templates[key])+')');
+        throw new Error('Ain\'t no template called '+key+' ('+typeOf(mvstpl._templates[key])+')');
       }
       return null;
     },
 
-    // Same as inflate, but removes bindings after inflating
+
+    // ### templates::inflateOnce
+    // 
+    // Same as inflate, but removes bindings after inflating.
+    // Useful when an element only needs to be inflated once without a desire to rebind
+    // (or accidentally unbind elements)
+    // 
     inflateOnce: function(dom, scriptData, skipInit){
       var r = mvstpl.inflate(dom, scriptData, skipInit);
       [(r || [])].flatten().each(function(el){
@@ -1022,8 +1249,12 @@
       });
       return r;
     },
-    
-    // Inflate a template
+
+
+    // ### templates::inflate
+    //     
+    // Inflate a template.
+    // 
     inflate: function(dom, scriptData, skipInit){
       if(typeOf(dom) === 'string'){
         // Assume a key was passed in
@@ -1056,9 +1287,13 @@
       return null;
     },
 
+
+    // ### templates::inflateSurround
+    // 
     // Inflate a template and pass it's elements to another.
     // Useful when wanting to inflate a template inside another
     // generic template (like a dialog/popup/etc).
+    // 
     inflateSurround: function(template, surround, scriptData, skipInit){
       var tpl, surroundData;
       scriptData = scriptData || {};
@@ -1074,36 +1309,41 @@
       }
     },
 
-    // Initialize a template and bind to it's data
+
+    // ### templates::init
+    // 
+    // Initialize a template and bind to it's data.
     // Different than bind in that it will check for a registered script
     // and call that (bind simply binds the data to data-bind fields)
-    init: function(els, data){
+    // 
+    init: function(els, data, options){
       (!els ? [] : (typeOf(els) === 'element' ? [els] : els)).each(function(el){
         if(el.get('data-tpl')){
           var tpls = el.get('data-tpl').split(' ');
           tpls.each(function(tpl){
-            if(mvstpl.templates[tpl].script){
-              mvstpl.templates[tpl].script(el, (data && (data[tpl] || data[tpl.replace('tpl:','')])) || data);
-            }else{
-              mvstpl.bind(el, data);
-            }
+            if(mvstpl._templates[tpl].script)
+              mvstpl._templates[tpl].script(el, (data && (data[tpl] || data[tpl.replace('tpl:','')])) || data, options);
+            else
+              mvstpl.bind(el, data, options);
           });
         }else{
-          mvstpl.bind(el, data);
+          mvstpl.bind(el, data, options);
         }
       });
     },
 
-    /**
-     * Bind a template to a data object. This *does not* call a registered script
-     * 
-     * @param  {(Element|Element[])} elements  An element or array of elements to bind
-     * @param  {Object}              data      The data to bind to the element and its children
-     * @param  {Object}              [options] A maps of options passed to the template
-     * 
-     * @property {Boolean} options.onlyDefined If true, only bind the keys defined in `data`
-     *                                         ignoring other data-bind values (not unbinding them)
-     */
+
+    // ### templates::bind
+    // 
+    // Binds all elements under a template to the passed `data` JSON object. This *does not* call a registered script.
+    // It will stop binding elements once it reaches an element in the DOM with a `data-autobind` attribute set to false
+    // (which **MooVeeStar.View**s do automatically -- so each view is in control of it's binding)
+    // 
+    //  - If a single empty element is passed, and data is a string value, then it will be used
+    //    as the value for that element
+    //  - If `options.onlyDefined === true` then no `data-bind` fields will be unbound, only those
+    //    `data-bind` keys in the data map will be bound
+    //
     bind: function(els, data, options){
       data = data || {};
       options = options || {};
@@ -1217,7 +1457,11 @@
       });
     },
 
+
+    // ### templates::scrape
+    // 
     // Scrape the dom and register any templates
+    // 
     scrape: function(){
       $$('script[type="text/x-tpl"]').each(function(tpl){
         mvstpl.register(tpl.get('id'), tpl.get('text'));
@@ -1226,14 +1470,17 @@
     }
   };
 
-  MooVeeStar.templates = mvstpl;
+  // ---
 
-  // If html5 shiv, then let's shiv in <markup> (IE8- support)
+  // Create the "markup" element **MooVeeStar.tempaltes* uses.
+  // If html5 shiv, then let's shiv in <markup> (<=IE8 support)
   if(window && window.html5 && window.html5.supportsUnknownElements === false){
     window.html5.elements += ' markup';
     html5.shivDocument(document);
   }
   document.createElement('markup');
+
+  // Scrape the page on initialization
   MooVeeStar.templates.scrape();
 
 })(this);
