@@ -28,8 +28,8 @@
                 <a class="pilcrow" href="#section-1">&#182;</a>
               </div>
               <blockquote>
-<p>MooVeeStar v0.0.1 #20131205 - <a href="https://rgthree.github.io/mooveestar/">https://rgthree.github.io/mooveestar/</a>
-by Regis Gaughan, III <a href="&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#x72;&#x65;&#x67;&#x69;&#115;&#x2e;&#x67;&#x61;&#x75;&#x67;&#x68;&#97;&#110;&#x40;&#103;&#x6d;&#97;&#x69;&#108;&#x2e;&#99;&#111;&#109;">&#x72;&#x65;&#x67;&#x69;&#115;&#x2e;&#x67;&#x61;&#x75;&#x67;&#x68;&#97;&#110;&#x40;&#103;&#x6d;&#97;&#x69;&#108;&#x2e;&#99;&#111;&#109;</a>
+<p>MooVeeStar v0.0.1 #20131211 - <a href="https://rgthree.github.io/mooveestar/">https://rgthree.github.io/mooveestar/</a>
+by Regis Gaughan, III <a href="&#x6d;&#x61;&#x69;&#108;&#116;&#x6f;&#58;&#114;&#101;&#x67;&#x69;&#x73;&#x2e;&#x67;&#x61;&#117;&#103;&#x68;&#x61;&#x6e;&#64;&#103;&#x6d;&#x61;&#x69;&#x6c;&#46;&#x63;&#x6f;&#x6d;">&#114;&#101;&#x67;&#x69;&#x73;&#x2e;&#x67;&#x61;&#117;&#103;&#x68;&#x61;&#x6e;&#64;&#103;&#x6d;&#x61;&#x69;&#x6c;&#46;&#x63;&#x6f;&#x6d;</a> <a href="http://regisgaughan.com">http://regisgaughan.com</a>
 MooVeeStar may be freely distributed under the MIT license.</p>
 </blockquote>
 
@@ -75,9 +75,9 @@ MooVeeStar may be freely distributed under the MIT license.</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-4">&#182;</a>
               </div>
-              <h2 id="mooveestar-namespace-">MooVeeStar (namespace)</h2>
+              <h2 id="mooveestar-mediator-namespace-">MooVeeStar (Mediator/namespace)</h2>
 <p>The <strong>MooVeeStar</strong> namespace is an instantiated MooTools Events object
-allowing it to be used as a mediator.</p>
+allowing it to be used as a global mediator.</p>
 <pre><code>MooVeeStar.fireEvent(<span class="string">'some-event'</span>, { <span class="comment">/* ... */</span> });
 MooVeeStar.addEvent(<span class="string">'some-event'</span>, <span class="function"><span class="keyword">function</span><span class="params">(e)</span>{</span> <span class="comment">/* ... */</span> });</code></pre>
 
@@ -107,8 +107,42 @@ MooVeeStar.addEvent(<span class="string">'some-event'</span>, <span class="funct
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-6">&#182;</a>
               </div>
+              <h2 id="mooveestar-event">MooVeeStar.Event</h2>
+<p>A Simple Object wrapper for the event payload. Useful when wanting to check instance of an object</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  MooVeeStar.Event = <span class="keyword">new</span> Class({
+    initialize: <span class="function"><span class="keyword">function</span><span class="params">(obj)</span>{</span>
+      <span class="keyword">var</span> self = <span class="keyword">this</span>;
+      Object.forEach(obj || {}, <span class="function"><span class="keyword">function</span><span class="params">(v,k)</span>{</span> self[k] = v; });
+    }
+  });</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-7">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-7">&#182;</a>
+              </div>
+              <hr>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-8">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-8">&#182;</a>
+              </div>
               <h2 id="mooveestar-events">MooVeeStar.Events</h2>
-<p>An events mixin that wraps <code>fireEvent</code> to fire an additional “*”
+<p>An events mixin that wraps <code>fireEvent</code> to fire an additional <code>*</code> event.
 Specifically, so collection add listen to all events of their models
 to pass through. </p>
 
@@ -120,11 +154,11 @@ to pass through. </p>
         </li>
         
         
-        <li id="section-7">
+        <li id="section-9">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-7">&#182;</a>
+                <a class="pilcrow" href="#section-9">&#182;</a>
               </div>
               <h3 id="events-fireevent">Events#fireEvent</h3>
 <p>Wrap this instance’s “fireEvent” to additionally fire a “*” event with additional information</p>
@@ -132,6 +166,9 @@ to pass through. </p>
             </div>
             
             <div class="content"><div class='highlight'><pre>    fireEvent: <span class="function"><span class="keyword">function</span><span class="params">(type, message)</span>{</span>
+      <span class="keyword">if</span>(!(message <span class="keyword">instanceof</span> MooVeeStar.Event))
+        message = <span class="keyword">new</span> MooVeeStar.Event(message);
+
       Events.prototype.fireEvent.call(<span class="keyword">this</span>, type, message);
       Events.prototype.fireEvent.call(<span class="keyword">this</span>, <span class="string">'*'</span>, { event:type, message:message });
     },</pre></div></div>
@@ -139,11 +176,11 @@ to pass through. </p>
         </li>
         
         
-        <li id="section-8">
+        <li id="section-10">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-8">&#182;</a>
+                <a class="pilcrow" href="#section-10">&#182;</a>
               </div>
               <h3 id="events-silence">Events#silence</h3>
 <p>Overloaded method to silence an object’s operations. Pass a boolean
@@ -173,11 +210,11 @@ model.silence(<span class="literal">true</span>).set(<span class="string">'somrt
         </li>
         
         
-        <li id="section-9">
+        <li id="section-11">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-9">&#182;</a>
+                <a class="pilcrow" href="#section-11">&#182;</a>
               </div>
               <hr>
 
@@ -186,11 +223,11 @@ model.silence(<span class="literal">true</span>).set(<span class="string">'somrt
         </li>
         
         
-        <li id="section-10">
+        <li id="section-12">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-10">&#182;</a>
+                <a class="pilcrow" href="#section-12">&#182;</a>
               </div>
               <h2 id="mooveestar-model">MooVeeStar.Model</h2>
 <p>MooVeeStar <strong>Model</strong>s are the stars of the framework. A model is a basic
@@ -206,11 +243,11 @@ its data.</p>
         </li>
         
         
-        <li id="section-11">
+        <li id="section-13">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-11">&#182;</a>
+                <a class="pilcrow" href="#section-13">&#182;</a>
               </div>
               <p>The key to identify the model by. Returned by <code>Model#getId()</code></p>
 
@@ -221,11 +258,11 @@ its data.</p>
         </li>
         
         
-        <li id="section-12">
+        <li id="section-14">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-12">&#182;</a>
+                <a class="pilcrow" href="#section-14">&#182;</a>
               </div>
               <p>A client identifier for this model. Guarenteed to be unique, it will use the model’s
 <code>idProperty</code> if it exists when it’s called, otherwise it will fall back to <code>String.uniqueID()</code></p>
@@ -237,11 +274,11 @@ its data.</p>
         </li>
         
         
-        <li id="section-13">
+        <li id="section-15">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-13">&#182;</a>
+                <a class="pilcrow" href="#section-15">&#182;</a>
               </div>
               <p>Define specific properties values and methods w/ the property name as the key, and a value being 
 a map containing: ‘initial’, ‘possible’, ‘get’, ‘set’, ‘sanitize’, and/ or ‘validate’</p>
@@ -253,11 +290,11 @@ a map containing: ‘initial’, ‘possible’, ‘get’, ‘set’, ‘saniti
         </li>
         
         
-        <li id="section-14">
+        <li id="section-16">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-14">&#182;</a>
+                <a class="pilcrow" href="#section-16">&#182;</a>
               </div>
               <p>Internal properties map. Accessed via get/set</p>
 
@@ -270,11 +307,11 @@ a map containing: ‘initial’, ‘possible’, ‘get’, ‘set’, ‘saniti
         </li>
         
         
-        <li id="section-15">
+        <li id="section-17">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-15">&#182;</a>
+                <a class="pilcrow" href="#section-17">&#182;</a>
               </div>
               <h3 id="model-constructor">Model Constructor</h3>
 <p>Create a new <strong>Model</strong>. Merges a passed object with the <strong>Model</strong>‘s default values in the
@@ -304,11 +341,11 @@ a map containing: ‘initial’, ‘possible’, ‘get’, ‘set’, ‘saniti
         </li>
         
         
-        <li id="section-16">
+        <li id="section-18">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-16">&#182;</a>
+                <a class="pilcrow" href="#section-18">&#182;</a>
               </div>
               <h3 id="model-set">Model#set</h3>
 <p>Overloaded set method to set a property or properties on the model. Can be called with a single
@@ -337,11 +374,11 @@ model.set({ name:<span class="string">'Edward'</span> }, { silent:<span class="l
         </li>
         
         
-        <li id="section-17">
+        <li id="section-19">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-17">&#182;</a>
+                <a class="pilcrow" href="#section-19">&#182;</a>
               </div>
               <p>Backwards compatibility for a boolean silent param</p>
 
@@ -366,16 +403,16 @@ model.set({ name:<span class="string">'Edward'</span> }, { silent:<span class="l
         </li>
         
         
-        <li id="section-18">
+        <li id="section-20">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-18">&#182;</a>
+                <a class="pilcrow" href="#section-20">&#182;</a>
               </div>
               <h3 id="_model-_set_"><em>Model#_set</em></h3>
-<p>Internal set method, called from exposed <code>Model#set</code>
+<p><em>Private</em>. Internal set method, called from exposed <code>Model#set</code>
 While <code>Model#set</code> files changed &amp; errors events, <code>Model#_set</code> is in charge of firing seperate
-<code>chnge:_prop_</code> events.</p>
+<code>change:_prop_</code> events.</p>
 
             </div>
             
@@ -389,11 +426,11 @@ While <code>Model#set</code> files changed &amp; errors events, <code>Model#_set
         </li>
         
         
-        <li id="section-19">
+        <li id="section-21">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-19">&#182;</a>
+                <a class="pilcrow" href="#section-21">&#182;</a>
               </div>
               <p>Backwards compatibility for a boolean silent param</p>
 
@@ -407,11 +444,11 @@ While <code>Model#set</code> files changed &amp; errors events, <code>Model#_set
         </li>
         
         
-        <li id="section-20">
+        <li id="section-22">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-20">&#182;</a>
+                <a class="pilcrow" href="#section-22">&#182;</a>
               </div>
               <p>Get the raw from value</p>
 
@@ -422,11 +459,11 @@ While <code>Model#set</code> files changed &amp; errors events, <code>Model#_set
         </li>
         
         
-        <li id="section-21">
+        <li id="section-23">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-21">&#182;</a>
+                <a class="pilcrow" href="#section-23">&#182;</a>
               </div>
               <p>Sanitize the value</p>
 
@@ -438,11 +475,11 @@ While <code>Model#set</code> files changed &amp; errors events, <code>Model#_set
         </li>
         
         
-        <li id="section-22">
+        <li id="section-24">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-22">&#182;</a>
+                <a class="pilcrow" href="#section-24">&#182;</a>
               </div>
               <p>If we have a custom setter, call it.</p>
 
@@ -455,11 +492,11 @@ While <code>Model#set</code> files changed &amp; errors events, <code>Model#_set
         </li>
         
         
-        <li id="section-23">
+        <li id="section-25">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-23">&#182;</a>
+                <a class="pilcrow" href="#section-25">&#182;</a>
               </div>
               <p>No change? Then abandon</p>
 
@@ -471,11 +508,11 @@ While <code>Model#set</code> files changed &amp; errors events, <code>Model#_set
         </li>
         
         
-        <li id="section-24">
+        <li id="section-26">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-24">&#182;</a>
+                <a class="pilcrow" href="#section-26">&#182;</a>
               </div>
               <p>Basic validator support</p>
 
@@ -506,11 +543,11 @@ While <code>Model#set</code> files changed &amp; errors events, <code>Model#_set
         </li>
         
         
-        <li id="section-25">
+        <li id="section-27">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-25">&#182;</a>
+                <a class="pilcrow" href="#section-27">&#182;</a>
               </div>
               <h3 id="model-get">Model#get</h3>
 <p>Overloaded get method to get a single value, or a map of <code>property:_proeprtyValue_</code>.
@@ -536,32 +573,31 @@ model.get([<span class="string">'name'</span>, <span class="string">'id'</span>]
         </li>
         
         
-        <li id="section-26">
+        <li id="section-28">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-26">&#182;</a>
+                <a class="pilcrow" href="#section-28">&#182;</a>
               </div>
               <h3 id="_model-_get_"><em>Model#_get</em></h3>
-<p>Returns the value of a property, or <code>null</code> if it does not exist.
+<p><em>Private</em>. Returns the value of a property, or <code>null</code> if it does not exist.
 Passing <code>raw</code> as true will get the raw value directly as it’s stored, without checking
 if there’s a custom getter within the Model’s properties</p>
 
             </div>
             
             <div class="content"><div class='highlight'><pre>    _get: <span class="function"><span class="keyword">function</span><span class="params">(key, raw)</span> {</span>
-      <span class="keyword">if</span>(!raw &amp;&amp; <span class="keyword">this</span>.properties[key] &amp;&amp; <span class="keyword">this</span>.properties[key].get){
-        <span class="keyword">return</span> <span class="keyword">this</span>.properties[key].get.apply(<span class="keyword">this</span>, arguments);
-      }</pre></div></div>
+      <span class="keyword">if</span>(!raw &amp;&amp; <span class="keyword">this</span>.properties[key] &amp;&amp; <span class="keyword">this</span>.properties[key].get)
+        <span class="keyword">return</span> <span class="keyword">this</span>.properties[key].get.apply(<span class="keyword">this</span>, arguments);</pre></div></div>
             
         </li>
         
         
-        <li id="section-27">
+        <li id="section-29">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-27">&#182;</a>
+                <a class="pilcrow" href="#section-29">&#182;</a>
               </div>
               <p>If we asked for the cid, return it if it exists, otherwise call <code>getId</code> and return it</p>
 
@@ -576,11 +612,11 @@ if there’s a custom getter within the Model’s properties</p>
         </li>
         
         
-        <li id="section-28">
+        <li id="section-30">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-28">&#182;</a>
+                <a class="pilcrow" href="#section-30">&#182;</a>
               </div>
               <h3 id="model-getid">Model#getId</h3>
 <p>Returns an id for the model. If the <code>idProperty</code> exists, it will return it, otherwise
@@ -599,11 +635,11 @@ If there is no <code>cid</code> set yet, it will permenently assign it at this t
         </li>
         
         
-        <li id="section-29">
+        <li id="section-31">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-29">&#182;</a>
+                <a class="pilcrow" href="#section-31">&#182;</a>
               </div>
               <h3 id="model-unset">Model#unset</h3>
 <p>Accepts a list of keys and passes them to <code>Model#set</code> with a null value.</p>
@@ -624,11 +660,11 @@ If there is no <code>cid</code> set yet, it will permenently assign it at this t
         </li>
         
         
-        <li id="section-30">
+        <li id="section-32">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-30">&#182;</a>
+                <a class="pilcrow" href="#section-32">&#182;</a>
               </div>
               <h3 id="model-destroy">Model#destroy</h3>
 <p>Destroys a model by setting it’s property to an empty map and firing a destroy event</p>
@@ -646,14 +682,14 @@ If there is no <code>cid</code> set yet, it will permenently assign it at this t
         </li>
         
         
-        <li id="section-31">
+        <li id="section-33">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-31">&#182;</a>
+                <a class="pilcrow" href="#section-33">&#182;</a>
               </div>
               <h3 id="_model-_validate_"><em>Model#_validate</em></h3>
-<p>Called when setting a value, it </p>
+<p><em>Private</em>. Called when setting a value, it </p>
 <ul>
 <li>calls a <code>validate</code> function set in the <code>Model.properties</code> map and returns the value</li>
 <li>checks the new value against a <code>possible</code> array of values in the <code>Model.properties</code> map</li>
@@ -675,11 +711,11 @@ If there is no <code>cid</code> set yet, it will permenently assign it at this t
         </li>
         
         
-        <li id="section-32">
+        <li id="section-34">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-32">&#182;</a>
+                <a class="pilcrow" href="#section-34">&#182;</a>
               </div>
               <h3 id="model-tojson">Model#toJSON</h3>
 <p>Returns a recursively cloned value map of the model’s <em>raw</em> properties.</p>
@@ -709,11 +745,11 @@ If there is no <code>cid</code> set yet, it will permenently assign it at this t
         </li>
         
         
-        <li id="section-33">
+        <li id="section-35">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-33">&#182;</a>
+                <a class="pilcrow" href="#section-35">&#182;</a>
               </div>
               <hr>
 
@@ -722,11 +758,11 @@ If there is no <code>cid</code> set yet, it will permenently assign it at this t
         </li>
         
         
-        <li id="section-34">
+        <li id="section-36">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-34">&#182;</a>
+                <a class="pilcrow" href="#section-36">&#182;</a>
               </div>
               <h2 id="mooveestar-collection">MooVeeStar.Collection</h2>
 <p>The <em>MooVeeStar.Collection</em> is essentially an ordered list of your models.</p>
@@ -740,11 +776,11 @@ If there is no <code>cid</code> set yet, it will permenently assign it at this t
         </li>
         
         
-        <li id="section-35">
+        <li id="section-37">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-35">&#182;</a>
+                <a class="pilcrow" href="#section-37">&#182;</a>
               </div>
               <p>The model class to define. When a model is added, it checks to see if the object is a
 model and, if not, instantiates a new model of this class</p>
@@ -758,11 +794,11 @@ model and, if not, instantiates a new model of this class</p>
         </li>
         
         
-        <li id="section-36">
+        <li id="section-38">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-36">&#182;</a>
+                <a class="pilcrow" href="#section-38">&#182;</a>
               </div>
               <p>Does this collection allow the same model in multiple positions?</p>
 
@@ -774,11 +810,11 @@ model and, if not, instantiates a new model of this class</p>
         </li>
         
         
-        <li id="section-37">
+        <li id="section-39">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-37">&#182;</a>
+                <a class="pilcrow" href="#section-39">&#182;</a>
               </div>
               <p>The internal list of models</p>
 
@@ -789,11 +825,11 @@ model and, if not, instantiates a new model of this class</p>
         </li>
         
         
-        <li id="section-38">
+        <li id="section-40">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-38">&#182;</a>
+                <a class="pilcrow" href="#section-40">&#182;</a>
               </div>
               <h3 id="collection-constructor">Collection Constructor</h3>
 <p>Create a new <strong>Collection</strong>. Pass it a list of items to be added immediately</p>
@@ -807,11 +843,11 @@ model and, if not, instantiates a new model of this class</p>
         </li>
         
         
-        <li id="section-39">
+        <li id="section-41">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-39">&#182;</a>
+                <a class="pilcrow" href="#section-41">&#182;</a>
               </div>
               <p>Bind the onModelEvent passthrough so it can be removed</p>
 
@@ -822,11 +858,11 @@ model and, if not, instantiates a new model of this class</p>
         </li>
         
         
-        <li id="section-40">
+        <li id="section-42">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-40">&#182;</a>
+                <a class="pilcrow" href="#section-42">&#182;</a>
               </div>
               <p>Set a <code>cid</code> immediately. If <code>options.id</code> is passed, use it, otherwise assign as a unique string</p>
 
@@ -837,11 +873,11 @@ model and, if not, instantiates a new model of this class</p>
         </li>
         
         
-        <li id="section-41">
+        <li id="section-43">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-41">&#182;</a>
+                <a class="pilcrow" href="#section-43">&#182;</a>
               </div>
               <p>If <code>options.silent</code> was passed in, set silent immediately</p>
 
@@ -860,14 +896,14 @@ model and, if not, instantiates a new model of this class</p>
         </li>
         
         
-        <li id="section-42">
+        <li id="section-44">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-42">&#182;</a>
+                <a class="pilcrow" href="#section-44">&#182;</a>
               </div>
               <h3 id="_collection-_onmodelevent_"><em>Collection#_onModelEvent</em></h3>
-<p>Callback for every event fired from a model. Fires a collection event with a <code>&#39;model:&#39;</code> prefix.
+<p><em>Private</em>. Callback for every event fired from a model. Fires a collection event with a <code>&#39;model:&#39;</code> prefix.
 If a model fires a destroy event, we automatically remove it from the collection</p>
 
             </div>
@@ -882,11 +918,11 @@ If a model fires a destroy event, we automatically remove it from the collection
         </li>
         
         
-        <li id="section-43">
+        <li id="section-45">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-43">&#182;</a>
+                <a class="pilcrow" href="#section-45">&#182;</a>
               </div>
               <h3 id="collection-add">Collection#add</h3>
 <p>Callback for every event fired from a model. Fires a collection event with a <code>&#39;model:&#39;</code> prefix.
@@ -907,11 +943,11 @@ If a model fires a destroy event, we automatically remove it from the collection
         </li>
         
         
-        <li id="section-44">
+        <li id="section-46">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-44">&#182;</a>
+                <a class="pilcrow" href="#section-46">&#182;</a>
               </div>
               <p>If not a MooVeeStar.Model and a <code>modelClass</code> is defined, then instantiate</p>
 
@@ -924,11 +960,11 @@ If a model fires a destroy event, we automatically remove it from the collection
         </li>
         
         
-        <li id="section-45">
+        <li id="section-47">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-45">&#182;</a>
+                <a class="pilcrow" href="#section-47">&#182;</a>
               </div>
               <p>If we don’t find the model in our list already, or we allowDuplicates</p>
 
@@ -958,11 +994,11 @@ If a model fires a destroy event, we automatically remove it from the collection
         </li>
         
         
-        <li id="section-46">
+        <li id="section-48">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-46">&#182;</a>
+                <a class="pilcrow" href="#section-48">&#182;</a>
               </div>
               <h3 id="collection-remove">Collection#remove</h3>
 <p>Removes a model by index or all instance of a model or array of models from the collection. If <code>indexOrModels</code>
@@ -981,11 +1017,11 @@ if it is a model or array of models, then remove all instances of each.</p>
         </li>
         
         
-        <li id="section-47">
+        <li id="section-49">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-47">&#182;</a>
+                <a class="pilcrow" href="#section-49">&#182;</a>
               </div>
               <p>If we passed a number in, then handle as an index and remove only the item at that index<br>even if that model exists elsewhere</p>
 
@@ -1000,11 +1036,11 @@ if it is a model or array of models, then remove all instances of each.</p>
         </li>
         
         
-        <li id="section-48">
+        <li id="section-50">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-48">&#182;</a>
+                <a class="pilcrow" href="#section-50">&#182;</a>
               </div>
               <p>Only remove the event listener when there’s no more instances of the model in the collection</p>
 
@@ -1017,11 +1053,11 @@ if it is a model or array of models, then remove all instances of each.</p>
         </li>
         
         
-        <li id="section-49">
+        <li id="section-51">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-49">&#182;</a>
+                <a class="pilcrow" href="#section-51">&#182;</a>
               </div>
               <p>Otherwise, remove all occurrences of the model(s) passed in</p>
 
@@ -1033,13 +1069,13 @@ if it is a model or array of models, then remove all instances of each.</p>
         </li>
         
         
-        <li id="section-50">
+        <li id="section-52">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-50">&#182;</a>
+                <a class="pilcrow" href="#section-52">&#182;</a>
               </div>
-              <p>Loop over inversely so we do not mess with order if indexOrModels === this._model when removeAll()</p>
+              <p>Loop over inversely so we do not mess with order if <code>indexOrModels === this._model</code> when <code>removeAll()</code></p>
 
             </div>
             
@@ -1052,11 +1088,11 @@ if it is a model or array of models, then remove all instances of each.</p>
         </li>
         
         
-        <li id="section-51">
+        <li id="section-53">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-51">&#182;</a>
+                <a class="pilcrow" href="#section-53">&#182;</a>
               </div>
               <p>Array.erase removes all instances of the model</p>
 
@@ -1076,11 +1112,11 @@ if it is a model or array of models, then remove all instances of each.</p>
         </li>
         
         
-        <li id="section-52">
+        <li id="section-54">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-52">&#182;</a>
+                <a class="pilcrow" href="#section-54">&#182;</a>
               </div>
               <h3 id="collection-empty">Collection#empty</h3>
 <p>Empties the <strong>Collection</strong> by callng remove on all items</p>
@@ -1100,11 +1136,11 @@ if it is a model or array of models, then remove all instances of each.</p>
         </li>
         
         
-        <li id="section-53">
+        <li id="section-55">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-53">&#182;</a>
+                <a class="pilcrow" href="#section-55">&#182;</a>
               </div>
               <h3 id="collection-move">Collection#move</h3>
 <p>Moves a model from one index to another. If <code>indexOrModel</code> is a number, then move the model at that index.
@@ -1141,11 +1177,11 @@ If it is a model then <em>only whose first instance of the model</em> in the col
         </li>
         
         
-        <li id="section-54">
+        <li id="section-56">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-54">&#182;</a>
+                <a class="pilcrow" href="#section-56">&#182;</a>
               </div>
               <h3 id="collection-getid">Collection#getId</h3>
 <p>Returns the <code>cid</code>.</p>
@@ -1159,11 +1195,11 @@ If it is a model then <em>only whose first instance of the model</em> in the col
         </li>
         
         
-        <li id="section-55">
+        <li id="section-57">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-55">&#182;</a>
+                <a class="pilcrow" href="#section-57">&#182;</a>
               </div>
               <h3 id="collection-getid">Collection#getId</h3>
 <p>Returns the <code>cid</code>.</p>
@@ -1177,11 +1213,11 @@ If it is a model then <em>only whose first instance of the model</em> in the col
         </li>
         
         
-        <li id="section-56">
+        <li id="section-58">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-56">&#182;</a>
+                <a class="pilcrow" href="#section-58">&#182;</a>
               </div>
               <h3 id="collection-at">Collection#at</h3>
 <p>Returns the model at a specific index, if it exists.</p>
@@ -1195,11 +1231,11 @@ If it is a model then <em>only whose first instance of the model</em> in the col
         </li>
         
         
-        <li id="section-57">
+        <li id="section-59">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-57">&#182;</a>
+                <a class="pilcrow" href="#section-59">&#182;</a>
               </div>
               <h3 id="collection-get">Collection#get</h3>
 <p>Returns the first model found from the key.
@@ -1218,11 +1254,11 @@ of if <code>key</code> is numeric call <code>Collection:findFirst</code></p>
         </li>
         
         
-        <li id="section-58">
+        <li id="section-60">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-58">&#182;</a>
+                <a class="pilcrow" href="#section-60">&#182;</a>
               </div>
               <h3 id="collection-getall">Collection#getAll</h3>
 <p>Returns the list of models</p>
@@ -1236,11 +1272,11 @@ of if <code>key</code> is numeric call <code>Collection:findFirst</code></p>
         </li>
         
         
-        <li id="section-59">
+        <li id="section-61">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-59">&#182;</a>
+                <a class="pilcrow" href="#section-61">&#182;</a>
               </div>
               <h3 id="collection-find">Collection#find</h3>
 <p>Accept a value or list of values and returns any models who’s <code>idProperty</code> is within the values list.
@@ -1256,11 +1292,11 @@ Pass <code>keyToFind</code> to compare that key’s value instread of <code>idPr
         </li>
         
         
-        <li id="section-60">
+        <li id="section-62">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-60">&#182;</a>
+                <a class="pilcrow" href="#section-62">&#182;</a>
               </div>
               <h3 id="collection-findfirst">Collection#findFirst</h3>
 <p>Returns the first model whos <code>idProperty</code> (or <code>keyToFind</code> value) matches the passed value</p>
@@ -1275,11 +1311,11 @@ Pass <code>keyToFind</code> to compare that key’s value instread of <code>idPr
         </li>
         
         
-        <li id="section-61">
+        <li id="section-63">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-61">&#182;</a>
+                <a class="pilcrow" href="#section-63">&#182;</a>
               </div>
               <h3 id="collection-tojson">Collection#toJSON</h3>
 <p>Returns a new array of all of the <code>Models.toJSON</code> values</p>
@@ -1293,11 +1329,11 @@ Pass <code>keyToFind</code> to compare that key’s value instread of <code>idPr
         </li>
         
         
-        <li id="section-62">
+        <li id="section-64">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-62">&#182;</a>
+                <a class="pilcrow" href="#section-64">&#182;</a>
               </div>
               <h3 id="collection-destroy">Collection#destroy</h3>
 <p>Silently empties the list and fires a destroy message</p>
@@ -1315,11 +1351,11 @@ Pass <code>keyToFind</code> to compare that key’s value instread of <code>idPr
         </li>
         
         
-        <li id="section-63">
+        <li id="section-65">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-63">&#182;</a>
+                <a class="pilcrow" href="#section-65">&#182;</a>
               </div>
               <h3 id="collection-applytomodels">Collection#applyToModels</h3>
 <p>Calls a method on all models, or all models found</p>
@@ -1351,11 +1387,11 @@ collection.applyToModels(<span class="string">'unset'</span>, [[<span class="str
         </li>
         
         
-        <li id="section-64">
+        <li id="section-66">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-64">&#182;</a>
+                <a class="pilcrow" href="#section-66">&#182;</a>
               </div>
               <h3 id="collection-set">Collection#set</h3>
 <p>  <strong>DEPRECATED</strong>
@@ -1379,11 +1415,11 @@ Call set on all items in the collection
         </li>
         
         
-        <li id="section-65">
+        <li id="section-67">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-65">&#182;</a>
+                <a class="pilcrow" href="#section-67">&#182;</a>
               </div>
               <p>Implement Select Array methods</p>
 
@@ -1398,11 +1434,11 @@ Call set on all items in the collection
         </li>
         
         
-        <li id="section-66">
+        <li id="section-68">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-66">&#182;</a>
+                <a class="pilcrow" href="#section-68">&#182;</a>
               </div>
               <hr>
 
@@ -1411,14 +1447,14 @@ Call set on all items in the collection
         </li>
         
         
-        <li id="section-67">
+        <li id="section-69">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-67">&#182;</a>
+                <a class="pilcrow" href="#section-69">&#182;</a>
               </div>
               <h2 id="mooveestar-view">MooVeeStar.View</h2>
-<p>The <em>MooVeeStar.View</em> helps you take control of how your interface interacts with user input and data changes.
+<p>The <strong>MooVeeStar.View</strong> helps you take control of how your interface interacts with user input and data changes.
 It was built to take full power of the MooVeeStar templating system, but can be used with any templating library.</p>
 
             </div>
@@ -1432,27 +1468,155 @@ It was built to take full power of the MooVeeStar templating system, but can be 
       autorender: <span class="literal">true</span>,
       inflater: <span class="literal">null</span>,   <span class="comment">// Lazily set in constructor</span>
       binder: <span class="literal">null</span>      <span class="comment">// Lazily set in constructor</span>
-    },
-    events:{},
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-70">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-70">&#182;</a>
+              </div>
+              <p>The <code>events</code> are somewhat magical. There is a lot you can throw at it, and it will only fail
+when it can’t find what you’re trying to attach to, or the string method name doesn’t exist on your view.</p>
+<pre><code><span class="string">'model:change'</span>: <span class="string">'render'</span>,          <span class="comment">// Listen for 'change' events on 'this.model'</span>
+<span class="string">'this.model:change'</span>: <span class="string">'render'</span>,     <span class="comment">// (Same as above)</span>
+<span class="string">'model:change:name'</span>: <span class="string">'render'</span>,     <span class="comment">// Listen for the specific 'change:name' events on 'this.model'</span>
+<span class="string">'click'</span>: <span class="string">'onClick'</span>,                <span class="comment">// Listen for 'click' events on 'this.element'</span>
+<span class="string">'element:click'</span>: <span class="string">'onClick'</span>,        <span class="comment">// (Same as above)</span>
+<span class="string">'this.element:click'</span>: <span class="string">'onClick'</span>,   <span class="comment">// (Same as above)</span>
+<span class="string">'this:click'</span>: <span class="string">'onFiredClick'</span>,      <span class="comment">// Not a mouse-click! Force listening to an internal view event</span>
+                                   <span class="comment">// named "click" fired through 'this.fireEvent("click")'</span>
 
-    template: <span class="literal">null</span>,
-    element: <span class="literal">null</span>,
-    elements: {},
+<span class="string">'click:relay(button)'</span>: <span class="string">'onButtonClick'</span>,   <span class="comment">// Listen for 'click' events on button children of 'this.element'</span>
+<span class="string">'elements.button:click'</span>: <span class="string">'onButtonClick'</span>, <span class="comment">// Assuming 'this.elements.button' was set before attaching events</span>
+                                          <span class="comment">// this will listen for clicks on this element</span>
+<span class="string">'someProperty:some-event'</span>: <span class="string">'someFn'</span>,      <span class="comment">// Assuming 'this.someProperty' exists and has an 'addEvent' method</span>
+<span class="string">'this.someProperty:some-event'</span>: <span class="string">'someFn'</span>, <span class="comment">// (Same as above)</span>
 
-    initialize: <span class="function"><span class="keyword">function</span><span class="params">(model, options)</span>{</span>
+<span class="string">'window:scroll'</span>: <span class="string">'onWindowScroll'</span>,        <span class="comment">// Window Scroll event</span>
+<span class="string">'document:click'</span>: <span class="string">'onWindowScroll'</span>,       <span class="comment">// Click events on the 'document'</span>
+
+<span class="string">'MooVeeStar:some-event'</span>: <span class="string">'someFn'</span>,        <span class="comment">// Listen for 'some-event' fired through the MooVeeStar mediator</span>
+
+<span class="string">'someGlobalObject:some-event'</span>: <span class="string">'someFn'</span>,  <span class="comment">// Assuming 'window.someGlobalObject' exists and has an 'addEvent' method</span>
+
+<span class="string">'someHtmlId:keydown'</span>:<span class="string">'onSomeKeydown'</span>      <span class="comment">// Assuming an element with 'id="someHtmlId"', listen for it's keydowns</span></code></pre>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    events:{},</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-71">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-71">&#182;</a>
+              </div>
+              <p>The template string to use</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    template: <span class="literal">null</span>,</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-72">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-72">&#182;</a>
+              </div>
+              <p>The element. Will be assigned to the inflated template, unless already defined before calling the MooVeeStar.View parent.
+Also defined as <code>this.elements.container</code></p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    element: <span class="literal">null</span>,</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-73">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-73">&#182;</a>
+              </div>
+              <p>An elements map.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    elements: {},</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-74">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-74">&#182;</a>
+              </div>
+              <h3 id="view-constructor">View Constructor</h3>
+<p>Create a new <strong>MooVeeStar.View</strong>. Pass it a list of items to be added immediately</p>
+<pre><code><span class="keyword">new</span> MooVeeStar.View();</code></pre>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    initialize: <span class="function"><span class="keyword">function</span><span class="params">(modelOrObject, options)</span>{</span>
       options = options || {};
       options.inflater = options.inflater || <span class="keyword">this</span>.options.inflater || (MooVeeStar.templates &amp;&amp; MooVeeStar.templates.inflate) || <span class="literal">null</span>;
       options.binder = options.binder || <span class="keyword">this</span>.options.binder || (MooVeeStar.templates &amp;&amp; MooVeeStar.templates.init) || <span class="literal">null</span>;
       <span class="keyword">this</span>.setOptions(options);
 
       <span class="keyword">this</span>.events = Object.clone(<span class="keyword">this</span>.events || {});
-      <span class="keyword">this</span>.model = <span class="keyword">this</span>.model || model || <span class="literal">null</span>;
+      <span class="keyword">this</span>.model = <span class="keyword">this</span>.model || modelOrObject || <span class="literal">null</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-75">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-75">&#182;</a>
+              </div>
+              <p>If we passed a plain object, inflate to a generic MooVeeStar.Model</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      <span class="keyword">if</span>(!(<span class="keyword">this</span>.model <span class="keyword">instanceof</span> MooVeeStar.Model))
+        <span class="keyword">this</span>.model = <span class="keyword">new</span> MooVeeStar.Model(<span class="keyword">this</span>.model);
+
       <span class="keyword">this</span>.setElement();
       <span class="keyword">this</span>.options.autoattach &amp;&amp; <span class="keyword">this</span>.attachEvents();
       <span class="keyword">this</span>.options.autorender &amp;&amp; <span class="keyword">this</span>.render();
-    },
-    
-    setElement: <span class="function"><span class="keyword">function</span><span class="params">(element)</span>{</span>
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-76">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-76">&#182;</a>
+              </div>
+              <h3 id="view-setelement">View#setElement</h3>
+<p>Sets the element property of the view to <code>this.element</code> and <code>this.elements.container</code>
+Also modifies the elements’ dataset attributes to stop autobinding and mark as having a view controller
+as well as storing this view instance to the elements <code>__view</code> key.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    setElement: <span class="function"><span class="keyword">function</span><span class="params">(element)</span>{</span>
       <span class="keyword">if</span>(!<span class="keyword">this</span>.element){
         <span class="keyword">this</span>.element = $(element);
         <span class="keyword">if</span>(!<span class="keyword">this</span>.element &amp;&amp; <span class="keyword">this</span>.template &amp;&amp; <span class="keyword">this</span>.options.inflater)
@@ -1465,44 +1629,176 @@ It was built to take full power of the MooVeeStar templating system, but can be 
         <span class="keyword">this</span>.elements.container = <span class="keyword">this</span>.element;
       }
       <span class="keyword">return</span> <span class="keyword">this</span>;
-    },
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-77">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-77">&#182;</a>
+              </div>
+              <h3 id="view-toelement">View#toElement</h3>
+<p>Returns the views element. <code>toElement</code> gets called by MooTools in most DOM manipulation methods</p>
 
-    toElement: <span class="function"><span class="keyword">function</span><span class="params">()</span>{</span>
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    toElement: <span class="function"><span class="keyword">function</span><span class="params">()</span>{</span>
       <span class="keyword">return</span> <span class="keyword">this</span>.element;
-    },
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-78">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-78">&#182;</a>
+              </div>
+              <h3 id="view-render">View#render</h3>
+<p>Likely overridden and called through <code>parent()</code>, this determines the data to bind to the element. Pass a <strong>MooVeeStar.Event</strong>
+instance which contains a <code>changed</code> key, it will only rebind those changed values. Otherwise, it will use the passed argument
+or, more likely, call <code>model.toJSON</code></p>
 
-    render: <span class="function"><span class="keyword">function</span><span class="params">(data)</span>{</span>
-      <span class="keyword">this</span>.options.binder &amp;&amp; <span class="keyword">this</span>.options.binder(<span class="keyword">this</span>.element, data || (<span class="keyword">this</span>.model &amp;&amp; <span class="keyword">this</span>.model.toJSON()) || {});
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    render: <span class="function"><span class="keyword">function</span><span class="params">(objectOrChangeEvent)</span>{</span>
+      <span class="keyword">if</span>(<span class="keyword">this</span>.options.binder){
+        <span class="keyword">var</span> data = objectOrChangeEvent;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-79">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-79">&#182;</a>
+              </div>
+              <p>If data is an event and there’s items changed, then just bind the changed values</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        <span class="keyword">if</span>(objectOrChangeEvent <span class="keyword">instanceof</span> MooVeeStar.Event &amp;&amp; objectOrChangeEvent.changed){
+          data = {};
+          Object.forEach(objectOrChangeEvent.changed, <span class="function"><span class="keyword">function</span><span class="params">(v,k)</span>{</span>
+            data[k] = v.value;
+          });
+        }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-80">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-80">&#182;</a>
+              </div>
+              <p>Pass the data to the binder. First param is the element, second is the data, and third is an options map
+containing a boolean to tell the binder we may only want to bind the data defined (not unbind undefined fields)</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        <span class="keyword">this</span>.options.binder(<span class="keyword">this</span>.element, data || (<span class="keyword">this</span>.model.toJSON &amp;&amp; <span class="keyword">this</span>.model.toJSON()) || <span class="keyword">this</span>.model || {}, { onlyDefined:!!templateData });        
+      }
       <span class="keyword">return</span> <span class="keyword">this</span>;
     },</pre></div></div>
             
         </li>
         
         
-        <li id="section-68">
+        <li id="section-81">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-68">&#182;</a>
+                <a class="pilcrow" href="#section-81">&#182;</a>
               </div>
-              <p>Dispose of the View
-Detach all events from itself and any children that have a view controller
-Dispose/destroy itself</p>
+              <h3 id="view-destroy">View#destroy</h3>
+<p>Destroy the passed element, or the view’s <code>element</code>. Calls <code>view.destroy()</code>
+for all <em>attached</em> views within the element’s DOM.
+Fires the <code>View#destroy</code> event</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    _doDomManipulation: <span class="function"><span class="keyword">function</span><span class="params">(fn, el)</span>{</span>
-      fn = fn || <span class="string">'dispose'</span>; 
-      el = el || <span class="keyword">this</span>.element;</pre></div></div>
+            <div class="content"><div class='highlight'><pre>    destroy: <span class="function"><span class="keyword">function</span><span class="params">(elOrUndefined)</span>{</span>
+      <span class="keyword">this</span>._doDomManipulation(<span class="string">'destroy'</span>, elOrUndefined);
+      <span class="keyword">this</span>._destroyed = <span class="literal">true</span>;
+      <span class="keyword">return</span> <span class="keyword">this</span>;
+    },</pre></div></div>
             
         </li>
         
         
-        <li id="section-69">
+        <li id="section-82">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-69">&#182;</a>
+                <a class="pilcrow" href="#section-82">&#182;</a>
+              </div>
+              <h3 id="view-empty">View#empty</h3>
+<p>Empties the passed element, or the view’s <code>element</code>. Calls <code>view.destroy()</code>
+for all <em>attached</em> views within the element’s DOM.
+Fires the <code>View#empty</code> event</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    empty: <span class="function"><span class="keyword">function</span><span class="params">(elOrUndefined)</span>{</span>
+      <span class="keyword">return</span> <span class="keyword">this</span>._doDomManipulation(<span class="string">'empty'</span>, elOrUndefined);
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-83">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-83">&#182;</a>
+              </div>
+              <h3 id="view-dispose">View#dispose</h3>
+<p>Disposes of an element, or the view’s <code>element</code>. This <em>does not</em> affect and
+attached sub views (like <code>destroy</code> and <code>empty</code>).
+Fires the <code>View#dispose</code> event</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    dispose: <span class="function"><span class="keyword">function</span><span class="params">(elOrUndefined)</span>{</span>
+      <span class="keyword">return</span> <span class="keyword">this</span>._doDomManipulation(<span class="string">'dispose'</span>, elOrUndefined);
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-84">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-84">&#182;</a>
+              </div>
+              <h3 id="_view-_dodommanipulation_"><em>View#_doDomManipulation</em></h3>
+<p><em>Private</em>. Manipulates the DOM under the element, or passed element. Using the <code>data-has-view-controller</code> attribute
+we can find the stored <code>__view</code> to cleanup any views that need to be.
+If we’re emptying or destroying an element we call <code>destroy</code> on all elements being removed.
+Fires the event for the manipulation method (<code>destroy</code>, <code>empty</code>, <code>dispose</code>)</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    _doDomManipulation: <span class="function"><span class="keyword">function</span><span class="params">(fn, elOrUndefined)</span>{</span>
+      <span class="keyword">var</span> el = elOrUndefined || <span class="keyword">this</span>.element;
+      fn = fn || <span class="string">'dispose'</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-85">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-85">&#182;</a>
               </div>
               <p>If we’re destroying or emptying an element, then destroy all views underneath.
 // (dispose shouldn’t touch view’s elements underneath, except to detach them)</p>
@@ -1513,38 +1809,27 @@ Dispose/destroy itself</p>
         <span class="keyword">this</span>._doNestedViewsCall(<span class="string">'destroy'</span>, el);
       <span class="keyword">this</span>.detach(el, fn === <span class="string">'empty'</span>);
       el[fn]();
-      <span class="keyword">this</span>.fireEvent(fn, { view:<span class="keyword">this</span> });
+      <span class="keyword">this</span>.fireEvent(fn, { view:<span class="keyword">this</span>, element:el });
       <span class="keyword">return</span> <span class="keyword">this</span>;
-    },
-
-    dispose: <span class="function"><span class="keyword">function</span><span class="params">(el)</span>{</span>
-      <span class="keyword">return</span> <span class="keyword">this</span>._doDomManipulation(<span class="string">'dispose'</span>, el);
-    },
-
-    destroy: <span class="function"><span class="keyword">function</span><span class="params">(el)</span>{</span>
-      <span class="keyword">return</span> <span class="keyword">this</span>._doDomManipulation(<span class="string">'destroy'</span>, el);
-    },
-
-    empty: <span class="function"><span class="keyword">function</span><span class="params">(el)</span>{</span>
-      <span class="keyword">return</span> <span class="keyword">this</span>._doDomManipulation(<span class="string">'empty'</span>, el);
     },</pre></div></div>
             
         </li>
         
         
-        <li id="section-70">
+        <li id="section-86">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-70">&#182;</a>
+                <a class="pilcrow" href="#section-86">&#182;</a>
               </div>
-              <p>Finds all nested view controllers and calls a method on them</p>
+              <h3 id="_view-_donestedviewscall_"><em>View#_doNestedViewsCall</em></h3>
+<p><em>Private</em>. Using the <code>data-has-view-controller</code> attribute we can find the stored <code>__view</code> to call a method on them</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    _doNestedViewsCall: <span class="function"><span class="keyword">function</span><span class="params">(methods, element)</span>{</span>
-      <span class="keyword">var</span> views;
-      element = element || <span class="keyword">this</span>.element;
+            <div class="content"><div class='highlight'><pre>    _doNestedViewsCall: <span class="function"><span class="keyword">function</span><span class="params">(methods, elOrUndefined)</span>{</span>
+      <span class="keyword">var</span> views, element;
+      element = elOrUndefined || <span class="keyword">this</span>.element;
       methods = Array.from(methods);
       views = element.getElements(<span class="string">'*[data-has-view-controller]'</span>).clean().reverse();
       views.forEach(<span class="function"><span class="keyword">function</span><span class="params">(el)</span>{</span>
@@ -1559,26 +1844,79 @@ Dispose/destroy itself</p>
         </li>
         
         
-        <li id="section-71">
+        <li id="section-87">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-71">&#182;</a>
+                <a class="pilcrow" href="#section-87">&#182;</a>
               </div>
-              <p>Attaches or detach it’s events and all children views as well as rendering</p>
+              <h3 id="view-attach">View#attach</h3>
+<p>Attaches all events from the <code>element</code> or passed element and all the descendants within the DOM.
+<code>excludeSelf</code> will only do so for all descendants</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    _doAttachDetach: <span class="function"><span class="keyword">function</span><span class="params">(operation, element, excludeSelf)</span>{</span>
-      <span class="keyword">var</span> self, methods;
+            <div class="content"><div class='highlight'><pre>    attach: <span class="function"><span class="keyword">function</span><span class="params">(elOrUndefined, excludeSelf)</span>{</span>
+      <span class="keyword">return</span> <span class="keyword">this</span>._doAttachDetach(<span class="string">'attach'</span>, elOrUndefined, excludeSelf);
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-88">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-88">&#182;</a>
+              </div>
+              <h3 id="view-detach">View#detach</h3>
+<p>Detaches all events from the <code>element</code> or passed element and all the descendants within the DOM.
+<code>excludeSelf</code> will only do so for all descendants</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    detach: <span class="function"><span class="keyword">function</span><span class="params">(elOrUndefined, excludeSelf)</span>{</span>
+      <span class="keyword">return</span> <span class="keyword">this</span>._doAttachDetach(<span class="string">'detach'</span>, elOrUndefined, excludeSelf);
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-89">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-89">&#182;</a>
+              </div>
+              <h3 id="_view-_doattachdetach_"><em>View#_doAttachDetach</em></h3>
+<p><em>Private</em>. Attaches or detaches its events and all children views as well as rendering</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    _doAttachDetach: <span class="function"><span class="keyword">function</span><span class="params">(operation, elOrUndefined, excludeSelf)</span>{</span>
+      <span class="keyword">var</span> self, element, methods;
       self = <span class="keyword">this</span>;
-      element = element || <span class="keyword">this</span>.element;
+      element = elOrUndefined || self.element;
       operation = (operation || <span class="string">'attach'</span>);
-      methods = [operation+<span class="string">'Events'</span>];
-      <span class="keyword">if</span>(operation === <span class="string">'attach'</span>)
+      methods = [operation+<span class="string">'Events'</span>]; <span class="comment">// `View#attachEvents` or `View#detachEvents`</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-90">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-90">&#182;</a>
+              </div>
+              <p>If we’re attaching events, call render afterwards</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      <span class="keyword">if</span>(operation === <span class="string">'attach'</span>)
         methods.push(<span class="string">'render'</span>);
 
-      <span class="keyword">this</span>._doNestedViewsCall(methods, element);
+      self._doNestedViewsCall(methods, element);
 
       <span class="keyword">if</span>(!excludeSelf){
         methods.forEach(<span class="function"><span class="keyword">function</span><span class="params">(method)</span>{</span>
@@ -1586,124 +1924,158 @@ Dispose/destroy itself</p>
         });
       }
       <span class="keyword">return</span> <span class="keyword">this</span>;
-    },
-
-    attach: <span class="function"><span class="keyword">function</span><span class="params">(element, excludeSelf)</span>{</span>
-      <span class="keyword">return</span> <span class="keyword">this</span>._doAttachDetach(<span class="string">'attach'</span>, element, excludeSelf);
-    },
-
-    detach: <span class="function"><span class="keyword">function</span><span class="params">(element, excludeSelf)</span>{</span>
-      <span class="keyword">return</span> <span class="keyword">this</span>._doAttachDetach(<span class="string">'detach'</span>, element, excludeSelf);
-    },
-
-    attachEvents: <span class="function"><span class="keyword">function</span><span class="params">()</span>{</span></pre></div></div>
+    },</pre></div></div>
             
         </li>
         
         
-        <li id="section-72">
+        <li id="section-91">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-72">&#182;</a>
+                <a class="pilcrow" href="#section-91">&#182;</a>
+              </div>
+              <h3 id="view-attachevents">View#attachEvents</h3>
+<p>Loops over the models events map and attaches the events</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    attachEvents: <span class="function"><span class="keyword">function</span><span class="params">()</span>{</span>
+      <span class="keyword">var</span> self;
+      self = <span class="keyword">this</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-92">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-92">&#182;</a>
               </div>
               <p>Keep track of attached events &amp;&amp; bound functions (for detaching)</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>      <span class="keyword">this</span>._attachedEvents = <span class="keyword">this</span>._attachedEvents || {};
-      <span class="keyword">this</span>._boundEventFns = <span class="keyword">this</span>._boundEventFns || {};
+            <div class="content"><div class='highlight'><pre>      self._attachedEvents = self._attachedEvents || {};
+      self._boundEventFns = self._boundEventFns || {};
 
-      Object.each(<span class="keyword">this</span>.events, <span class="function"><span class="keyword">function</span><span class="params">(v, k)</span>{</span>
-        <span class="keyword">if</span>(!<span class="keyword">this</span>._attachedEvents[k]){
-          <span class="keyword">if</span>(k &amp;&amp; k.length &amp;&amp; typeOf(<span class="keyword">this</span>[v]) === <span class="string">'function'</span>){</pre></div></div>
+      Object.each(self.events, <span class="function"><span class="keyword">function</span><span class="params">(v, k)</span>{</span></pre></div></div>
             
         </li>
         
         
-        <li id="section-73">
+        <li id="section-93">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-73">&#182;</a>
+                <a class="pilcrow" href="#section-93">&#182;</a>
               </div>
-              <p>Break psuedo and check if it’s in Element.NativeEvents</p>
+              <p>Only if we haven’t attached this event and it’s string value is a method name on this view instance</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>            <span class="keyword">var</span> name, attach, nativeName;
-            nativeName = k.substr(<span class="number">0</span>, k.indexOf(<span class="string">':'</span>) &gt; <span class="number">0</span> ? k.indexOf(<span class="string">':'</span>) : k.length);
-            <span class="keyword">if</span>((!k.contains(<span class="string">':'</span>) || <span class="regexp">/\:relay\(/gi</span>.test(k)) &amp;&amp; (Element.NativeEvents[nativeName] || Element.Events[nativeName])){</pre></div></div>
+            <div class="content"><div class='highlight'><pre>        <span class="keyword">if</span>(!self._attachedEvents[k] &amp;&amp; typeOf(self[v]) === <span class="string">'function'</span>){
+          <span class="keyword">var</span> name, attach, nativeName;</pre></div></div>
             
         </li>
         
         
-        <li id="section-74">
+        <li id="section-94">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-74">&#182;</a>
+                <a class="pilcrow" href="#section-94">&#182;</a>
               </div>
-              <p>Simple dom event or relay</p>
-
+              
             </div>
             
-            <div class="content"><div class='highlight'><pre>              attach = $(<span class="keyword">this</span>.element);
-              name = k;
-            }<span class="keyword">else</span> <span class="keyword">if</span>(<span class="regexp">/attach\(([^\)]+)/gi</span>.test(k)){</pre></div></div>
+            <div class="content"><div class='highlight'><pre>          nativeName = k.substr(<span class="number">0</span>, k.indexOf(<span class="string">':'</span>) &gt; <span class="number">0</span> ? k.indexOf(<span class="string">':'</span>) : k.length);</pre></div></div>
             
         </li>
         
         
-        <li id="section-75">
+        <li id="section-95">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-75">&#182;</a>
+                <a class="pilcrow" href="#section-95">&#182;</a>
               </div>
-              <p>Attach as a css fn after the event (deprecate?)
-click:attach(window) or click:relay():attach(this.views.evaledEl)</p>
+              <p>If we just passed in a <code>Element.Event</code> (with an optional relay) then the target is the view’s element, and the event name is the item’s key</p>
+<pre><code><span class="string">'click'</span> <span class="comment">// 'this.element:click'</span>
+<span class="string">'mousedown:relay([data-action])'</span> <span class="comment">// 'this.element:click:relay([data-action])'</span></code></pre>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>              attach = <span class="regexp">/attach\(([^\)]+)/gi</span>.exec(k);
-              name = k.replace(<span class="regexp">/:?attach\([^\)]+\)/i</span>,<span class="string">''</span>);
-              attach = attach &amp;&amp; attach[<span class="number">1</span>];
-              attach = <span class="keyword">this</span>._getEventObj(attach) || <span class="keyword">this</span>;
-            }<span class="keyword">else</span>{</pre></div></div>
+            <div class="content"><div class='highlight'><pre>          <span class="keyword">if</span>((!k.contains(<span class="string">':'</span>) || <span class="regexp">/\:relay\(/gi</span>.test(k)) &amp;&amp; (Element.NativeEvents[nativeName] || Element.Events[nativeName])){
+            attach = $(self.element);
+            name = k;</pre></div></div>
             
         </li>
         
         
-        <li id="section-76">
+        <li id="section-96">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-76">&#182;</a>
+                <a class="pilcrow" href="#section-96">&#182;</a>
               </div>
-              <p>toAttach as first : delimited list
-window:scroll or collection:add or this.views.block:change</p>
+              <p>Otherwise, split on ‘:’ where the first item is the attachment, the name is everything else</p>
+<pre><code> <span class="string">'window:scroll:relay(.overflow)'</span>
+ <span class="string">'MooVeeStar:some-event'</span>
+ <span class="string">'model:destroy'</span>
+ <span class="string">'model:change:id'</span>
+ <span class="string">'collection:model:change'</span></code></pre>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>              attach = k.split(<span class="string">':'</span>)[<span class="number">0</span>];
-              name = k.replace(attach+<span class="string">':'</span>,<span class="string">''</span>);
-              attach = <span class="keyword">this</span>._getEventObj(attach) || <span class="keyword">this</span>;
-            }
-            <span class="keyword">if</span>(attach &amp;&amp; name &amp;&amp; attach.addEvent){
-              <span class="keyword">this</span>._boundEventFns[v] = <span class="keyword">this</span>._boundEventFns[v] || <span class="keyword">this</span>[v].bind(<span class="keyword">this</span>);
-              attach.addEvent(name, <span class="keyword">this</span>._boundEventFns[v]);
-              <span class="keyword">this</span>._attachedEvents[k] = {<span class="string">'attach'</span>:attach, <span class="string">'name'</span>:name, <span class="string">'fn'</span>:<span class="keyword">this</span>._boundEventFns[v]};
-            }<span class="keyword">else</span>{
-              <span class="keyword">throw</span> <span class="keyword">new</span> Error(<span class="string">'[VIEW ERROR] Could not attach event "'</span>+k+<span class="string">'". Something went awry.'</span>);
-            }
+            <div class="content"><div class='highlight'><pre>          }<span class="keyword">else</span>{
+            attach = k.split(<span class="string">':'</span>)[<span class="number">0</span>];
+            name = k.replace(attach+<span class="string">':'</span>,<span class="string">''</span>);
+            attach = self._getEventObj(attach) || self;
+          }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-97">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-97">&#182;</a>
+              </div>
+              <p>If we found an attachment and it has an <code>addEvent</code>, add the bound method name to it and add to <code>_atachedEvents</code></p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>          <span class="keyword">if</span>(attach &amp;&amp; name &amp;&amp; attach.addEvent){
+            self._boundEventFns[v] = self._boundEventFns[v] || self[v].bind(self);
+            attach.addEvent(name, self._boundEventFns[v]);
+            self._attachedEvents[k] = { attach:attach, name:name, fn:self._boundEventFns[v] };
+          }<span class="keyword">else</span>{
+            <span class="keyword">throw</span> <span class="keyword">new</span> Error(<span class="string">'[VIEW ERROR] Could not attach event "'</span>+k+<span class="string">'". Something went awry.'</span>);
           }
         }
-      }.bind(<span class="keyword">this</span>));
-      <span class="keyword">return</span> <span class="keyword">this</span>;
-    },
+      });
+      <span class="keyword">return</span> self;
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-98">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-98">&#182;</a>
+              </div>
+              <h3 id="view-detachevents">View#detachEvents</h3>
+<p>Loops over the <code>_attachedEvents</code> and removes them from their attached item.
+This gets invoked automatically if <code>destroy</code> or <code>empty</code> is called.</p>
 
-    detachEvents: <span class="function"><span class="keyword">function</span><span class="params">()</span>{</span>
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    detachEvents: <span class="function"><span class="keyword">function</span><span class="params">()</span>{</span>
       Object.each(<span class="keyword">this</span>._attachedEvents || {}, <span class="function"><span class="keyword">function</span><span class="params">(v)</span>{</span>
         v.attach.removeEvent(v.name, v.fn);
       });
@@ -1714,14 +2086,14 @@ window:scroll or collection:add or this.views.block:change</p>
         </li>
         
         
-        <li id="section-77">
+        <li id="section-99">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-77">&#182;</a>
+                <a class="pilcrow" href="#section-99">&#182;</a>
               </div>
-              <p>Recurse the object via a dot-delimited string for the property that 
-has an event to attach</p>
+              <h3 id="_view-_geteventobj_"><em>View#_getEventObj</em></h3>
+<p><em>Private</em>. Taking an attachment string, finds what the appropriate attachment target is</p>
 
             </div>
             
@@ -1757,10 +2129,36 @@ has an event to attach</p>
       <span class="keyword">return</span> <span class="literal">null</span>;
     }
 
-  });
+  });</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-100">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-100">&#182;</a>
+              </div>
+              <hr>
 
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-101">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-101">&#182;</a>
+              </div>
+              <h2 id="mooveestar-storage">MooVeeStar.Storage</h2>
+<p>A <em>very simple</em> local storage mixin.</p>
 
-  MooVeeStar.Storage = <span class="keyword">new</span> Class({
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  MooVeeStar.Storage = <span class="keyword">new</span> Class({
 
     store: <span class="function"><span class="keyword">function</span><span class="params">()</span>{</span>
       <span class="keyword">try</span>{
@@ -1782,48 +2180,98 @@ has an event to attach</p>
       <span class="keyword">return</span> <span class="keyword">this</span>.fireEvent(<span class="string">'eliminate'</span>);
     }
 
-  });
+  });</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-102">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-102">&#182;</a>
+              </div>
+              <hr>
 
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-103">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-103">&#182;</a>
+              </div>
+              <h2 id="mooveestar-templates">MooVeeStar.templates</h2>
+<p>The <strong>MooVeeStar.templates</strong> power the UI using <em>completely logicless</em> templating system relying on 
+HTML5 mindset and technologies.</p>
 
-  <span class="keyword">var</span> mvstpl = {
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="keyword">var</span> mvstpl = MooVeeStar.templates = {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-104">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-104">&#182;</a>
+              </div>
+              <p>The templates registry</p>
 
-    templates: {},
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    _templates: {},</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-105">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-105">&#182;</a>
+              </div>
+              <h3 id="_templates-_cleankey_"><em>templates::_cleanKey</em></h3>
+<p><em>Private</em>. Cleans a key to ensure odd names are valid</p>
 
-    cleanKey: <span class="function"><span class="keyword">function</span><span class="params">(key)</span>{</span>
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    _cleanKey: <span class="function"><span class="keyword">function</span><span class="params">(key)</span>{</span>
       <span class="keyword">return</span> key.toLowerCase().trim().replace(<span class="regexp">/\s/g</span>,<span class="string">''</span>);
-    },
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-106">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-106">&#182;</a>
+              </div>
+              <h3 id="_templates-_parseshorthand_"><em>templates::_parseShorthand</em></h3>
+<p><em>Private</em>. Parses the shorthand template style to the full template style</p>
+<pre><code> <span class="comment">// &lt;li data-bind="name uuid:data-uuid accent:class privacy:(data-private class)" data-action="choose"&gt;&lt;/li&gt;</span>
+ &lt;li data-bind=<span class="string">"name uuid accent privacy"</span> data-bind-uuid=<span class="string">"data-uuid"</span> data-bind-accent=<span class="string">"class"</span> data-bind-privacy=<span class="string">"data-private class"</span> data-action=<span class="string">"choose"</span>&gt;<span class="xml"><span class="tag">&lt;/<span class="title">li</span>&gt;</span></span></code></pre>
 
-    <span class="comment">/**
-     * Parses the shorthand template style to the full template style
-     * @example
-     * // Input: &lt;li data-bind="name uuid:data-uuid accent:class privacy:(data-private class)" data-action="choose"&gt;&lt;/li&gt;
-     * &lt;li data-bind="name uuid accent privacy" data-bind-uuid="data-uuid" data-bind-accent="class" data-bind-privacy="data-private class" data-action="choose"&gt;&lt;/li&gt;
-     *
-     * @param  {[type]} str [description]
-     * @return {[type]}     [description]
-     */</span>
-    _parseShorthand: <span class="function"><span class="keyword">function</span><span class="params">(element)</span>{</span>
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    _parseShorthand: <span class="function"><span class="keyword">function</span><span class="params">(element)</span>{</span>
       <span class="keyword">var</span> elements = element.getElements(<span class="string">'[data-bind]'</span>);
       <span class="keyword">if</span>(element.get(<span class="string">'data-bind'</span>))
         elements.unshift(element);
       elements.forEach(<span class="function"><span class="keyword">function</span><span class="params">(el)</span>{</span>
         <span class="keyword">var</span> dataBind = el.get(<span class="string">'data-bind'</span>);
-        <span class="keyword">if</span>(dataBind &amp;&amp; dataBind.contains(<span class="string">':'</span>)){</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-78">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-78">&#182;</a>
-              </div>
-              <p>Loop over two regex’es one with parens, one without parens</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>          [<span class="regexp">/\s*([^\s]+?)(?!\\):\(([^\)]+)\)/</span>, <span class="regexp">/\s*([^\s]+?)(?!\\):([^\s]+)/</span>].each(<span class="function"><span class="keyword">function</span><span class="params">(regex)</span>{</span>
+        <span class="keyword">if</span>(dataBind &amp;&amp; dataBind.contains(<span class="string">':'</span>)){
+          [
+            <span class="regexp">/\s*([^\s]+?)(?!\\):\(([^\)]+)\)/</span>,  <span class="comment">// Capture bindings with parens</span>
+            /\s*([^\s]+?)(?!\\):([^\s]+)/       <span class="comment">// Capture bdings without parens</span>
+          ].each(<span class="function"><span class="keyword">function</span><span class="params">(regex)</span>{</span>
             <span class="keyword">var</span> match;
             <span class="keyword">while</span>((match = regex.exec(dataBind))){
               dataBind = dataBind.replace(match[<span class="number">0</span>], <span class="string">' '</span>+match[<span class="number">1</span>]);
@@ -1839,115 +2287,134 @@ has an event to attach</p>
         </li>
         
         
-        <li id="section-79">
+        <li id="section-107">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-79">&#182;</a>
+                <a class="pilcrow" href="#section-107">&#182;</a>
               </div>
-              <p>Register a template to an html string and create a dom from it
+              <h3 id="templates-register">templates::register</h3>
+<p>Register a template to an html string and create a dom from it
 Overloaded to accept a register a script as second param</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    register: <span class="function"><span class="keyword">function</span><span class="params">(key, html)</span>{</span>
-      <span class="keyword">if</span>(<span class="keyword">typeof</span>(html) === <span class="string">'function'</span>){
-        mvstpl.registerScript(key, html);
+            <div class="content"><div class='highlight'><pre>    register: <span class="function"><span class="keyword">function</span><span class="params">(key, htmlStringOrFunction)</span>{</span>
+      <span class="keyword">if</span>(<span class="keyword">typeof</span>(htmlStringOrFunction) === <span class="string">'function'</span>){
+        mvstpl.registerScript(key, htmlStringOrFunction);
         <span class="keyword">return</span>;
       }
-      key = mvstpl.cleanKey(key);
-      html = html.replace(<span class="regexp">/&lt;\!\-\-.*?\-\-&gt;/g</span>, <span class="string">''</span>).trim().replace(<span class="regexp">/\n/g</span>,<span class="string">' '</span>).replace(<span class="regexp">/\s+/g</span>,<span class="string">' '</span>); <span class="comment">// Strip out comments and excess whitespace</span>
+      <span class="keyword">var</span> html = htmlStringOrFunction;
+      key = mvstpl._cleanKey(key);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-108">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-108">&#182;</a>
+              </div>
+              <p>Strip out comments and excess whitespace</p>
 
-      mvstpl.templates[key] = mvstpl.templates[key] || {};
-      mvstpl.templates[key].dom = mvstpl._parseShorthand(<span class="keyword">new</span> Element(<span class="string">'markup[html="'</span>+html+<span class="string">'"]'</span>));
-      mvstpl.templates[key].markup = mvstpl.templates[key].dom.innerHTML;
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      html = html.replace(<span class="regexp">/&lt;\!\-\-.*?\-\-&gt;/g</span>, <span class="string">''</span>).trim().replace(<span class="regexp">/\n/g</span>,<span class="string">' '</span>).replace(<span class="regexp">/\s+/g</span>,<span class="string">' '</span>);
+
+      mvstpl._templates[key] = mvstpl._templates[key] || {};
+      mvstpl._templates[key].dom = mvstpl._parseShorthand(<span class="keyword">new</span> Element(<span class="string">'markup[html="'</span>+html+<span class="string">'"]'</span>));
+      mvstpl._templates[key].markup = mvstpl._templates[key].dom.innerHTML;
     },</pre></div></div>
             
         </li>
         
         
-        <li id="section-80">
+        <li id="section-109">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-80">&#182;</a>
+                <a class="pilcrow" href="#section-109">&#182;</a>
               </div>
-              <p>Register a script to be called when a template is bind</p>
+              <h3 id="templates-registerscript">templates::registerScript</h3>
+<p>Register a script to be called when a template is bind</p>
 
             </div>
             
             <div class="content"><div class='highlight'><pre>    registerScript: <span class="function"><span class="keyword">function</span><span class="params">(key, fn)</span>{</span>
-      key = mvstpl.cleanKey(key);
-      mvstpl.templates[key] = mvstpl.templates[key] || {};
-      mvstpl.templates[key].script = fn;
+      key = mvstpl._cleanKey(key);
+      mvstpl._templates[key] = mvstpl._templates[key] || {};
+      mvstpl._templates[key].script = fn;
     },</pre></div></div>
             
         </li>
         
         
-        <li id="section-81">
+        <li id="section-110">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-81">&#182;</a>
+                <a class="pilcrow" href="#section-110">&#182;</a>
               </div>
-              <p>Return the script associated with a key</p>
+              <h3 id="templates-getscript">templates::getScript</h3>
+<p>Return the script associated with a key</p>
 
             </div>
             
             <div class="content"><div class='highlight'><pre>    getScript: <span class="function"><span class="keyword">function</span><span class="params">(key)</span>{</span>
-      key = mvstpl.cleanKey(key);
-      <span class="keyword">if</span>(mvstpl.templates[key] &amp;&amp; mvstpl.templates[key].script){
-        <span class="keyword">return</span> mvstpl.templates[key].script;
-      }<span class="keyword">else</span>{
-        <span class="keyword">throw</span> <span class="keyword">new</span> Error(<span class="string">'Ain\'t no script for the template called '</span>+key+<span class="string">' ('</span>+typeOf(mvstpl.templates[key].script)+<span class="string">')'</span>);
-      }
+      key = mvstpl._cleanKey(key);
+      <span class="keyword">if</span>(mvstpl._templates[key] &amp;&amp; mvstpl._templates[key].script)
+        <span class="keyword">return</span> mvstpl._templates[key].script;
+      <span class="keyword">else</span>
+        <span class="keyword">throw</span> <span class="keyword">new</span> Error(<span class="string">'Ain\'t no script for the template called '</span>+key+<span class="string">' ('</span>+typeOf(mvstpl._templates[key].script)+<span class="string">')'</span>);
     },</pre></div></div>
             
         </li>
         
         
-        <li id="section-82">
+        <li id="section-111">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-82">&#182;</a>
+                <a class="pilcrow" href="#section-111">&#182;</a>
               </div>
-              <p>check for the existance of a template key</p>
+              <h3 id="templates-check">templates::check</h3>
+<p>check for the existance of a template key</p>
 
             </div>
             
             <div class="content"><div class='highlight'><pre>    check: <span class="function"><span class="keyword">function</span><span class="params">(key)</span>{</span>
-      <span class="keyword">return</span> !!mvstpl.templates[mvstpl.cleanKey(key)];
+      <span class="keyword">return</span> !!mvstpl._templates[mvstpl._cleanKey(key)];
     },</pre></div></div>
             
         </li>
         
         
-        <li id="section-83">
+        <li id="section-112">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-83">&#182;</a>
+                <a class="pilcrow" href="#section-112">&#182;</a>
               </div>
-              <p>Return the dom of a template</p>
+              <h3 id="templates-get">templates::get</h3>
+<p>Return the dom of a template</p>
 
             </div>
             
             <div class="content"><div class='highlight'><pre>    get: <span class="function"><span class="keyword">function</span><span class="params">(key)</span>{</span>
       <span class="keyword">var</span> data, markupEl, els, childrenTemplates;
-      key = mvstpl.cleanKey(key);
-      data = mvstpl.templates[key];
+      key = mvstpl._cleanKey(key);
+      data = mvstpl._templates[key];
       <span class="keyword">if</span>(data){</pre></div></div>
             
         </li>
         
         
-        <li id="section-84">
+        <li id="section-113">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-84">&#182;</a>
+                <a class="pilcrow" href="#section-113">&#182;</a>
               </div>
               <p>If html5Shiv is installed, and we need to go around cloneNode for HTML5 elements</p>
 
@@ -1961,7 +2428,7 @@ Overloaded to accept a register a script as second param</p>
           <span class="keyword">return</span> data.dom.clone().set(<span class="string">'data-templateid'</span>, key);
         }       
       }<span class="keyword">else</span>{
-        <span class="keyword">throw</span> <span class="keyword">new</span> Error(<span class="string">'Ain\'t no template called '</span>+key+<span class="string">' ('</span>+typeOf(mvstpl.templates[key])+<span class="string">')'</span>);
+        <span class="keyword">throw</span> <span class="keyword">new</span> Error(<span class="string">'Ain\'t no template called '</span>+key+<span class="string">' ('</span>+typeOf(mvstpl._templates[key])+<span class="string">')'</span>);
       }
       <span class="keyword">return</span> <span class="literal">null</span>;
     },</pre></div></div>
@@ -1969,13 +2436,16 @@ Overloaded to accept a register a script as second param</p>
         </li>
         
         
-        <li id="section-85">
+        <li id="section-114">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-85">&#182;</a>
+                <a class="pilcrow" href="#section-114">&#182;</a>
               </div>
-              <p>Same as inflate, but removes bindings after inflating</p>
+              <h3 id="templates-inflateonce">templates::inflateOnce</h3>
+<p>Same as inflate, but removes bindings after inflating.
+Useful when an element only needs to be inflated once without a desire to rebind
+(or accidentally unbind elements)</p>
 
             </div>
             
@@ -1991,13 +2461,14 @@ Overloaded to accept a register a script as second param</p>
         </li>
         
         
-        <li id="section-86">
+        <li id="section-115">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-86">&#182;</a>
+                <a class="pilcrow" href="#section-115">&#182;</a>
               </div>
-              <p>Inflate a template</p>
+              <h3 id="templates-inflate">templates::inflate</h3>
+<p>Inflate a template.</p>
 
             </div>
             
@@ -2007,11 +2478,11 @@ Overloaded to accept a register a script as second param</p>
         </li>
         
         
-        <li id="section-87">
+        <li id="section-116">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-87">&#182;</a>
+                <a class="pilcrow" href="#section-116">&#182;</a>
               </div>
               <p>Assume a key was passed in</p>
 
@@ -2025,11 +2496,11 @@ Overloaded to accept a register a script as second param</p>
         </li>
         
         
-        <li id="section-88">
+        <li id="section-117">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-88">&#182;</a>
+                <a class="pilcrow" href="#section-117">&#182;</a>
               </div>
               <p>Attach any markup templates</p>
 
@@ -2041,11 +2512,11 @@ Overloaded to accept a register a script as second param</p>
         </li>
         
         
-        <li id="section-89">
+        <li id="section-118">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-89">&#182;</a>
+                <a class="pilcrow" href="#section-118">&#182;</a>
               </div>
               <p>If there’s a class name specified on the <markup> tag, add it to the children</p>
 
@@ -2056,11 +2527,11 @@ Overloaded to accept a register a script as second param</p>
         </li>
         
         
-        <li id="section-90">
+        <li id="section-119">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-90">&#182;</a>
+                <a class="pilcrow" href="#section-119">&#182;</a>
               </div>
               <p>If we passed in skipInit, use it, otherwise set to true assuming this pass is initializing final markup</p>
 
@@ -2088,13 +2559,14 @@ Overloaded to accept a register a script as second param</p>
         </li>
         
         
-        <li id="section-91">
+        <li id="section-120">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-91">&#182;</a>
+                <a class="pilcrow" href="#section-120">&#182;</a>
               </div>
-              <p>Inflate a template and pass it’s elements to another.
+              <h3 id="templates-inflatesurround">templates::inflateSurround</h3>
+<p>Inflate a template and pass it’s elements to another.
 Useful when wanting to inflate a template inside another
 generic template (like a dialog/popup/etc).</p>
 
@@ -2118,57 +2590,69 @@ generic template (like a dialog/popup/etc).</p>
         </li>
         
         
-        <li id="section-92">
+        <li id="section-121">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-92">&#182;</a>
+                <a class="pilcrow" href="#section-121">&#182;</a>
               </div>
-              <p>Initialize a template and bind to it’s data
+              <h3 id="templates-init">templates::init</h3>
+<p>Initialize a template and bind to it’s data.
 Different than bind in that it will check for a registered script
 and call that (bind simply binds the data to data-bind fields)</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    init: <span class="function"><span class="keyword">function</span><span class="params">(els, data)</span>{</span>
+            <div class="content"><div class='highlight'><pre>    init: <span class="function"><span class="keyword">function</span><span class="params">(els, data, options)</span>{</span>
       (!els ? [] : (typeOf(els) === <span class="string">'element'</span> ? [els] : els)).each(<span class="function"><span class="keyword">function</span><span class="params">(el)</span>{</span>
         <span class="keyword">if</span>(el.get(<span class="string">'data-tpl'</span>)){
           <span class="keyword">var</span> tpls = el.get(<span class="string">'data-tpl'</span>).split(<span class="string">' '</span>);
           tpls.each(<span class="function"><span class="keyword">function</span><span class="params">(tpl)</span>{</span>
-            <span class="keyword">if</span>(mvstpl.templates[tpl].script){
-              mvstpl.templates[tpl].script(el, (data &amp;&amp; (data[tpl] || data[tpl.replace(<span class="string">'tpl:'</span>,<span class="string">''</span>)])) || data);
-            }<span class="keyword">else</span>{
-              mvstpl.bind(el, data);
-            }
+            <span class="keyword">if</span>(mvstpl._templates[tpl].script)
+              mvstpl._templates[tpl].script(el, (data &amp;&amp; (data[tpl] || data[tpl.replace(<span class="string">'tpl:'</span>,<span class="string">''</span>)])) || data, options);
+            <span class="keyword">else</span>
+              mvstpl.bind(el, data, options);
           });
         }<span class="keyword">else</span>{
-          mvstpl.bind(el, data);
+          mvstpl.bind(el, data, options);
         }
       });
-    },
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-122">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-122">&#182;</a>
+              </div>
+              <h3 id="templates-bind">templates::bind</h3>
+<p>Binds all elements under a template to the passed <code>data</code> JSON object. This <em>does not</em> call a registered script.
+It will stop binding elements once it reaches an element in the DOM with a <code>data-autobind</code> attribute set to false
+(which <strong>MooVeeStar.View</strong>s do automatically — so each view is in control of it’s binding)</p>
+<ul>
+<li>If a single empty element is passed, and data is a string value, then it will be used
+as the value for that element</li>
+<li>If <code>options.onlyDefined === true</code> then no <code>data-bind</code> fields will be unbound, only those
+<code>data-bind</code> keys in the data map will be bound</li>
+</ul>
 
-    <span class="comment">/**
-     * Bind a template to a data object. This *does not* call a registered script
-     * 
-     * @param  {(Element|Element[])} elements  An element or array of elements to bind
-     * @param  {Object}              data      The data to bind to the element and its children
-     * @param  {Object}              [options] A maps of options passed to the template
-     * 
-     * @property {Boolean} options.onlyDefined If true, only bind the keys defined in `data`
-     *                                         ignoring other data-bind values (not unbinding them)
-     */</span>
-    bind: <span class="function"><span class="keyword">function</span><span class="params">(els, data, options)</span>{</span>
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    bind: <span class="function"><span class="keyword">function</span><span class="params">(els, data, options)</span>{</span>
       data = data || {};
       options = options || {};</pre></div></div>
             
         </li>
         
         
-        <li id="section-93">
+        <li id="section-123">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-93">&#182;</a>
+                <a class="pilcrow" href="#section-123">&#182;</a>
               </div>
               <p>If <code>els</code> is a single empty element w/ no <code>[data-bind]</code> set <em>and</em> <code>data</code> is a string, set it to be the value of the el</p>
 
@@ -2182,11 +2666,11 @@ and call that (bind simply binds the data to data-bind fields)</p>
         </li>
         
         
-        <li id="section-94">
+        <li id="section-124">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-94">&#182;</a>
+                <a class="pilcrow" href="#section-124">&#182;</a>
               </div>
               <p>Get all children to be bind that are not inner binds</p>
 
@@ -2203,11 +2687,11 @@ and call that (bind simply binds the data to data-bind fields)</p>
         </li>
         
         
-        <li id="section-95">
+        <li id="section-125">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-95">&#182;</a>
+                <a class="pilcrow" href="#section-125">&#182;</a>
               </div>
               <p>Exclude any els that are in their own data-tpl (which will follow)</p>
 
@@ -2221,11 +2705,11 @@ and call that (bind simply binds the data to data-bind fields)</p>
         </li>
         
         
-        <li id="section-96">
+        <li id="section-126">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-96">&#182;</a>
+                <a class="pilcrow" href="#section-126">&#182;</a>
               </div>
               <p>Get the bindings this elements wants</p>
 
@@ -2239,11 +2723,11 @@ and call that (bind simply binds the data to data-bind fields)</p>
         </li>
         
         
-        <li id="section-97">
+        <li id="section-127">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-97">&#182;</a>
+                <a class="pilcrow" href="#section-127">&#182;</a>
               </div>
               <p>If the value is undefined, then return if we want to ignore it (via <code>onlyDefined</code>)
 or set to null to unbind this binding key</p>
@@ -2260,11 +2744,11 @@ or set to null to unbind this binding key</p>
         </li>
         
         
-        <li id="section-98">
+        <li id="section-128">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-98">&#182;</a>
+                <a class="pilcrow" href="#section-128">&#182;</a>
               </div>
               <p>Get the fields for this binding</p>
 
@@ -2276,11 +2760,11 @@ or set to null to unbind this binding key</p>
         </li>
         
         
-        <li id="section-99">
+        <li id="section-129">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-99">&#182;</a>
+                <a class="pilcrow" href="#section-129">&#182;</a>
               </div>
               <p>If it’s a style binding</p>
 
@@ -2293,11 +2777,11 @@ or set to null to unbind this binding key</p>
         </li>
         
         
-        <li id="section-100">
+        <li id="section-130">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-100">&#182;</a>
+                <a class="pilcrow" href="#section-130">&#182;</a>
               </div>
               <p>tpl:[array] will inflate the specified template for each item</p>
 
@@ -2312,11 +2796,11 @@ or set to null to unbind this binding key</p>
         </li>
         
         
-        <li id="section-101">
+        <li id="section-131">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-101">&#182;</a>
+                <a class="pilcrow" href="#section-131">&#182;</a>
               </div>
               <p>Inflate each template passing in item and have them init (force false skipInit)
 Then, remove data-tpl b/c we just inflated it (and, presumably, it’s data is
@@ -2336,11 +2820,11 @@ already set so we don’t want to set it again below).</p>
         </li>
         
         
-        <li id="section-102">
+        <li id="section-132">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-102">&#182;</a>
+                <a class="pilcrow" href="#section-132">&#182;</a>
               </div>
               <p>TODO: Revert previously bound classes?</p>
 
@@ -2371,11 +2855,11 @@ already set so we don’t want to set it again below).</p>
         </li>
         
         
-        <li id="section-103">
+        <li id="section-133">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-103">&#182;</a>
+                <a class="pilcrow" href="#section-133">&#182;</a>
               </div>
               <p>Now loop over children w/ “data-tpl” and init them, unless they have an “data-autobind” set to “false”
 (as in, they have a separate View Controller rendering their data)</p>
@@ -2391,11 +2875,11 @@ already set so we don’t want to set it again below).</p>
         </li>
         
         
-        <li id="section-104">
+        <li id="section-134">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-104">&#182;</a>
+                <a class="pilcrow" href="#section-134">&#182;</a>
               </div>
               <p>If the el is inside another [data-tpl] don’t init now (it will recursively next time)</p>
 
@@ -2407,11 +2891,11 @@ already set so we don’t want to set it again below).</p>
         </li>
         
         
-        <li id="section-105">
+        <li id="section-135">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-105">&#182;</a>
+                <a class="pilcrow" href="#section-135">&#182;</a>
               </div>
               <p>If we passed in a specific map in data for this, then init</p>
 
@@ -2424,11 +2908,11 @@ already set so we don’t want to set it again below).</p>
         </li>
         
         
-        <li id="section-106">
+        <li id="section-136">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-106">&#182;</a>
+                <a class="pilcrow" href="#section-136">&#182;</a>
               </div>
               <p>Only init cascadingly if autobind is not “false” (as in, a separate controller handles it’s own rendering)</p>
 
@@ -2448,13 +2932,14 @@ already set so we don’t want to set it again below).</p>
         </li>
         
         
-        <li id="section-107">
+        <li id="section-137">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-107">&#182;</a>
+                <a class="pilcrow" href="#section-137">&#182;</a>
               </div>
-              <p>Scrape the dom and register any templates</p>
+              <h3 id="templates-scrape">templates::scrape</h3>
+<p>Scrape the dom and register any templates</p>
 
             </div>
             
@@ -2464,20 +2949,44 @@ already set so we don’t want to set it again below).</p>
         tpl.destroy();
       });
     }
-  };
-
-  MooVeeStar.templates = mvstpl;</pre></div></div>
+  };</pre></div></div>
             
         </li>
         
         
-        <li id="section-108">
+        <li id="section-138">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-108">&#182;</a>
+                <a class="pilcrow" href="#section-138">&#182;</a>
               </div>
-              <p>If html5 shiv, then let’s shiv in <markup> (IE8- support)</p>
+              <hr>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-139">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-139">&#182;</a>
+              </div>
+              
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-140">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-140">&#182;</a>
+              </div>
+              <p>Create the “markup” element <em>*MooVeeStar.tempaltes</em> uses.
+If html5 shiv, then let’s shiv in <markup> (&lt;=IE8 support)</p>
 
             </div>
             
@@ -2485,8 +2994,22 @@ already set so we don’t want to set it again below).</p>
     window.html5.elements += <span class="string">' markup'</span>;
     html5.shivDocument(document);
   }
-  document.createElement(<span class="string">'markup'</span>);
-  MooVeeStar.templates.scrape();
+  document.createElement(<span class="string">'markup'</span>);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-141">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-141">&#182;</a>
+              </div>
+              <p>Scrape the page on initialization</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  MooVeeStar.templates.scrape();
 
 })(<span class="keyword">this</span>);</pre></div></div>
             
