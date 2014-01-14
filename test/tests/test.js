@@ -539,7 +539,6 @@
       });
 
       it('should strip out comment, newlines, and excess whitespace', function(){
-
         MooVeeStar.templates.register('item-tpl', itemHtml);
 
         assert.isNotNull(MooVeeStar.templates.templates['item-tpl']);
@@ -618,6 +617,26 @@
         assert.equal(el.getLast().get('tag'), 'aside');
         assert.equal(el.getLast().get('text'), 'Subtitle');
         
+      });
+
+      it('should bind not change the value (style/url)', function(){
+        MooVeeStar.templates.register('test-inflate-valuechange', '<div data-bind="title" data-bind-title="title"><img data-bind="src" data-bind-src="style:background-image src" /></div>');
+        var el, data;
+        data = { title:'puppy', src:'http://test.com/puppy.jpg'};
+        el = MooVeeStar.templates.inflate('test-inflate-valuechange', data);
+        assert.equal(el.get('title'), data.title);
+        assert.equal(el.getElement('img').getStyle('background-image'), 'url('+data.src+')');
+        assert.equal(el.getElement('img').get('src'), data.src);
+      });
+
+      it('should bind the data via shorthand', function(){
+        MooVeeStar.templates.register('test-inflate-valuechange', '<div data-bind="title:title"><img data-bind="src:(style:background-image src)" /></div>');
+        var el, data;
+        data = { title:'puppy', src:'http://test.com/puppy.jpg'};
+        el = MooVeeStar.templates.inflate('test-inflate-valuechange', data);
+        assert.equal(el.get('title'), data.title);
+        assert.equal(el.getElement('img').getStyle('background-image'), 'url('+data.src+')');
+        assert.equal(el.getElement('img').get('src'), data.src);
       });
 
     });

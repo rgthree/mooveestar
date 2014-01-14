@@ -1,4 +1,4 @@
-// MooVeeStar v0.0.1 #20131203 - https://rgthree.github.io/mooveestar/
+// MooVeeStar v0.0.1 #20140114 - https://rgthree.github.io/mooveestar/
 // by Regis Gaughan, III <regis.gaughan@gmail.com>
 // MooVeeStar may be freely distributed under the MIT license.
 
@@ -956,17 +956,18 @@
               // Get the fields for this binding
               fields = child.get('data-bind-'+binding) ? child.get('data-bind-'+binding).split(' ') : ['default'];
               fields.each(function bindField(field){
+                var val = value; // Reassign the value in case we change it below
                 // If it's a style binding
                 if(field.indexOf('style:') === 0){
-                  value = value && String(value).indexOf('http') === 0 ? 'url('+value+')' : value;
-                  child.setStyle(field.replace('style:',''), value);
+                  val = val && String(val).indexOf('http') === 0 ? 'url('+val+')' : val;
+                  child.setStyle(field.replace('style:',''), val);
 
                 // tpl:[array] will inflate the specified template for each item
                 }else if(field.indexOf('tpl:') === 0 && mvstpl.check(field.replace('tpl:',''))){
                   child.empty();
-                  if(typeOf(value) === 'array'){
+                  if(typeOf(val) === 'array'){
                     var frag = document.createDocumentFragment();
-                    value.each(function(item){
+                    val.each(function(item){
                       // Inflate each template passing in item and have them init (force false skipInit)
                       // Then, remove data-tpl b/c we just inflated it (and, presumably, it's data is
                       // already set so we don't want to set it again below).
@@ -975,27 +976,27 @@
                       frag.appendChild(tpl);
                     });
                     child.empty().appendChild(frag);
-                  }else if(value){
-                    child.grab(mvstpl.inflate(field.replace('tpl:',''), value));
+                  }else if(val){
+                    child.grab(mvstpl.inflate(field.replace('tpl:',''), val));
                   }
 
                 // TODO: Revert previously bound classes?
                 }else if(field === 'class' || (binding === 'class' && field === 'default')){
-                  value && child.addClass(value);
+                  val && child.addClass(val);
 
-                }else if((field === 'html' || field === 'default') && /^element/.test(typeOf(value))) {
+                }else if((field === 'html' || field === 'default') && /^element/.test(typeOf(val))) {
                   child.empty();
-                  Array.from(value).forEach(function(val){
+                  Array.from(val).forEach(function(val){
                     child.grab(val);
                   });
                    
                 }else if(field === 'default'){
                   field = /input|textarea|select/.test(child.get('tag')) ? 'value' : 'html';
-                  child.set(field, value !== null ? value : '');
-                }else if(value !== null){
-                  child.set(field, value);
+                  child.set(field, val !== null ? val : '');
+                }else if(val !== null){
+                  child.set(field, val);
                 }else{
-                  child.removeProperty(field, value);
+                  child.removeProperty(field, val);
                 }
               });
             });
