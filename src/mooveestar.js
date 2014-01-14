@@ -1032,11 +1032,23 @@
     },
 
     // Scrape the dom and register any templates
-    scrape: function(){
-      $$('script[type="text/x-tpl"]').each(function(tpl){
-        mvstpl.register(tpl.get('id'), tpl.get('text'));
+    scrape: function(htmlOrEl){
+      var el = document.html;
+      if(typeOf(htmlOrEl) === 'string')
+        el = new Element('div', { html:htmlOrEl });
+      if(typeOf(htmlOrEl) === 'element')
+        el = htmlOrEl;
+      el.getElements('script[type="text/x-tpl"]').each(function(tpl){
+        mvstpl.register(tpl.get('id') || tpl.get('data-id'), tpl.get('text'));
         tpl.destroy();
       });
+    },
+
+    load: function(path, callback){
+      return new Request({ url:path, evalScripts:false, evalResponse:false, onSuccess: function(){
+        mvstpl.scrape(this.response.text);
+        callback && callback();
+      }}).get();
     }
   };
 

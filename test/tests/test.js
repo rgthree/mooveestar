@@ -548,6 +548,31 @@
     });
 
 
+    describe('.scrape()', function(){
+
+      it('should accept html string', function(){
+        MooVeeStar.templates.scrape('<html><body><script type="text/x-tpl" id="test001">test001</script></body></html>');
+        assert.isNotNull(MooVeeStar.templates.get('test001'));
+
+        MooVeeStar.templates.scrape('<html><body><script type="text/x-tpl" id="test002">test002</script><script type="text/x-tpl" id="test003">test003</script></body></html>');
+        assert.isNotNull(MooVeeStar.templates.get('test002'));
+        assert.isNotNull(MooVeeStar.templates.get('test003'));
+
+        MooVeeStar.templates.scrape('<script type="text/x-tpl" id="test004">test004</script><script type="text/x-tpl" id="test005">test005</script>');
+        assert.isNotNull(MooVeeStar.templates.get('test004'));
+        assert.isNotNull(MooVeeStar.templates.get('test005'));
+      });
+
+      it('should accept an html element', function(){
+        var el = new Element('div');
+        el.grab(new Element('script[type="text/x-tpl"][id="test006"][text="test006"]'));
+        el.grab(new Element('script[type="text/x-tpl"][id="test007"][text="test007"]'));
+        MooVeeStar.templates.scrape(el);
+        assert.isNotNull(MooVeeStar.templates.get('test006'));
+        assert.isNotNull(MooVeeStar.templates.get('test007'));
+      });
+
+    });
 
     describe('.inflate()', function(){
 
