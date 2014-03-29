@@ -1,4 +1,4 @@
-// > MooVeeStar v0.0.1 #20131211 - https://rgthree.github.io/mooveestar/
+// > MooVeeStar v0.0.2 #20140329 - https://rgthree.github.io/mooveestar/
 // > by Regis Gaughan, III <regis.gaughan@gmail.com> http://regisgaughan.com
 // > MooVeeStar may be freely distributed under the MIT license.
 
@@ -7,8 +7,6 @@
 ;(function(root){
   
   "use strict";
-
-
 
   // ---
   // ## MooVeeStar (Mediator/namespace)
@@ -796,8 +794,23 @@
     setElement: function(element){
       if(!this.element){
         this.element = $(element);
-        if(!this.element && this.template && this.options.inflater)
-          this.element = this.options.inflater(this.template, null, true);
+        if(!this.element && this.template && this.options.inflater){
+          
+          // Check if we're using MooVeeStar.templates and passing an element or a string that is not a registered
+          // template key, then inflate it as an element with an generated key
+          if((MooVeeStar.templates && this.options.inflater === MooVeeStar.templates.inflate) && (typeOf(this.template) === 'element' || !MooVeeStar.templates.check(this.template))){
+            var _uinqueTemplateID = String.uniqueID();
+            MooVeeStar.templates.register(_uinqueTemplateID, this.template);
+            this.template = _uinqueTemplateID;
+            this.element = this.options.inflater(this.template, null, true);
+          }else if(typeOf(this.template) === 'element'){
+            // Otherwise, if we passed an element, then use it directly
+            this.element = this.template;
+          }else{
+            // Finally, call the inflater with the passed template
+            this.element = this.options.inflater(this.template, null, true);
+          }
+        }
       }
       if(this.element){
         this.element.set('data-autobind', 'false');
@@ -826,9 +839,11 @@
     // 
     render: function(objectOrChangeEvent){
       if(this.options.binder){
-        var data = objectOrChangeEvent;
+        var data, isChangeEvent;
+        data = objectOrChangeEvent;
+        isChangeEvent = !!(objectOrChangeEvent instanceof MooVeeStar.Event && objectOrChangeEvent.changed);
         // If data is an event and there's items changed, then just bind the changed values
-        if(objectOrChangeEvent instanceof MooVeeStar.Event && objectOrChangeEvent.changed){
+        if(isChangeEvent){
           data = {};
           Object.forEach(objectOrChangeEvent.changed, function(v,k){
             data[k] = v.value;
@@ -836,7 +851,7 @@
         }
         // Pass the data to the binder. First param is the element, second is the data, and third is an options map
         // containing a boolean to tell the binder we may only want to bind the data defined (not unbind undefined fields)
-        this.options.binder(this.element, data || (this.model.toJSON && this.model.toJSON()) || this.model || {}, { onlyDefined:!!templateData });        
+        this.options.binder(this.element, data || (this.model.toJSON && this.model.toJSON()) || this.model || {}, { onlyDefined:isChangeEvent });        
       }
       return this;
     },
@@ -979,8 +994,6 @@
         // Only if we haven't attached this event and it's string value is a method name on this view instance
         if(!self._attachedEvents[k] && typeOf(self[v]) === 'function'){
           var name, attach, nativeName;
-
-          // 
           nativeName = k.substr(0, k.indexOf(':') > 0 ? k.indexOf(':') : k.length);
 
           // If we just passed in a `Element.Event` (with an optional relay) then the target is the view's element, and the event name is the item's key
@@ -1116,6 +1129,9 @@
     // The templates registry
     _templates: {},
 
+    // Test if the browser supports HTML5 <template> tags
+    supportsTemplate: ('content' in document.createElement('template')),
+
 
     // ### _templates::_cleanKey_
     // 
@@ -1134,9 +1150,12 @@
     //      <li data-bind="name uuid accent privacy" data-bind-uuid="data-uuid" data-bind-accent="class" data-bind-privacy="data-private class" data-action="choose"></li>
     //
     _parseShorthand: function(element){
-      var elements = element.getElements('[data-bind]');
+      var elements;
+      elements = element.getElements('[data-bind]');
       if(element.get('data-bind'))
         elements.unshift(element);
+
+
       elements.forEach(function(el){
         var dataBind = el.get('data-bind');
         if(dataBind && dataBind.contains(':')){
@@ -1162,19 +1181,35 @@
     // Register a template to an html string and create a dom from it
     // Overloaded to accept a register a script as second param
     // 
-    register: function(key, htmlStringOrFunction){
-      if(typeof(htmlStringOrFunction) === 'function'){
-        mvstpl.registerScript(key, htmlStringOrFunction);
-        return;
-      }
-      var html = htmlStringOrFunction;
+    register: function(key, htmlOrElementOrFunction){
+      var html, type;
       key = mvstpl._cleanKey(key);
-      // Strip out comments and excess whitespace
+      type = typeOf(htmlOrElementOrFunction);
+
+      if(type === 'function')
+        return mvstpl.registerScript(key, htmlOrElementOrFunction);
+
+
+      // If it's an element, use it's inner HTML (ior text content if a `<script>`)
+      
+      if(type === 'element'){
+        if(htmlOrElementOrFunction.get('tag') === 'script')
+          html = htmlOrElementOrFunction.get('text');
+        else if(htmlOrElementOrFunction.get('tag') === 'template')
+          html = htmlOrElementOrFunction.get('html');
+        else
+          html = new Element('tpl').grab(htmlOrElementOrFunction).get('html');
+      }else if(type === 'string'){
+        html = htmlOrElementOrFunction;
+      }else{
+        throw new Error('A registered script must pass an element or a string. (key:"'+key+'")');
+      }
+
       html = html.replace(/<\!\-\-.*?\-\->/g, '').trim().replace(/\n/g,' ').replace(/\s+/g,' ');
 
       mvstpl._templates[key] = mvstpl._templates[key] || {};
-      mvstpl._templates[key].dom = mvstpl._parseShorthand(new Element('markup[html="'+html+'"]'));
-      mvstpl._templates[key].markup = mvstpl._templates[key].dom.innerHTML;
+      mvstpl._templates[key].tpl = mvstpl._parseShorthand(new Element('tpl[html="'+html+'"]'));
+      mvstpl._templates[key].markup = mvstpl._templates[key].tpl.innerHTML;
     },
 
 
@@ -1221,12 +1256,12 @@
       data = mvstpl._templates[key];
       if(data){
         // If html5Shiv is installed, and we need to go around cloneNode for HTML5 elements
-        if(window.html5 && window.html5.supportsUnknownElements === false){
-          var node = html5.createElement('markup');
+        if(!mvstpl.supportsTemplate && window.html5 && window.html5.supportsUnknownElements === false){
+          var node = html5.createElement('template');
           node.innerHTML = data.markup;
           return $(node).set('data-templateid', key);  
         }else{
-          return data.dom.clone().set('data-templateid', key);
+          return data.tpl.clone().set('data-templateid', key);
         }       
       }else{
         throw new Error('Ain\'t no template called '+key+' ('+typeOf(mvstpl._templates[key])+')');
@@ -1383,17 +1418,18 @@
               // Get the fields for this binding
               fields = child.get('data-bind-'+binding) ? child.get('data-bind-'+binding).split(' ') : ['default'];
               fields.each(function bindField(field){
+                var val = value; // Reassign the value in case we change it below
                 // If it's a style binding
                 if(field.indexOf('style:') === 0){
-                  value = value && String(value).indexOf('http') === 0 ? 'url('+value+')' : value;
-                  child.setStyle(field.replace('style:',''), value);
+                  val = val && String(val).indexOf('http') === 0 ? 'url('+val+')' : val;
+                  child.setStyle(field.replace('style:',''), val);
 
                 // tpl:[array] will inflate the specified template for each item
                 }else if(field.indexOf('tpl:') === 0 && mvstpl.check(field.replace('tpl:',''))){
                   child.empty();
-                  if(typeOf(value) === 'array'){
+                  if(typeOf(val) === 'array'){
                     var frag = document.createDocumentFragment();
-                    value.each(function(item){
+                    val.each(function(item){
                       // Inflate each template passing in item and have them init (force false skipInit)
                       // Then, remove data-tpl b/c we just inflated it (and, presumably, it's data is
                       // already set so we don't want to set it again below).
@@ -1402,27 +1438,31 @@
                       frag.appendChild(tpl);
                     });
                     child.empty().appendChild(frag);
-                  }else if(value){
-                    child.grab(mvstpl.inflate(field.replace('tpl:',''), value));
+                  }else if(val){
+                    child.grab(mvstpl.inflate(field.replace('tpl:',''), val));
                   }
 
                 // TODO: Revert previously bound classes?
                 }else if(field === 'class' || (binding === 'class' && field === 'default')){
-                  value && child.addClass(value);
+                  val && child.addClass(val);
 
-                }else if((field === 'html' || field === 'default') && /^element/.test(typeOf(value))) {
+                }else if((field === 'html' || field === 'default') && /^element/.test(typeOf(val))) {
                   child.empty();
-                  Array.from(value).forEach(function(val){
+                  Array.from(val).forEach(function(val){
                     child.grab(val);
                   });
                    
                 }else if(field === 'default'){
                   field = /input|textarea|select/.test(child.get('tag')) ? 'value' : 'html';
-                  child.set(field, value !== null ? value : '');
-                }else if(value !== null){
-                  child.set(field, value);
+                  child.set(field, val !== null ? val : '');
+                }else if(val !== null){
+                  child.set(field, val);
                 }else{
-                  child.removeProperty(field, value);
+                  // IE 11 puts a 'null' if 'html' is used with removeProperty, so let's use `set`
+                  if(field === 'html')
+                    child.set(field, value);
+                  else
+                    child.removeProperty(field);
                 }
               });
             });
@@ -1460,13 +1500,28 @@
 
     // ### templates::scrape
     // 
-    // Scrape the dom and register any templates
-    // 
-    scrape: function(){
-      $$('script[type="text/x-tpl"]').each(function(tpl){
-        mvstpl.register(tpl.get('id'), tpl.get('text'));
+    // Scrape the dom and register any templates as `<template id="xxx">`, `<template data-id="xxx">` or `<script type="text/x-tpl" data-id="xxx">`
+    scrape: function(htmlOrEl){
+      var el = document.html;
+      if(typeOf(htmlOrEl) === 'string')
+        el = new Element('div', { html:htmlOrEl });
+      if(typeOf(htmlOrEl) === 'element')
+        el = htmlOrEl;
+      el.getElements('template[id], template[data-id], script[type="text/x-tpl"]').each(function(tpl){
+        mvstpl.register(tpl.get('id') || tpl.get('data-id'), tpl);
+
         tpl.destroy();
       });
+    },
+
+    // ### templates::load
+    // 
+    // Give it the path to templates file/text and it will scrape the results
+    load: function(path, callback){
+      return new Request({ url:path, evalScripts:false, evalResponse:false, onSuccess: function(){
+        mvstpl.scrape(this.response.text);
+        callback && callback();
+      }}).get();
     }
   };
 
@@ -1475,10 +1530,11 @@
   // Create the "markup" element **MooVeeStar.tempaltes* uses.
   // If html5 shiv, then let's shiv in <markup> (<=IE8 support)
   if(window && window.html5 && window.html5.supportsUnknownElements === false){
-    window.html5.elements += ' markup';
+    window.html5.elements += ' tpl template';
     html5.shivDocument(document);
   }
-  document.createElement('markup');
+  document.createElement('tpl');
+  document.createElement('template');
 
   // Scrape the page on initialization
   MooVeeStar.templates.scrape();
