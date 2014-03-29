@@ -566,9 +566,9 @@
     },
 
 
-    // ### Collection#getId
+    // ### Collection#getLength
     //     
-    // Returns the `cid`.
+    // Returns the number of items in the collection.
     // 
     getLength: function(){
       return this._models.length;
@@ -589,7 +589,7 @@
     // Returns the first model found from the key.
     // If `key` is `null`, return all items;
     // or call `Collection:findFirst` with `key`;
-    // of if `key` is numeric call `Collection:findFirst`
+    // or if `key` is numeric call `Collection:at`
     // 
     get: function(key){
       if(key instanceof MooVeeStar.Model)

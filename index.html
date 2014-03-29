@@ -40,9 +40,11 @@
       <dl id="classes">
         <dt>MooVeeStar</dt>
         <dd>
-          MooVeeStar is the object/namespace that holds the MooVeeStar modules. However, the MooVeeStar object itself is an instantiated MooTools Events object, and can therefore be used as a global mediator between components:
-          <code class="block javascript">MooVeeStar.addEvent('someEvent', function(eventObject){ ... }));
-MooVeeStar.fireEvent('someEvent', eventObject);</code>
+          <p>MooVeeStar is the object/namespace that holds the MooVeeStar modules. However, the MooVeeStar object itself is an instantiated MooTools Events object, and can therefore be used as a global mediator between components:</p>
+          <code class="block javascript">MooVeeStar.addEvent('someEvent', function(eventObject){
+  alert(eventObject.say);
+});
+MooVeeStar.fireEvent('someEvent', { say:'hi'});</code>
         </dd>
 
         <dt>MooVeeStar.Model</dt>
@@ -70,9 +72,9 @@ MooVeeStar.fireEvent('someEvent', eventObject);</code>
     },
     fullname: {
       set: function(value){
-        var names = value.split(' ');
-        this.set('firstname', names[0]);
-        this.set('lastname', names[1]);
+        var names = (value || '').split(' ');
+        this.set('firstname', names[0] || null);
+        this.set('lastname', names[1] || null);
       },
       get: function(){
         return this.get('firstname')+' '+this.get('lastname');
@@ -169,6 +171,14 @@ if(ssn != null) // Not Cancel
         <dt>MooVeeStar.Collection</dt>
         <dd>
           <dl>
+            <dt data-type="property">
+              errors
+              <code>collection.modelClass</code>
+            </dt>
+            <dd>
+              The class of models will auto-instantiate to when added if not an instance of  <code>MooVeeStar.Model</code> already
+            </dd>
+
             <dt data-type="method">
               constructor/initialize
               <code>new MooVeeStar.Collection([models], [options])</code>
@@ -177,16 +187,28 @@ if(ssn != null) // Not Cancel
 
             <dt data-type="method">
               add
-              <code>collection.add(models, [silent])</code>
+              <code>collection.add(items, [options])</code>
             </dt>
-            <dd></dd>
+            <dd>Adds an item to the collection. Will not allow duplicates unless the collection's <code>allowDuplicates</code> is <code>true</code>. Will instantiate the collection's <code>modelClass</code> if the item added is not a <code>MooVeeStar.Model</code>. It is possible to add mixed Model instances. Fires <code>Collection#change</code> and <code>Collection#add</code> and <code>Collection#error</code> events.</dd>
             
             <dt data-type="method">
               remove
-              <code>collection.remove(models, [silent])</code>
+              <code>collection.remove(indexOrModels, [options])</code>
             </dt>
-            <dd></dd>
+            <dd>Removes a model by index or all instance of a model or array of models from the collection. If <code>indexOrModels</code> is a number, then remove at that index; if it is a string id, then get the model and remove all instances of it; if it is a model or array of models, then remove all instances of each. Fires <code>Collection#change</code> and <code>Collection#remove</code> events.</dd>
             
+            <dt data-type="method">
+              getId
+              <code>collection.empty([options])</code>
+            </dt>
+            <dd>Empties the Collection by callng <code>remove</code> on all items</dd>
+
+            <dt data-type="method">
+              getId
+              <code>collection.move(indexOrModel, to, [options])</code>
+            </dt>
+            <dd>Moves a model from one index to another. If <code>indexOrModel</code> is a number, then move the model at that index. If it is a model then only whose first instance of the model in the collection will be moved.</dd>
+
             <dt data-type="method">
               getId
               <code>collection.getId()</code>
@@ -197,53 +219,64 @@ if(ssn != null) // Not Cancel
               getLength
               <code>collection.getLength()</code>
             </dt>
-            <dd></dd>
+            <dd>Returns the number of items in the collection</dd>
             
             <dt data-type="method">
               at
               <code>collection.at(index)</code>
             </dt>
-            <dd></dd>
+            <dd>Returns the model at a specific index, if it exists.</dd>
             
             <dt data-type="method">
               get
-              <code>collection.get(cid)</code>
+              <code>collection.get([key])</code>
             </dt>
-            <dd></dd>
+            <dd>Returns the first model found from the key. If <code>key</code> is <code>null</code>, return all items; or call <code>Collection:findFirst</code> with <code>key</code>; or if <code>key</code> is numeric call C</code>ollection:at</code></dd>
             
             <dt data-type="method">
               getAll
               <code>collection.getAll()</code>
             </dt>
-            <dd></dd>
+            <dd>Returns the list of models</dd>
             
             <dt data-type="method">
               find
-              <code>collection.find(values, [against])</code>
+              <code>collection.find(values, [keyToFind])</code>
             </dt>
-            <dd></dd>
+            <dd>Accept a value or list of values and returns any models who’s idProperty is within the values list. Pass <code>keyToFind</code> to compare that key’s value instread of <code>idProperty</code></dd>
             
             <dt data-type="method">
               findFirst
-              <code>collection.findFirst(value, [against])</code>
+              <code>collection.findFirst(value, [keyToFind])</code>
             </dt>
-            <dd></dd>
+            <dd>Returns the first model whos <code>idProperty</code> (or <code>keyToFind</code> value) matches the passed value</dd>
 
             <dt data-type="method">
               toJSON
               <code>collection.toJSON()</code>
             </dt>
-            <dd></dd>
+            <dd>Returns a _new array_ of all of the <code>Models.toJSON</code> values</dd>
 
-          </dl>
-
-          <h3>Models Methods Pass Throughs</h3>
-          <dl>
             <dt data-type="method">
-              set
-              <code>collection.set()</code>
+              toJSON
+              <code>collection.destroy([options])</code>
             </dt>
-            <dd>Calls <code>model.set(&lt;arguments&gt;)</code> with the arguments for each model.</dd>
+            <dd>Silently empties the list and fires a destroy message</dd>
+
+            <dt data-type="method">
+              toJSON
+              <code>collection.applyToModels(operation, opArgs, modelsOrFindValues, findKeyToFind)</code>
+            </dt>
+            <dd>Calls a method on all models, or all models found
+              <code class="block javascript">// Set all models to complete
+collection.applyToModels('set', ['complete', true]);
+
+// Set all models whos 'complete' key is === false
+collection.applyToModels('set', [{ complete:true }], false, 'complete');
+
+// Unset 'complete' and 'due' on models whos 'complete' key is === false
+collection.applyToModels('unset', [['complete','due']], collection.find(false, 'complete'));</code></dd>
+
           </dl>
 
           <h3>Array Methods</h3>
