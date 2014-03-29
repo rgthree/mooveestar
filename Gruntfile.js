@@ -18,9 +18,9 @@ module.exports = function(grunt) {
     concat: {
       options: {
         stripBanners: { block:false, line:true },        
-        banner: '// <%= pkg.name %> v<%= pkg.version %> #<%= grunt.template.today("yyyymmdd") %> - <%= pkg.homepage %>\n'+
-                '// by <%= pkg.author.name %> <<%= pkg.author.email %>>\n'+
-                '// <%= pkg.name %> may be freely distributed under the <%= pkg.license %> license.\n\n'
+        banner: '// > <%= pkg.name %> v<%= pkg.version %> #<%= grunt.template.today("yyyymmdd") %> - <%= pkg.homepage %>\n'+
+                '// > by <%= pkg.author.name %> <<%= pkg.author.email %>> <%= pkg.author.url %>\n'+
+                '// > <%= pkg.name %> may be freely distributed under the <%= pkg.license %> license.\n\n'
       },
       source: {
         src: ['src/<%= pkg.name.toLowerCase() %>.js'],
