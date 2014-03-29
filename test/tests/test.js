@@ -553,7 +553,7 @@
 
     describe('.scrape()', function(){
 
-      it('should accept html string', function(){
+      it('should accept html <script> string', function(){
         MooVeeStar.templates.scrape('<html><body><script type="text/x-tpl" id="test001">test001</script></body></html>');
         assert.isNotNull(MooVeeStar.templates.get('test001'));
 
@@ -566,13 +566,50 @@
         assert.isNotNull(MooVeeStar.templates.get('test005'));
       });
 
-      it('should accept an html element', function(){
+      it('should accept html <template> string', function(){
+        MooVeeStar.templates.scrape('<html><body><template id="test011">test011</template></body></html>');
+        assert.isNotNull(MooVeeStar.templates.get('test011'));
+
+        MooVeeStar.templates.scrape('<html><body><template id="test012">test012</template><template data-id="test013">test013</template></body></html>');
+        assert.isNotNull(MooVeeStar.templates.get('test012'));
+        assert.isNotNull(MooVeeStar.templates.get('test013'));
+
+        MooVeeStar.templates.scrape('<template id="test014">test014</template><template data-id="test015">test015</template>');
+        assert.isNotNull(MooVeeStar.templates.get('test014'));
+        assert.isNotNull(MooVeeStar.templates.get('test015'));
+      });
+
+      it('should accept html w/ <script> & <template> string', function(){
+        MooVeeStar.templates.scrape('<script type="text/x-tpl" id="test021">test021</script><template data-id="test022">test022</template>');
+        assert.isNotNull(MooVeeStar.templates.get('test021'));
+        assert.isNotNull(MooVeeStar.templates.get('test022'));
+      });
+
+      it('should accept a <script> html element', function(){
         var el = new Element('div');
-        el.grab(new Element('script[type="text/x-tpl"][id="test006"][text="test006"]'));
-        el.grab(new Element('script[type="text/x-tpl"][id="test007"][text="test007"]'));
+        el.grab(new Element('script[type="text/x-tpl"][id="test036"][text="test036"]'));
+        el.grab(new Element('script[type="text/x-tpl"][id="test037"][text="test037"]'));
         MooVeeStar.templates.scrape(el);
-        assert.isNotNull(MooVeeStar.templates.get('test006'));
-        assert.isNotNull(MooVeeStar.templates.get('test007'));
+        assert.isNotNull(MooVeeStar.templates.get('test036'));
+        assert.isNotNull(MooVeeStar.templates.get('test037'));
+      });
+
+      it('should accept a <template> html element', function(){
+        var el = new Element('div');
+        el.grab(new Element('template[id="test046"][text="test046"]'));
+        el.grab(new Element('template[data-id="test047"][html="test047"]'));
+        MooVeeStar.templates.scrape(el);
+        assert.isNotNull(MooVeeStar.templates.get('test046'));
+        assert.isNotNull(MooVeeStar.templates.get('test047'));
+      });
+
+      it('should accept an element w/ <script> & <template> elements', function(){
+        var el = new Element('div');
+        el.grab(new Element('script[type="text/x-tpl"][id="test056"][text="test056"]'));
+        el.grab(new Element('template[data-id="test057"][html="test057"]'));
+        MooVeeStar.templates.scrape(el);
+        assert.isNotNull(MooVeeStar.templates.get('test056'));
+        assert.isNotNull(MooVeeStar.templates.get('test057'));
       });
 
     });
