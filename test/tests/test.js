@@ -80,15 +80,18 @@
         var error, errorFgColor;
         error = errorFgColor = false;
         model.addEvent('error', function(e){
+          console.log(e);
           if(e.model === model && e.errors.fgColor && e.errors.fgColor.value && e.errors.fgColor.from && e.errors.fgColor.error)
             error = true;
         });
         model.addEvent('error:fgColor', function(e){
+          console.log(e);
           if(e.model === model && e.key === 'fgColor' && e.value && e.from && e.error)
             errorFgColor = true;
         });
 
         // Try setting our fgColor to the background color
+        error = errorFgColor = false;
         model.set('fgColor', 'brown');
         assert.isTrue(error);
         assert.isTrue(errorFgColor);
@@ -517,6 +520,112 @@
   });
 
 
+  describe('MooVeeStar.View', function(){
+
+    var Employee, EmployeesCollection, EmployeeView, EmployeesView;
+
+    Employee = new Class({
+      Extends: MooVeeStar.Model,
+      idProperty: 'uid'
+    });
+
+    EmployeesCollection = new Class({
+      Extends: MooVeeStar.Collection,
+      modelClass: Employee
+    });
+
+    EmployeesView = new Class({
+      Extends: MooVeeStar.View,
+      template: new Element('ul'),
+      events:{
+        'collection:add':'onCollectionAdd'
+      },
+      initialize: function(collection){
+        this.collection = collection;
+        this.parent(new MooVeeStar.Model({}));
+      },
+      onCollectionAdd: function(e){
+        var self = this;
+        (e && e.models || []).forEach(function(m){
+          self.element.grab($(new EmployeeView(m)));
+        });
+      }
+    });
+
+    EmployeeView = new Class({
+      Extends: MooVeeStar.View,
+      template: '<li data-bind="uid:data-uid"><h2 data-bind="name"></h2><p data-bind="sex"></p><p data-bind="salary"></p></li>',
+      events: { 'model:change':'render' }
+    });
+
+    var collection, itemsView;
+
+    itemsView = new EmployeesView((collection = new EmployeesCollection()));
+    collection.add(new Employee({ uid:'001', name:'Tom', sex:'m', salary:40000 }));
+    collection.add([
+      new Employee({ uid:'002', name:'Susan', sex:'f', salary:45000 }),
+      { uid:'003', name:'Diane', sex:'f', salary:60000 }
+      ]);
+
+
+    it('should be instantiated w/ Events & Options', function(){
+      assert.instanceOf(itemsView, MooVeeStar.View);
+      assert.typeOf(itemsView.addEvent, 'function');
+      assert.typeOf(itemsView.setOptions, 'function');
+    });
+
+    it('should haven inital collection, models and elements correctly', function(){
+      // New local collection to test this specifically
+      assert.equal(collection.getLength(), 3);
+      assert.equal(collection._models.length, 3);
+      assert.instanceOf(collection.get('003'), Employee);
+      assert.equal(typeOf($(itemsView)), 'element');
+      assert.equal($(itemsView).get('tag'), 'ul');
+      assert.equal($(itemsView).getChildren().length, 3);
+      assert.equal($(itemsView).getElement('[data-uid="001"] [data-bind="name"]').get('html'), 'Tom');
+      assert.equal($(itemsView).getElement('[data-uid="001"] [data-bind="sex"]').get('html'), 'm');
+      assert.equal($(itemsView).getElement('[data-uid="001"] [data-bind="salary"]').get('html'), '40000');
+      assert.equal($(itemsView).getElement('[data-uid="002"] [data-bind="name"]').get('html'), 'Susan');
+      assert.equal($(itemsView).getElement('[data-uid="002"] [data-bind="sex"]').get('html'), 'f');
+      assert.equal($(itemsView).getElement('[data-uid="002"] [data-bind="salary"]').get('html'), '45000');
+      assert.equal($(itemsView).getElement('[data-uid="003"] [data-bind="name"]').get('html'), 'Diane');
+      assert.equal($(itemsView).getElement('[data-uid="003"] [data-bind="sex"]').get('html'), 'f');
+      assert.equal($(itemsView).getElement('[data-uid="003"] [data-bind="salary"]').get('html'), '60000');
+    });
+
+    it('changing amodel should update the item view', function(){
+      var susan = collection.get('002');
+      susan.set({ salary:65000 }); // Setting this should only set salary.
+      assert.equal($(itemsView).getElement('[data-uid="001"] [data-bind="name"]').get('html'), 'Tom');
+      assert.equal($(itemsView).getElement('[data-uid="001"] [data-bind="sex"]').get('html'), 'm');
+      assert.equal($(itemsView).getElement('[data-uid="001"] [data-bind="salary"]').get('html'), '40000');
+      assert.equal($(itemsView).getElement('[data-uid="002"] [data-bind="name"]').get('html'), 'Susan');
+      assert.equal($(itemsView).getElement('[data-uid="002"] [data-bind="sex"]').get('html'), 'f');
+      assert.equal($(itemsView).getElement('[data-uid="002"] [data-bind="salary"]').get('html'), '65000');
+      assert.equal($(itemsView).getElement('[data-uid="003"] [data-bind="name"]').get('html'), 'Diane');
+      assert.equal($(itemsView).getElement('[data-uid="003"] [data-bind="sex"]').get('html'), 'f');
+      assert.equal($(itemsView).getElement('[data-uid="003"] [data-bind="salary"]').get('html'), '60000');
+
+      $(itemsView).getElement('[data-uid="002"]').retrieve('__view').render({ salary:90000 }); // Passing a render data object should _only_ render these
+      assert.equal($(itemsView).getElement('[data-uid="001"] [data-bind="name"]').get('html'), 'Tom');
+      assert.equal($(itemsView).getElement('[data-uid="001"] [data-bind="sex"]').get('html'), 'm');
+      assert.equal($(itemsView).getElement('[data-uid="001"] [data-bind="salary"]').get('html'), '40000');
+      assert.equal($(itemsView).getElement('li:not([data-uid]) [data-bind="name"]').get('html'), '');
+      assert.equal($(itemsView).getElement('li:not([data-uid])  [data-bind="sex"]').get('html'), '');
+      assert.equal($(itemsView).getElement('li:not([data-uid])  [data-bind="salary"]').get('html'), '90000');
+      assert.equal($(itemsView).getElement('[data-uid="003"] [data-bind="name"]').get('html'), 'Diane');
+      assert.equal($(itemsView).getElement('[data-uid="003"] [data-bind="sex"]').get('html'), 'f');
+      assert.equal($(itemsView).getElement('[data-uid="003"] [data-bind="salary"]').get('html'), '60000');
+    });
+
+
+
+    describe('.add(...)', function(){
+      it('should add single or array of and inflate items', function(){
+      });
+    });
+  });
+
 
   describe('MooVeeStar.templates', function(){
     
@@ -530,25 +639,86 @@
         MooVeeStar.templates.register('section-tpl', sectionHtml);
         MooVeeStar.templates.register('list-tpl', listHtml);
 
-        assert.isNotNull(MooVeeStar.templates.templates['section-tpl']);
-        assert.equal(MooVeeStar.templates.templates['section-tpl'].markup, sectionHtml);
+        assert.isNotNull(MooVeeStar.templates._templates['section-tpl']);
+        assert.equal(MooVeeStar.templates._templates['section-tpl'].markup, sectionHtml);
 
-        assert.isNotNull(MooVeeStar.templates.templates['list-tpl']);
-        assert.equal(MooVeeStar.templates.templates['list-tpl'].markup, listHtml);
+        assert.isNotNull(MooVeeStar.templates._templates['list-tpl']);
+        assert.equal(MooVeeStar.templates._templates['list-tpl'].markup, listHtml);
 
       });
 
       it('should strip out comment, newlines, and excess whitespace', function(){
-
         MooVeeStar.templates.register('item-tpl', itemHtml);
 
-        assert.isNotNull(MooVeeStar.templates.templates['item-tpl']);
-        assert.equal(MooVeeStar.templates.templates['item-tpl'].markup, '<li> </li>');
+        assert.isNotNull(MooVeeStar.templates._templates['item-tpl']);
+        assert.equal(MooVeeStar.templates._templates['item-tpl'].markup, '<li> </li>');
       });
 
     });
 
 
+    describe('.scrape()', function(){
+
+      it('should accept html <script> string', function(){
+        MooVeeStar.templates.scrape('<html><body><script type="text/x-tpl" id="test001">test001</script></body></html>');
+        assert.isNotNull(MooVeeStar.templates.get('test001'));
+
+        MooVeeStar.templates.scrape('<html><body><script type="text/x-tpl" id="test002">test002</script><script type="text/x-tpl" id="test003">test003</script></body></html>');
+        assert.isNotNull(MooVeeStar.templates.get('test002'));
+        assert.isNotNull(MooVeeStar.templates.get('test003'));
+
+        MooVeeStar.templates.scrape('<script type="text/x-tpl" id="test004">test004</script><script type="text/x-tpl" id="test005">test005</script>');
+        assert.isNotNull(MooVeeStar.templates.get('test004'));
+        assert.isNotNull(MooVeeStar.templates.get('test005'));
+      });
+
+      it('should accept html <template> string', function(){
+        MooVeeStar.templates.scrape('<html><body><template id="test011">test011</template></body></html>');
+        assert.isNotNull(MooVeeStar.templates.get('test011'));
+
+        MooVeeStar.templates.scrape('<html><body><template id="test012">test012</template><template data-id="test013">test013</template></body></html>');
+        assert.isNotNull(MooVeeStar.templates.get('test012'));
+        assert.isNotNull(MooVeeStar.templates.get('test013'));
+
+        MooVeeStar.templates.scrape('<template id="test014">test014</template><template data-id="test015">test015</template>');
+        assert.isNotNull(MooVeeStar.templates.get('test014'));
+        assert.isNotNull(MooVeeStar.templates.get('test015'));
+      });
+
+      it('should accept html w/ <script> & <template> string', function(){
+        MooVeeStar.templates.scrape('<script type="text/x-tpl" id="test021">test021</script><template data-id="test022">test022</template>');
+        assert.isNotNull(MooVeeStar.templates.get('test021'));
+        assert.isNotNull(MooVeeStar.templates.get('test022'));
+      });
+
+      it('should accept a <script> html element', function(){
+        var el = new Element('div');
+        el.grab(new Element('script[type="text/x-tpl"][id="test036"][text="test036"]'));
+        el.grab(new Element('script[type="text/x-tpl"][id="test037"][text="test037"]'));
+        MooVeeStar.templates.scrape(el);
+        assert.isNotNull(MooVeeStar.templates.get('test036'));
+        assert.isNotNull(MooVeeStar.templates.get('test037'));
+      });
+
+      it('should accept a <template> html element', function(){
+        var el = new Element('div');
+        el.grab(new Element('template[id="test046"][text="test046"]'));
+        el.grab(new Element('template[data-id="test047"][html="test047"]'));
+        MooVeeStar.templates.scrape(el);
+        assert.isNotNull(MooVeeStar.templates.get('test046'));
+        assert.isNotNull(MooVeeStar.templates.get('test047'));
+      });
+
+      it('should accept an element w/ <script> & <template> elements', function(){
+        var el = new Element('div');
+        el.grab(new Element('script[type="text/x-tpl"][id="test056"][text="test056"]'));
+        el.grab(new Element('template[data-id="test057"][html="test057"]'));
+        MooVeeStar.templates.scrape(el);
+        assert.isNotNull(MooVeeStar.templates.get('test056'));
+        assert.isNotNull(MooVeeStar.templates.get('test057'));
+      });
+
+    });
 
     describe('.inflate()', function(){
 
@@ -618,6 +788,26 @@
         assert.equal(el.getLast().get('tag'), 'aside');
         assert.equal(el.getLast().get('text'), 'Subtitle');
         
+      });
+
+      it('should bind not change the value (style/url)', function(){
+        MooVeeStar.templates.register('test-inflate-valuechange', '<div data-bind="title" data-bind-title="title"><img data-bind="src" data-bind-src="style:background-image src" /></div>');
+        var el, data;
+        data = { title:'puppy', src:'http://test.com/puppy.jpg'};
+        el = MooVeeStar.templates.inflate('test-inflate-valuechange', data);
+        assert.equal(el.get('title'), data.title);
+        assert.equal(el.getElement('img').getStyle('background-image'), 'url('+data.src+')');
+        assert.equal(el.getElement('img').get('src'), data.src);
+      });
+
+      it('should bind the data via shorthand', function(){
+        MooVeeStar.templates.register('test-inflate-valuechange', '<div data-bind="title:title"><img data-bind="src:(style:background-image src)" /></div>');
+        var el, data;
+        data = { title:'puppy', src:'http://test.com/puppy.jpg'};
+        el = MooVeeStar.templates.inflate('test-inflate-valuechange', data);
+        assert.equal(el.get('title'), data.title);
+        assert.equal(el.getElement('img').getStyle('background-image'), 'url('+data.src+')');
+        assert.equal(el.getElement('img').get('src'), data.src);
       });
 
     });

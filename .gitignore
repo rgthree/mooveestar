@@ -3,3 +3,5 @@ test.html
 .sass-cache
 *.sublime-*
 .DS_Store
+docs
+*docco*
