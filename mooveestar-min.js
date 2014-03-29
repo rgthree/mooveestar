@@ -1,4 +1,4 @@
-// > MooVeeStar v0.0.1 #20140329 - https://rgthree.github.io/mooveestar/
+// > MooVeeStar v0.0.2 #20140329 - https://rgthree.github.io/mooveestar/
 // > by Regis Gaughan, III <regis.gaughan@gmail.com> http://regisgaughan.com
 // > MooVeeStar may be freely distributed under the MIT license.
 
