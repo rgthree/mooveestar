@@ -520,6 +520,112 @@
   });
 
 
+  describe('MooVeeStar.View', function(){
+
+    var Employee, EmployeesCollection, EmployeeView, EmployeesView;
+
+    Employee = new Class({
+      Extends: MooVeeStar.Model,
+      idProperty: 'uid'
+    });
+
+    EmployeesCollection = new Class({
+      Extends: MooVeeStar.Collection,
+      modelClass: Employee
+    });
+
+    EmployeesView = new Class({
+      Extends: MooVeeStar.View,
+      template: new Element('ul'),
+      events:{
+        'collection:add':'onCollectionAdd'
+      },
+      initialize: function(collection){
+        this.collection = collection;
+        this.parent(new MooVeeStar.Model({}));
+      },
+      onCollectionAdd: function(e){
+        var self = this;
+        (e && e.models || []).forEach(function(m){
+          self.element.grab($(new EmployeeView(m)));
+        });
+      }
+    });
+
+    EmployeeView = new Class({
+      Extends: MooVeeStar.View,
+      template: '<li data-bind="uid:data-uid"><h2 data-bind="name"></h2><p data-bind="sex"></p><p data-bind="salary"></p></li>',
+      events: { 'model:change':'render' }
+    });
+
+    var collection, itemsView;
+
+    itemsView = new EmployeesView((collection = new EmployeesCollection()));
+    collection.add(new Employee({ uid:'001', name:'Tom', sex:'m', salary:40000 }));
+    collection.add([
+      new Employee({ uid:'002', name:'Susan', sex:'f', salary:45000 }),
+      { uid:'003', name:'Diane', sex:'f', salary:60000 }
+      ]);
+
+
+    it('should be instantiated w/ Events & Options', function(){
+      assert.instanceOf(itemsView, MooVeeStar.View);
+      assert.typeOf(itemsView.addEvent, 'function');
+      assert.typeOf(itemsView.setOptions, 'function');
+    });
+
+    it('should haven inital collection, models and elements correctly', function(){
+      // New local collection to test this specifically
+      assert.equal(collection.getLength(), 3);
+      assert.equal(collection._models.length, 3);
+      assert.instanceOf(collection.get('003'), Employee);
+      assert.equal(typeOf($(itemsView)), 'element');
+      assert.equal($(itemsView).get('tag'), 'ul');
+      assert.equal($(itemsView).getChildren().length, 3);
+      assert.equal($(itemsView).getElement('[data-uid="001"] [data-bind="name"]').get('html'), 'Tom');
+      assert.equal($(itemsView).getElement('[data-uid="001"] [data-bind="sex"]').get('html'), 'm');
+      assert.equal($(itemsView).getElement('[data-uid="001"] [data-bind="salary"]').get('html'), '40000');
+      assert.equal($(itemsView).getElement('[data-uid="002"] [data-bind="name"]').get('html'), 'Susan');
+      assert.equal($(itemsView).getElement('[data-uid="002"] [data-bind="sex"]').get('html'), 'f');
+      assert.equal($(itemsView).getElement('[data-uid="002"] [data-bind="salary"]').get('html'), '45000');
+      assert.equal($(itemsView).getElement('[data-uid="003"] [data-bind="name"]').get('html'), 'Diane');
+      assert.equal($(itemsView).getElement('[data-uid="003"] [data-bind="sex"]').get('html'), 'f');
+      assert.equal($(itemsView).getElement('[data-uid="003"] [data-bind="salary"]').get('html'), '60000');
+    });
+
+    it('changing amodel should update the item view', function(){
+      var susan = collection.get('002');
+      susan.set({ salary:65000 }); // Setting this should only set salary.
+      assert.equal($(itemsView).getElement('[data-uid="001"] [data-bind="name"]').get('html'), 'Tom');
+      assert.equal($(itemsView).getElement('[data-uid="001"] [data-bind="sex"]').get('html'), 'm');
+      assert.equal($(itemsView).getElement('[data-uid="001"] [data-bind="salary"]').get('html'), '40000');
+      assert.equal($(itemsView).getElement('[data-uid="002"] [data-bind="name"]').get('html'), 'Susan');
+      assert.equal($(itemsView).getElement('[data-uid="002"] [data-bind="sex"]').get('html'), 'f');
+      assert.equal($(itemsView).getElement('[data-uid="002"] [data-bind="salary"]').get('html'), '65000');
+      assert.equal($(itemsView).getElement('[data-uid="003"] [data-bind="name"]').get('html'), 'Diane');
+      assert.equal($(itemsView).getElement('[data-uid="003"] [data-bind="sex"]').get('html'), 'f');
+      assert.equal($(itemsView).getElement('[data-uid="003"] [data-bind="salary"]').get('html'), '60000');
+
+      $(itemsView).getElement('[data-uid="002"]').retrieve('__view').render({ salary:90000 }); // Passing a render data object should _only_ render these
+      assert.equal($(itemsView).getElement('[data-uid="001"] [data-bind="name"]').get('html'), 'Tom');
+      assert.equal($(itemsView).getElement('[data-uid="001"] [data-bind="sex"]').get('html'), 'm');
+      assert.equal($(itemsView).getElement('[data-uid="001"] [data-bind="salary"]').get('html'), '40000');
+      assert.equal($(itemsView).getElement('li:not([data-uid]) [data-bind="name"]').get('html'), '');
+      assert.equal($(itemsView).getElement('li:not([data-uid])  [data-bind="sex"]').get('html'), '');
+      assert.equal($(itemsView).getElement('li:not([data-uid])  [data-bind="salary"]').get('html'), '90000');
+      assert.equal($(itemsView).getElement('[data-uid="003"] [data-bind="name"]').get('html'), 'Diane');
+      assert.equal($(itemsView).getElement('[data-uid="003"] [data-bind="sex"]').get('html'), 'f');
+      assert.equal($(itemsView).getElement('[data-uid="003"] [data-bind="salary"]').get('html'), '60000');
+    });
+
+
+
+    describe('.add(...)', function(){
+      it('should add single or array of and inflate items', function(){
+      });
+    });
+  });
+
 
   describe('MooVeeStar.templates', function(){
     

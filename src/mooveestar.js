@@ -794,8 +794,23 @@
     setElement: function(element){
       if(!this.element){
         this.element = $(element);
-        if(!this.element && this.template && this.options.inflater)
-          this.element = this.options.inflater(this.template, null, true);
+        if(!this.element && this.template && this.options.inflater){
+          
+          // Check if we're using MooVeeStar.templates and passing an element or a string that is not a registered
+          // template key, then inflate it as an element with an generated key
+          if((MooVeeStar.templates && this.options.inflater === MooVeeStar.templates.inflate) && (typeOf(this.template) === 'element' || !MooVeeStar.templates.check(this.template))){
+            var _uinqueTemplateID = String.uniqueID();
+            MooVeeStar.templates.register(_uinqueTemplateID, this.template);
+            this.template = _uinqueTemplateID;
+            this.element = this.options.inflater(this.template, null, true);
+          }else if(typeOf(this.template) === 'element'){
+            // Otherwise, if we passed an element, then use it directly
+            this.element = this.template;
+          }else{
+            // Finally, call the inflater with the passed template
+            this.element = this.options.inflater(this.template, null, true);
+          }
+        }
       }
       if(this.element){
         this.element.set('data-autobind', 'false');
@@ -824,9 +839,11 @@
     // 
     render: function(objectOrChangeEvent){
       if(this.options.binder){
-        var data = objectOrChangeEvent;
+        var data, isChangeEvent;
+        data = objectOrChangeEvent;
+        isChangeEvent = !!(objectOrChangeEvent instanceof MooVeeStar.Event && objectOrChangeEvent.changed);
         // If data is an event and there's items changed, then just bind the changed values
-        if(objectOrChangeEvent instanceof MooVeeStar.Event && objectOrChangeEvent.changed){
+        if(isChangeEvent){
           data = {};
           Object.forEach(objectOrChangeEvent.changed, function(v,k){
             data[k] = v.value;
@@ -834,7 +851,7 @@
         }
         // Pass the data to the binder. First param is the element, second is the data, and third is an options map
         // containing a boolean to tell the binder we may only want to bind the data defined (not unbind undefined fields)
-        this.options.binder(this.element, data || (this.model.toJSON && this.model.toJSON()) || this.model || {}, { onlyDefined:!!templateData });        
+        this.options.binder(this.element, data || (this.model.toJSON && this.model.toJSON()) || this.model || {}, { onlyDefined:isChangeEvent });        
       }
       return this;
     },
@@ -1174,11 +1191,14 @@
 
 
       // If it's an element, use it's inner HTML (ior text content if a `<script>`)
+      
       if(type === 'element'){
         if(htmlOrElementOrFunction.get('tag') === 'script')
           html = htmlOrElementOrFunction.get('text');
-        else
+        else if(htmlOrElementOrFunction.get('tag') === 'template')
           html = htmlOrElementOrFunction.get('html');
+        else
+          html = new Element('tpl').grab(htmlOrElementOrFunction).get('html');
       }else if(type === 'string'){
         html = htmlOrElementOrFunction;
       }else{
