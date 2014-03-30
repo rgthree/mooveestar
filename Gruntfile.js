@@ -1,24 +1,34 @@
 /*global module:false*/
 module.exports = function(grunt) {
 
+  var pkg,v;
+  pkg = grunt.file.readJSON('package.json');
+  v = pkg.version.split('+');
+  pkg.version = (v[0] || '0.0.1')+'+'+(grunt.template.today("yyyymmdd"));
+
   grunt.initConfig({
-    pkg: grunt.file.readJSON('package.json'), // the package file to use
+
+    pkg: pkg, // the package file to use
+
     jshint: {
       all: ['Gruntfile.js', 'src/**/*.js', 'test/**/*.js']
     },
+
     mocha_phantomjs: {
       all: ['test/**/*.html']
     },
+
     uglify: {
       build: {
         src: 'src/<%= pkg.name.toLowerCase() %>.js',
         dest: '<%= pkg.name.toLowerCase() %>-min.js'
       }
     },
+
     concat: {
       options: {
         stripBanners: { block:false, line:true },        
-        banner: '// > <%= pkg.name %> v<%= pkg.version %> #<%= grunt.template.today("yyyymmdd") %> - <%= pkg.homepage %>\n'+
+        banner: '// > <%= pkg.name %> v<%= pkg.version %> - <%= pkg.homepage %>\n'+
                 '// > by <%= pkg.author.name %> <<%= pkg.author.email %>> <%= pkg.author.url %>\n'+
                 '// > <%= pkg.name %> may be freely distributed under the <%= pkg.license %> license.\n\n'
       },
@@ -30,7 +40,23 @@ module.exports = function(grunt) {
         src: ['<%= pkg.name.toLowerCase() %>-min.js'],
         dest: '<%= pkg.name.toLowerCase() %>-min.js',
       }
-    }
+    },
+
+    replace: {
+      main: {
+        src: [
+          'bower.json',
+          'package.json'
+        ],
+        overwrite: true,
+        replacements: [
+          { from:/^\s\s"name":\s*".*?"/g, to:'"name": "<%= pkg.name %>"'},
+          { from:/^\s\s"version":\s*".*?"/g, to:'"version": "<%= pkg.version %>"'}
+        ]
+      }
+    },
+
+
   });
 
   // Load the plugin that provides the "uglify" task.
@@ -38,8 +64,9 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-mocha-phantomjs');
+  grunt.loadNpmTasks('grunt-text-replace');
 
-  grunt.registerTask('default', ['jshint','mocha_phantomjs','uglify','concat']);
+  grunt.registerTask('default', ['jshint','mocha_phantomjs','uglify','concat','replace']);
   grunt.registerTask('test', ['mocha_phantomjs']);
 
 };
