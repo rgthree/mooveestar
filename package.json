@@ -1,6 +1,6 @@
 {
   "name": "MooVeeStar",
-  "version": "0.0.2",
+  "version": "0.0.2+20140329",
   "description": "MooTools MV* Framework",
   "homepage": "https://rgthree.github.io/mooveestar/",
   "author": {
@@ -11,13 +11,10 @@
   "bugs": {
     "url": "https://github.com/rgthree/mooveestar/issues"
   },
-  "main": "./src/mooveestar.js",
+  "main": "src/mooveestar.js",
   "license": "MIT",
   "directories": {
     "test": "test"
-  },
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
@@ -31,6 +28,7 @@
     "grunt-contrib-uglify":"latest",
     "grunt-mocha-phantomjs":"latest",
     "grunt-contrib-concat":"latest",
+    "grunt-text-replace":"latest",
     "chai":"latest"
   }
 }
