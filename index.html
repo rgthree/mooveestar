@@ -113,31 +113,46 @@ if(ssn != null) // Not Cancel
               <code>model.set((key, value)|(object), [silent])</code>
             </dt>
             <dd>
+              Overloaded set method to set a property or properties on the model. Can be called with a single key/value, or an object with many keys/values. Options can have a silent key that, when true, supresses events.
+<code class="block javascript">model.set('name', 'Edward', { silent:true });
+// or...
+model.set({ name:'Edward' }, { silent:true });
+</code>
             </dd>
             
+            <dt data-type="method">get
+              <code>model.get(keyOrArray, [raw])</code>
+            </dt>
+            <dd>
+              Overloaded get method to get a single value or a map if an array is passed. Passing <code>raw</code> as true will get the raw value directly as it’s stored, without checking if there’s a custom getter within the Model’s properties
+            </dd>
+
             <dt data-type="method">getId
               <code>model.getId()</code>
             </dt>
             <dd>
+              Returns an id for the model. If the idProperty exists, it will return it, otherwise it will return a unique string. If there is no cid set yet, it will permenently assign it at this time. MooVeeStar.Collection uses this to identify models within itself.
             </dd>
 
             <dt data-type="method">unset
               <code>model.unset(keys, [silent])</code>
             </dt>
             <dd>
+              Accepts a list of keys and passes them to <code>Model#set</code> with a null value.
             </dd>
             
             <dt data-type="method">destroy
               <code>model.destroy()</code>
             </dt>
             <dd>
+              Destroys a model by setting it’s property to an empty map and firing a destroy event
             </dd>
              
             <dt data-type="method">toJSON
               <code>model.toJSON()</code>
             </dt>
             <dd>
-              <span data-type="returns">Returns a recursively dereferenced clone of the model's properties.</span>
+              Returns a recursively cloned value map of the model’s raw properties.
             </dd>
 
             <dt data-type="property">
@@ -258,13 +273,13 @@ if(ssn != null) // Not Cancel
             <dd>Returns a _new array_ of all of the <code>Models.toJSON</code> values</dd>
 
             <dt data-type="method">
-              toJSON
+              destroy
               <code>collection.destroy([options])</code>
             </dt>
             <dd>Silently empties the list and fires a destroy message</dd>
 
             <dt data-type="method">
-              toJSON
+              applyToModels
               <code>collection.applyToModels(operation, opArgs, modelsOrFindValues, findKeyToFind)</code>
             </dt>
             <dd>Calls a method on all models, or all models found
@@ -388,31 +403,41 @@ $(document.body).grab(new EmployeeIdView(existingEmployeeModel));</code>
               template
               <code>view.template</code>
             </dt>
-            <dd></dd>
+            <dd>
+              The string key of the template to use. Can also be an element. The template will get inflated and set as <code>this.element</code>
+            </dd>
 
             <dt data-type="property">
               model
               <code>view.model</code>
             </dt>
-            <dd></dd>
+            <dd>
+              The view model. A view can have as many models as you would like and all can be used in any facility. A <code>view.model</code> will be setup by default in the view constructor.
+            </dd>
             
             <dt data-type="property">
               element
               <code>view.element</code>
             </dt>
-            <dd></dd>
+            <dd>
+              The element inflated from <code>view.template</code>
+            </dd>
             
             <dt data-type="property">
               elements
               <code>view.elements</code>
             </dt>
-            <dd></dd>
+            <dd>
+              A map for elements to be cached to for use in either the events map, or in other view methods. The <code>view.element</code> is added automatically as  <code>view.elements.container</code> as well.
+            </dd>
 
             <dt data-type="method">
               render
               <code>view.render([data])</code>
             </dt>
-            <dd></dd>
+            <dd>
+              Likely overridden and called through parent(), this determines the data to bind to the element. Pass a MooVeeStar.Event instance which contains a changed key, it will only rebind those changed values. Otherwise, it will use the passed argument or, more likely, call model.toJSON
+            </dd>
 
             <dt data-type="method">
               toElement
@@ -433,13 +458,17 @@ $(document.body).grab(new EmployeeIdView(existingEmployeeModel));</code>
               empty
               <code>view.empty([element])</code>
             </dt>
-            <dd></dd>
+            <dd>
+              Empties the passed element, or the view’s element. Calls view.destroy() for all attached views within the element’s DOM. Fires the View#empty event
+            </dd>
 
             <dt data-type="method">
               dispose
               <code>view.dispose([element])</code>
             </dt>
-            <dd></dd>
+            <dd>
+              Disposes of an element, or the view’s element. This does not affect and attached sub views (like destroy and empty). Fires the View#dispose event
+            </dd>
 
             <dt data-type="method">
               attach
