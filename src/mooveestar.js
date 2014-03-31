@@ -1,4 +1,4 @@
-// > MooVeeStar v0.0.2+20140329 - https://rgthree.github.io/mooveestar/
+// > MooVeeStar v0.1.0+20140330 - https://rgthree.github.io/mooveestar/
 // > by Regis Gaughan, III <regis.gaughan@gmail.com> http://regisgaughan.com
 // > MooVeeStar may be freely distributed under the MIT license.
 
@@ -798,15 +798,15 @@
           
           // Check if we're using MooVeeStar.templates and passing an element or a string that is not a registered
           // template key, then inflate it as an element with an generated key
-          if((MooVeeStar.templates && this.options.inflater === MooVeeStar.templates.inflate) && (typeOf(this.template) === 'element' || !MooVeeStar.templates.check(this.template))){
+          if(typeOf(this.template) === 'element'){
+            // Otherwise, if we passed an element, then use it directly
+            this.element = this.template;
+          }else if(MooVeeStar.templates && this.options.inflater === MooVeeStar.templates.inflate && !MooVeeStar.templates.check(this.template)){
             var _uinqueTemplateID = String.uniqueID();
             MooVeeStar.templates.register(_uinqueTemplateID, this.template);
             this.template = _uinqueTemplateID;
             this.element = this.options.inflater(this.template, null, true);
-          }else if(typeOf(this.template) === 'element'){
-            // Otherwise, if we passed an element, then use it directly
-            this.element = this.template;
-          }else{
+          }else {
             // Finally, call the inflater with the passed template
             this.element = this.options.inflater(this.template, null, true);
           }
@@ -900,7 +900,7 @@
     // Fires the event for the manipulation method (`destroy`, `empty`, `dispose`)
     // 
     _doDomManipulation: function(fn, elOrUndefined){
-      var el = elOrUndefined || this.element;
+      var el = typeOf(elOrUndefined) === 'element' && elOrUndefined || this.element;
       fn = fn || 'dispose'; 
       // If we're destroying or emptying an element, then destroy all views underneath.
       // // (dispose shouldn't touch view's elements underneath, except to detach them)
@@ -919,7 +919,7 @@
     // 
     _doNestedViewsCall: function(methods, elOrUndefined){
       var views, element;
-      element = elOrUndefined || this.element;
+      element = typeOf(elOrUndefined) === 'element' && elOrUndefined || this.element;
       methods = Array.from(methods);
       views = element.getElements('*[data-has-view-controller]').clean().reverse();
       views.forEach(function(el){
@@ -1090,28 +1090,61 @@
   // ---
   // ## MooVeeStar.Storage
   //   
-  // A _very simple_ local storage mixin.
+  // A _very simple_ local storage class. This can be used as a mixin, to store the current model/collection,
+  // or instantiated to store passed objects and listen for events separately
   // 
   MooVeeStar.Storage = new Class({
 
-    store: function(){
-      try{
-        root.localStorage.setItem(this.getId(), JSON.encode(this.toJSON()));
-        this.fireEvent('store');
-      }catch(e){}
+    Implements: [Events],
+
+    // ### Storage#store
+    // 
+    // Pass an model/collection/whatever to store. If an `id` parameter is passed it will be stored under that,
+    // otherwise if the item has an `getId` method, or `id` property, that will be used.
+    // Additionally, if there is no arguments, and `Storage` has been implemented within a Model or Class, it will store the
+    // instance.
+    // 
+    store: function(item, id){
+      if(!item && this.toJSON && this.getId)
+        item = this;
+
+      if(item && !id)
+        id = (item.getId && item.getId()) || (item.id) || null;
+
+      if(item && id){
+        try{
+          root.localStorage.setItem(id, JSON.encode(item.toJSON && item.toJSON() || item));
+          this.fireEvent('store', { item:item });
+          return true;
+        }catch(e){
+          return false;
+        }
+      }
     },
 
-    retrieve: function(){
-      try{
-        var model = root.localStorage.getItem(this.getId());
-        this.fireEvent('retrieve');
-        return JSON.decode(model);
-      }catch(e){}
+    // ### Storage#retrieve
+    // 
+    retrieve: function(id){
+      id = id || (this.getId && this.getId()) || null;
+      if(id){
+        try{
+          var item = JSON.decode(root.localStorage.getItem(id));
+          this.fireEvent('retrieve', { item:item });
+          return item;
+        }catch(e){
+          return null;
+        }
+      }
     },
 
-    eliminate: function() {
-      root.localStorage.removeItem(this.getId());
-      return this.fireEvent('eliminate');
+
+    // ### Storage#eliminate
+    // 
+    eliminate: function(id){
+      id = id || (this.getId && this.getId()) || null;
+      root.localStorage.removeItem(id);
+      this.fireEvent('eliminate');
+      return true;
     }
 
   });
@@ -1169,7 +1202,7 @@
               el.set('data-bind-'+match[1], match[2]);
             }
           });
-          el.set('data-bind', dataBind);
+          el.set('data-bind', dataBind.trim());
         }
       });
       return element;
@@ -1392,7 +1425,7 @@
       // Get all children to be bind that are not inner binds
       Array.from(els).each(function(el){
         var toBindEls, innerBindsElements;
-        toBindEls = el.getElements('[data-bind]');
+        toBindEls = el.getElements('[data-bind]:not([data-tpl])');
         if(el.get('data-bind'))
           toBindEls.unshift(el);
 

@@ -44,14 +44,10 @@ module.exports = function(grunt) {
 
     replace: {
       main: {
-        src: [
-          'bower.json',
-          'package.json'
-        ],
+        src: ['bower.json', 'package.json'],
         overwrite: true,
         replacements: [
-          { from:/^\s\s"name":\s*".*?"/g, to:'"name": "<%= pkg.name %>"'},
-          { from:/^\s\s"version":\s*".*?"/g, to:'"version": "<%= pkg.version %>"'}
+          { from:/"version":\s*".*?"/g, to:'"version": "<%= pkg.version %>"'}
         ]
       }
     },

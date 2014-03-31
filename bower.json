@@ -1,6 +1,6 @@
 {
   "name": "MooVeeStar",
-  "version": "0.0.2+20140329",
+  "version": "0.1.0+20140330",
   "main": [
     "mooveestar-min.js",
     "src/mooveestar.js"
@@ -11,8 +11,5 @@
     ".sass_cache",
     "docs",
     "test"
-  ],
-  "dependencies": {
-    "mootools": "1.4.5"
-  }
+  ]
 }
