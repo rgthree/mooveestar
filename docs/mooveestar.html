@@ -28,8 +28,8 @@
                 <a class="pilcrow" href="#section-1">&#182;</a>
               </div>
               <blockquote>
-<p>MooVeeStar v0.0.2 #20140329 - <a href="https://rgthree.github.io/mooveestar/">https://rgthree.github.io/mooveestar/</a>
-by Regis Gaughan, III <a href="&#109;&#x61;&#x69;&#x6c;&#116;&#111;&#x3a;&#x72;&#101;&#103;&#105;&#115;&#46;&#x67;&#97;&#117;&#x67;&#x68;&#97;&#110;&#64;&#103;&#109;&#x61;&#105;&#x6c;&#46;&#x63;&#111;&#x6d;">&#x72;&#101;&#103;&#105;&#115;&#46;&#x67;&#97;&#117;&#x67;&#x68;&#97;&#110;&#64;&#103;&#109;&#x61;&#105;&#x6c;&#46;&#x63;&#111;&#x6d;</a> <a href="http://regisgaughan.com">http://regisgaughan.com</a>
+<p>MooVeeStar v0.1.0+20140330 - <a href="https://rgthree.github.io/mooveestar/">https://rgthree.github.io/mooveestar/</a>
+by Regis Gaughan, III <a href="&#109;&#x61;&#x69;&#x6c;&#116;&#111;&#58;&#x72;&#x65;&#103;&#105;&#115;&#x2e;&#x67;&#97;&#x75;&#103;&#x68;&#x61;&#x6e;&#64;&#x67;&#109;&#97;&#x69;&#x6c;&#46;&#99;&#111;&#109;">&#x72;&#x65;&#103;&#105;&#115;&#x2e;&#x67;&#97;&#x75;&#103;&#x68;&#x61;&#x6e;&#64;&#x67;&#109;&#97;&#x69;&#x6c;&#46;&#99;&#111;&#109;</a> <a href="http://regisgaughan.com">http://regisgaughan.com</a>
 MooVeeStar may be freely distributed under the MIT license.</p>
 </blockquote>
 
@@ -1635,12 +1635,7 @@ template key, then inflate it as an element with an generated key</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>          <span class="keyword">if</span>((MooVeeStar.templates &amp;&amp; <span class="keyword">this</span>.options.inflater === MooVeeStar.templates.inflate) &amp;&amp; (typeOf(<span class="keyword">this</span>.template) === <span class="string">'element'</span> || !MooVeeStar.templates.check(<span class="keyword">this</span>.template))){
-            <span class="keyword">var</span> _uinqueTemplateID = String.uniqueID();
-            MooVeeStar.templates.register(_uinqueTemplateID, <span class="keyword">this</span>.template);
-            <span class="keyword">this</span>.template = _uinqueTemplateID;
-            <span class="keyword">this</span>.element = <span class="keyword">this</span>.options.inflater(<span class="keyword">this</span>.template, <span class="literal">null</span>, <span class="literal">true</span>);
-          }<span class="keyword">else</span> <span class="keyword">if</span>(typeOf(<span class="keyword">this</span>.template) === <span class="string">'element'</span>){</pre></div></div>
+            <div class="content"><div class='highlight'><pre>          <span class="keyword">if</span>(typeOf(<span class="keyword">this</span>.template) === <span class="string">'element'</span>){</pre></div></div>
             
         </li>
         
@@ -1656,7 +1651,12 @@ template key, then inflate it as an element with an generated key</p>
             </div>
             
             <div class="content"><div class='highlight'><pre>            <span class="keyword">this</span>.element = <span class="keyword">this</span>.template;
-          }<span class="keyword">else</span>{</pre></div></div>
+          }<span class="keyword">else</span> <span class="keyword">if</span>(MooVeeStar.templates &amp;&amp; <span class="keyword">this</span>.options.inflater === MooVeeStar.templates.inflate &amp;&amp; !MooVeeStar.templates.check(<span class="keyword">this</span>.template)){
+            <span class="keyword">var</span> _uinqueTemplateID = String.uniqueID();
+            MooVeeStar.templates.register(_uinqueTemplateID, <span class="keyword">this</span>.template);
+            <span class="keyword">this</span>.template = _uinqueTemplateID;
+            <span class="keyword">this</span>.element = <span class="keyword">this</span>.options.inflater(<span class="keyword">this</span>.template, <span class="literal">null</span>, <span class="literal">true</span>);
+          }<span class="keyword">else</span> {</pre></div></div>
             
         </li>
         
@@ -1843,7 +1843,7 @@ Fires the event for the manipulation method (<code>destroy</code>, <code>empty</
             </div>
             
             <div class="content"><div class='highlight'><pre>    _doDomManipulation: <span class="function"><span class="keyword">function</span><span class="params">(fn, elOrUndefined)</span>{</span>
-      <span class="keyword">var</span> el = elOrUndefined || <span class="keyword">this</span>.element;
+      <span class="keyword">var</span> el = typeOf(elOrUndefined) === <span class="string">'element'</span> &amp;&amp; elOrUndefined || <span class="keyword">this</span>.element;
       fn = fn || <span class="string">'dispose'</span>;</pre></div></div>
             
         </li>
@@ -1884,7 +1884,7 @@ Fires the event for the manipulation method (<code>destroy</code>, <code>empty</
             
             <div class="content"><div class='highlight'><pre>    _doNestedViewsCall: <span class="function"><span class="keyword">function</span><span class="params">(methods, elOrUndefined)</span>{</span>
       <span class="keyword">var</span> views, element;
-      element = elOrUndefined || <span class="keyword">this</span>.element;
+      element = typeOf(elOrUndefined) === <span class="string">'element'</span> &amp;&amp; elOrUndefined || <span class="keyword">this</span>.element;
       methods = Array.from(methods);
       views = element.getElements(<span class="string">'*[data-has-view-controller]'</span>).clean().reverse();
       views.forEach(<span class="function"><span class="keyword">function</span><span class="params">(el)</span>{</span>
@@ -2196,33 +2196,14 @@ This gets invoked automatically if <code>destroy</code> or <code>empty</code> is
                 <a class="pilcrow" href="#section-103">&#182;</a>
               </div>
               <h2 id="mooveestar-storage">MooVeeStar.Storage</h2>
-<p>A <em>very simple</em> local storage mixin.</p>
+<p>A <em>very simple</em> local storage class. This can be used as a mixin, to store the current model/collection,
+or instantiated to store passed objects and listen for events separately</p>
 
             </div>
             
             <div class="content"><div class='highlight'><pre>  MooVeeStar.Storage = <span class="keyword">new</span> Class({
 
-    store: <span class="function"><span class="keyword">function</span><span class="params">()</span>{</span>
-      <span class="keyword">try</span>{
-        root.localStorage.setItem(<span class="keyword">this</span>.getId(), JSON.encode(<span class="keyword">this</span>.toJSON()));
-        <span class="keyword">this</span>.fireEvent(<span class="string">'store'</span>);
-      }<span class="keyword">catch</span>(e){}
-    },
-
-    retrieve: <span class="function"><span class="keyword">function</span><span class="params">()</span>{</span>
-      <span class="keyword">try</span>{
-        <span class="keyword">var</span> model = root.localStorage.getItem(<span class="keyword">this</span>.getId());
-        <span class="keyword">this</span>.fireEvent(<span class="string">'retrieve'</span>);
-        <span class="keyword">return</span> JSON.decode(model);
-      }<span class="keyword">catch</span>(e){}
-    },
-
-    eliminate: <span class="function"><span class="keyword">function</span><span class="params">()</span> {</span>
-      root.localStorage.removeItem(<span class="keyword">this</span>.getId());
-      <span class="keyword">return</span> <span class="keyword">this</span>.fireEvent(<span class="string">'eliminate'</span>);
-    }
-
-  });</pre></div></div>
+    Implements: [Events],</pre></div></div>
             
         </li>
         
@@ -2233,9 +2214,31 @@ This gets invoked automatically if <code>destroy</code> or <code>empty</code> is
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-104">&#182;</a>
               </div>
-              <hr>
+              <h3 id="storage-store">Storage#store</h3>
+<p>Pass an model/collection/whatever to store. If an <code>id</code> parameter is passed it will be stored under that,
+otherwise if the item has an <code>getId</code> method, or <code>id</code> property, that will be used.
+Additionally, if there is no arguments, and <code>Storage</code> has been implemented within a Model or Class, it will store the
+instance.</p>
 
             </div>
+            
+            <div class="content"><div class='highlight'><pre>    store: <span class="function"><span class="keyword">function</span><span class="params">(item, id)</span>{</span>
+      <span class="keyword">if</span>(!item &amp;&amp; <span class="keyword">this</span>.toJSON &amp;&amp; <span class="keyword">this</span>.getId)
+        item = <span class="keyword">this</span>;
+
+      <span class="keyword">if</span>(item &amp;&amp; !id)
+        id = (item.getId &amp;&amp; item.getId()) || (item.id) || <span class="literal">null</span>;
+
+      <span class="keyword">if</span>(item &amp;&amp; id){
+        <span class="keyword">try</span>{
+          root.localStorage.setItem(id, JSON.encode(item.toJSON &amp;&amp; item.toJSON() || item));
+          <span class="keyword">this</span>.fireEvent(<span class="string">'store'</span>, { item:item });
+          <span class="keyword">return</span> <span class="literal">true</span>;
+        }<span class="keyword">catch</span>(e){
+          <span class="keyword">return</span> <span class="literal">false</span>;
+        }
+      }
+    },</pre></div></div>
             
         </li>
         
@@ -2245,6 +2248,67 @@ This gets invoked automatically if <code>destroy</code> or <code>empty</code> is
               
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-105">&#182;</a>
+              </div>
+              <h3 id="storage-retrieve">Storage#retrieve</h3>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    retrieve: <span class="function"><span class="keyword">function</span><span class="params">(id)</span>{</span>
+      id = id || (<span class="keyword">this</span>.getId &amp;&amp; <span class="keyword">this</span>.getId()) || <span class="literal">null</span>;
+      <span class="keyword">if</span>(id){
+        <span class="keyword">try</span>{
+          <span class="keyword">var</span> item = JSON.decode(root.localStorage.getItem(id));
+          <span class="keyword">this</span>.fireEvent(<span class="string">'retrieve'</span>, { item:item });
+          <span class="keyword">return</span> item;
+        }<span class="keyword">catch</span>(e){
+          <span class="keyword">return</span> <span class="literal">null</span>;
+        }
+      }
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-106">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-106">&#182;</a>
+              </div>
+              <h3 id="storage-eliminate">Storage#eliminate</h3>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    eliminate: <span class="function"><span class="keyword">function</span><span class="params">(id)</span>{</span>
+      id = id || (<span class="keyword">this</span>.getId &amp;&amp; <span class="keyword">this</span>.getId()) || <span class="literal">null</span>;
+      root.localStorage.removeItem(id);
+      <span class="keyword">this</span>.fireEvent(<span class="string">'eliminate'</span>);
+      <span class="keyword">return</span> <span class="literal">true</span>;
+    }
+
+  });</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-107">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-107">&#182;</a>
+              </div>
+              <hr>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-108">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-108">&#182;</a>
               </div>
               <h2 id="mooveestar-templates">MooVeeStar.templates</h2>
 <p>The <strong>MooVeeStar.templates</strong> power the UI using <em>completely logicless</em> templating system relying on 
@@ -2257,11 +2321,11 @@ HTML5 mindset and technologies.</p>
         </li>
         
         
-        <li id="section-106">
+        <li id="section-109">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-106">&#182;</a>
+                <a class="pilcrow" href="#section-109">&#182;</a>
               </div>
               <p>The templates registry</p>
 
@@ -2272,11 +2336,11 @@ HTML5 mindset and technologies.</p>
         </li>
         
         
-        <li id="section-107">
+        <li id="section-110">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-107">&#182;</a>
+                <a class="pilcrow" href="#section-110">&#182;</a>
               </div>
               <p>Test if the browser supports HTML5 <template> tags</p>
 
@@ -2287,11 +2351,11 @@ HTML5 mindset and technologies.</p>
         </li>
         
         
-        <li id="section-108">
+        <li id="section-111">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-108">&#182;</a>
+                <a class="pilcrow" href="#section-111">&#182;</a>
               </div>
               <h3 id="_templates-_cleankey_"><em>templates::_cleanKey</em></h3>
 <p><em>Private</em>. Cleans a key to ensure odd names are valid</p>
@@ -2305,11 +2369,11 @@ HTML5 mindset and technologies.</p>
         </li>
         
         
-        <li id="section-109">
+        <li id="section-112">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-109">&#182;</a>
+                <a class="pilcrow" href="#section-112">&#182;</a>
               </div>
               <h3 id="_templates-_parseshorthand_"><em>templates::_parseShorthand</em></h3>
 <p><em>Private</em>. Parses the shorthand template style to the full template style</p>
@@ -2338,7 +2402,7 @@ HTML5 mindset and technologies.</p>
               el.set(<span class="string">'data-bind-'</span>+match[<span class="number">1</span>], match[<span class="number">2</span>]);
             }
           });
-          el.set(<span class="string">'data-bind'</span>, dataBind);
+          el.set(<span class="string">'data-bind'</span>, dataBind.trim());
         }
       });
       <span class="keyword">return</span> element;
@@ -2347,11 +2411,11 @@ HTML5 mindset and technologies.</p>
         </li>
         
         
-        <li id="section-110">
+        <li id="section-113">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-110">&#182;</a>
+                <a class="pilcrow" href="#section-113">&#182;</a>
               </div>
               <h3 id="templates-register">templates::register</h3>
 <p>Register a template to an html string and create a dom from it
@@ -2370,11 +2434,11 @@ Overloaded to accept a register a script as second param</p>
         </li>
         
         
-        <li id="section-111">
+        <li id="section-114">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-111">&#182;</a>
+                <a class="pilcrow" href="#section-114">&#182;</a>
               </div>
               <p>If it’s an element, use it’s inner HTML (ior text content if a <code>&lt;script&gt;</code>)</p>
 
@@ -2404,11 +2468,11 @@ Overloaded to accept a register a script as second param</p>
         </li>
         
         
-        <li id="section-112">
+        <li id="section-115">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-112">&#182;</a>
+                <a class="pilcrow" href="#section-115">&#182;</a>
               </div>
               <h3 id="templates-registerscript">templates::registerScript</h3>
 <p>Register a script to be called when a template is bind</p>
@@ -2424,11 +2488,11 @@ Overloaded to accept a register a script as second param</p>
         </li>
         
         
-        <li id="section-113">
+        <li id="section-116">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-113">&#182;</a>
+                <a class="pilcrow" href="#section-116">&#182;</a>
               </div>
               <h3 id="templates-getscript">templates::getScript</h3>
 <p>Return the script associated with a key</p>
@@ -2446,11 +2510,11 @@ Overloaded to accept a register a script as second param</p>
         </li>
         
         
-        <li id="section-114">
+        <li id="section-117">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-114">&#182;</a>
+                <a class="pilcrow" href="#section-117">&#182;</a>
               </div>
               <h3 id="templates-check">templates::check</h3>
 <p>check for the existance of a template key</p>
@@ -2464,11 +2528,11 @@ Overloaded to accept a register a script as second param</p>
         </li>
         
         
-        <li id="section-115">
+        <li id="section-118">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-115">&#182;</a>
+                <a class="pilcrow" href="#section-118">&#182;</a>
               </div>
               <h3 id="templates-get">templates::get</h3>
 <p>Return the dom of a template</p>
@@ -2484,11 +2548,11 @@ Overloaded to accept a register a script as second param</p>
         </li>
         
         
-        <li id="section-116">
+        <li id="section-119">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-116">&#182;</a>
+                <a class="pilcrow" href="#section-119">&#182;</a>
               </div>
               <p>If html5Shiv is installed, and we need to go around cloneNode for HTML5 elements</p>
 
@@ -2510,11 +2574,11 @@ Overloaded to accept a register a script as second param</p>
         </li>
         
         
-        <li id="section-117">
+        <li id="section-120">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-117">&#182;</a>
+                <a class="pilcrow" href="#section-120">&#182;</a>
               </div>
               <h3 id="templates-inflateonce">templates::inflateOnce</h3>
 <p>Same as inflate, but removes bindings after inflating.
@@ -2535,11 +2599,11 @@ Useful when an element only needs to be inflated once without a desire to rebind
         </li>
         
         
-        <li id="section-118">
+        <li id="section-121">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-118">&#182;</a>
+                <a class="pilcrow" href="#section-121">&#182;</a>
               </div>
               <h3 id="templates-inflate">templates::inflate</h3>
 <p>Inflate a template.</p>
@@ -2552,11 +2616,11 @@ Useful when an element only needs to be inflated once without a desire to rebind
         </li>
         
         
-        <li id="section-119">
+        <li id="section-122">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-119">&#182;</a>
+                <a class="pilcrow" href="#section-122">&#182;</a>
               </div>
               <p>Assume a key was passed in</p>
 
@@ -2570,11 +2634,11 @@ Useful when an element only needs to be inflated once without a desire to rebind
         </li>
         
         
-        <li id="section-120">
+        <li id="section-123">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-120">&#182;</a>
+                <a class="pilcrow" href="#section-123">&#182;</a>
               </div>
               <p>Attach any markup templates</p>
 
@@ -2586,11 +2650,11 @@ Useful when an element only needs to be inflated once without a desire to rebind
         </li>
         
         
-        <li id="section-121">
+        <li id="section-124">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-121">&#182;</a>
+                <a class="pilcrow" href="#section-124">&#182;</a>
               </div>
               <p>If there’s a class name specified on the <markup> tag, add it to the children</p>
 
@@ -2601,11 +2665,11 @@ Useful when an element only needs to be inflated once without a desire to rebind
         </li>
         
         
-        <li id="section-122">
+        <li id="section-125">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-122">&#182;</a>
+                <a class="pilcrow" href="#section-125">&#182;</a>
               </div>
               <p>If we passed in skipInit, use it, otherwise set to true assuming this pass is initializing final markup</p>
 
@@ -2633,11 +2697,11 @@ Useful when an element only needs to be inflated once without a desire to rebind
         </li>
         
         
-        <li id="section-123">
+        <li id="section-126">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-123">&#182;</a>
+                <a class="pilcrow" href="#section-126">&#182;</a>
               </div>
               <h3 id="templates-inflatesurround">templates::inflateSurround</h3>
 <p>Inflate a template and pass it’s elements to another.
@@ -2664,11 +2728,11 @@ generic template (like a dialog/popup/etc).</p>
         </li>
         
         
-        <li id="section-124">
+        <li id="section-127">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-124">&#182;</a>
+                <a class="pilcrow" href="#section-127">&#182;</a>
               </div>
               <h3 id="templates-init">templates::init</h3>
 <p>Initialize a template and bind to it’s data.
@@ -2696,11 +2760,11 @@ and call that (bind simply binds the data to data-bind fields)</p>
         </li>
         
         
-        <li id="section-125">
+        <li id="section-128">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-125">&#182;</a>
+                <a class="pilcrow" href="#section-128">&#182;</a>
               </div>
               <h3 id="templates-bind">templates::bind</h3>
 <p>Binds all elements under a template to the passed <code>data</code> JSON object. This <em>does not</em> call a registered script.
@@ -2722,11 +2786,11 @@ as the value for that element</li>
         </li>
         
         
-        <li id="section-126">
+        <li id="section-129">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-126">&#182;</a>
+                <a class="pilcrow" href="#section-129">&#182;</a>
               </div>
               <p>If <code>els</code> is a single empty element w/ no <code>[data-bind]</code> set <em>and</em> <code>data</code> is a string, set it to be the value of the el</p>
 
@@ -2740,11 +2804,11 @@ as the value for that element</li>
         </li>
         
         
-        <li id="section-127">
+        <li id="section-130">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-127">&#182;</a>
+                <a class="pilcrow" href="#section-130">&#182;</a>
               </div>
               <p>Get all children to be bind that are not inner binds</p>
 
@@ -2752,7 +2816,7 @@ as the value for that element</li>
             
             <div class="content"><div class='highlight'><pre>      Array.from(els).each(<span class="function"><span class="keyword">function</span><span class="params">(el)</span>{</span>
         <span class="keyword">var</span> toBindEls, innerBindsElements;
-        toBindEls = el.getElements(<span class="string">'[data-bind]'</span>);
+        toBindEls = el.getElements(<span class="string">'[data-bind]:not([data-tpl])'</span>);
         <span class="keyword">if</span>(el.get(<span class="string">'data-bind'</span>))
           toBindEls.unshift(el);
 
@@ -2761,11 +2825,11 @@ as the value for that element</li>
         </li>
         
         
-        <li id="section-128">
+        <li id="section-131">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-128">&#182;</a>
+                <a class="pilcrow" href="#section-131">&#182;</a>
               </div>
               <p>Exclude any els that are in their own data-tpl (which will follow)</p>
 
@@ -2779,11 +2843,11 @@ as the value for that element</li>
         </li>
         
         
-        <li id="section-129">
+        <li id="section-132">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-129">&#182;</a>
+                <a class="pilcrow" href="#section-132">&#182;</a>
               </div>
               <p>Get the bindings this elements wants</p>
 
@@ -2797,11 +2861,11 @@ as the value for that element</li>
         </li>
         
         
-        <li id="section-130">
+        <li id="section-133">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-130">&#182;</a>
+                <a class="pilcrow" href="#section-133">&#182;</a>
               </div>
               <p>If the value is undefined, then return if we want to ignore it (via <code>onlyDefined</code>)
 or set to null to unbind this binding key</p>
@@ -2818,11 +2882,11 @@ or set to null to unbind this binding key</p>
         </li>
         
         
-        <li id="section-131">
+        <li id="section-134">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-131">&#182;</a>
+                <a class="pilcrow" href="#section-134">&#182;</a>
               </div>
               <p>Get the fields for this binding</p>
 
@@ -2835,11 +2899,11 @@ or set to null to unbind this binding key</p>
         </li>
         
         
-        <li id="section-132">
+        <li id="section-135">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-132">&#182;</a>
+                <a class="pilcrow" href="#section-135">&#182;</a>
               </div>
               <p>If it’s a style binding</p>
 
@@ -2852,11 +2916,11 @@ or set to null to unbind this binding key</p>
         </li>
         
         
-        <li id="section-133">
+        <li id="section-136">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-133">&#182;</a>
+                <a class="pilcrow" href="#section-136">&#182;</a>
               </div>
               <p>tpl:[array] will inflate the specified template for each item</p>
 
@@ -2871,11 +2935,11 @@ or set to null to unbind this binding key</p>
         </li>
         
         
-        <li id="section-134">
+        <li id="section-137">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-134">&#182;</a>
+                <a class="pilcrow" href="#section-137">&#182;</a>
               </div>
               <p>Inflate each template passing in item and have them init (force false skipInit)
 Then, remove data-tpl b/c we just inflated it (and, presumably, it’s data is
@@ -2895,11 +2959,11 @@ already set so we don’t want to set it again below).</p>
         </li>
         
         
-        <li id="section-135">
+        <li id="section-138">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-135">&#182;</a>
+                <a class="pilcrow" href="#section-138">&#182;</a>
               </div>
               <p>TODO: Revert previously bound classes?</p>
 
@@ -2924,11 +2988,11 @@ already set so we don’t want to set it again below).</p>
         </li>
         
         
-        <li id="section-136">
+        <li id="section-139">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-136">&#182;</a>
+                <a class="pilcrow" href="#section-139">&#182;</a>
               </div>
               <p>IE 11 puts a ‘null’ if ‘html’ is used with removeProperty, so let’s use <code>set</code></p>
 
@@ -2947,11 +3011,11 @@ already set so we don’t want to set it again below).</p>
         </li>
         
         
-        <li id="section-137">
+        <li id="section-140">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-137">&#182;</a>
+                <a class="pilcrow" href="#section-140">&#182;</a>
               </div>
               <p>Now loop over children w/ “data-tpl” and init them, unless they have an “data-autobind” set to “false”
 (as in, they have a separate View Controller rendering their data)</p>
@@ -2967,11 +3031,11 @@ already set so we don’t want to set it again below).</p>
         </li>
         
         
-        <li id="section-138">
+        <li id="section-141">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-138">&#182;</a>
+                <a class="pilcrow" href="#section-141">&#182;</a>
               </div>
               <p>If the el is inside another [data-tpl] don’t init now (it will recursively next time)</p>
 
@@ -2983,11 +3047,11 @@ already set so we don’t want to set it again below).</p>
         </li>
         
         
-        <li id="section-139">
+        <li id="section-142">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-139">&#182;</a>
+                <a class="pilcrow" href="#section-142">&#182;</a>
               </div>
               <p>If we passed in a specific map in data for this, then init</p>
 
@@ -3000,11 +3064,11 @@ already set so we don’t want to set it again below).</p>
         </li>
         
         
-        <li id="section-140">
+        <li id="section-143">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-140">&#182;</a>
+                <a class="pilcrow" href="#section-143">&#182;</a>
               </div>
               <p>Only init cascadingly if autobind is not “false” (as in, a separate controller handles it’s own rendering)</p>
 
@@ -3024,11 +3088,11 @@ already set so we don’t want to set it again below).</p>
         </li>
         
         
-        <li id="section-141">
+        <li id="section-144">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-141">&#182;</a>
+                <a class="pilcrow" href="#section-144">&#182;</a>
               </div>
               <h3 id="templates-scrape">templates::scrape</h3>
 <p>Scrape the dom and register any templates as <code>&lt;template id=&quot;xxx&quot;&gt;</code>, <code>&lt;template data-id=&quot;xxx&quot;&gt;</code> or <code>&lt;script type=&quot;text/x-tpl&quot; data-id=&quot;xxx&quot;&gt;</code></p>
@@ -3051,11 +3115,11 @@ already set so we don’t want to set it again below).</p>
         </li>
         
         
-        <li id="section-142">
+        <li id="section-145">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-142">&#182;</a>
+                <a class="pilcrow" href="#section-145">&#182;</a>
               </div>
               <h3 id="templates-load">templates::load</h3>
 <p>Give it the path to templates file/text and it will scrape the results</p>
@@ -3073,11 +3137,11 @@ already set so we don’t want to set it again below).</p>
         </li>
         
         
-        <li id="section-143">
+        <li id="section-146">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-143">&#182;</a>
+                <a class="pilcrow" href="#section-146">&#182;</a>
               </div>
               <hr>
 
@@ -3086,11 +3150,11 @@ already set so we don’t want to set it again below).</p>
         </li>
         
         
-        <li id="section-144">
+        <li id="section-147">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-144">&#182;</a>
+                <a class="pilcrow" href="#section-147">&#182;</a>
               </div>
               
             </div>
@@ -3098,11 +3162,11 @@ already set so we don’t want to set it again below).</p>
         </li>
         
         
-        <li id="section-145">
+        <li id="section-148">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-145">&#182;</a>
+                <a class="pilcrow" href="#section-148">&#182;</a>
               </div>
               <p>Create the “markup” element <em>*MooVeeStar.tempaltes</em> uses.
 If html5 shiv, then let’s shiv in <markup> (&lt;=IE8 support)</p>
@@ -3119,11 +3183,11 @@ If html5 shiv, then let’s shiv in <markup> (&lt;=IE8 support)</p>
         </li>
         
         
-        <li id="section-146">
+        <li id="section-149">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-146">&#182;</a>
+                <a class="pilcrow" href="#section-149">&#182;</a>
               </div>
               <p>Scrape the page on initialization</p>
 
