@@ -16,6 +16,9 @@
       <h1>MooVeeStar</h1>
       <p>A client-side MV* Framework built ontop of MooTools</p>
       <p>by Regis Gaughan, III</p>
+      <aside>
+        <a href="https://github.com/rgthree/mooveestar/" class="ribbon">Fork me on GitHub</a>
+      </aside>
     </header>
     <article>
 
@@ -30,7 +33,7 @@
         </nav>
       </section>
 
-      <p>MooVeeStar is a client-side MV* Framework built ontop of MooTools. It has been based off other JavaScript MV* Frameworks such as Backbone.js and Epitome.</p>
+      <p>MooVeeStar is a client-side MV* Framework built ontop of MooTools. It has been built to feel familiar while harnessing the power and practices of the MooTools library.</p>
 
       <h2>Introduction</h2>
       <p>The advancement of JavaScript the past decade has been nothing short of breathtaking. No longer is it a simple tool to popup an image slideshow or validate a contact form. It is a powerful tool that can be used to drive massive single-page websites. And if you've ever created a large-scale application you know all to well how you can quickly loose control of your client-side codebase in a jumbled mess of JavaScript.</p>
@@ -213,13 +216,13 @@ model.set({ name:'Edward' }, { silent:true });
             <dd>Removes a model by index or all instance of a model or array of models from the collection. If <code>indexOrModels</code> is a number, then remove at that index; if it is a string id, then get the model and remove all instances of it; if it is a model or array of models, then remove all instances of each. Fires <code>Collection#change</code> and <code>Collection#remove</code> events.</dd>
             
             <dt data-type="method">
-              getId
+              empty
               <code>collection.empty([options])</code>
             </dt>
             <dd>Empties the Collection by callng <code>remove</code> on all items</dd>
 
             <dt data-type="method">
-              getId
+              move
               <code>collection.move(indexOrModel, to, [options])</code>
             </dt>
             <dd>Moves a model from one index to another. If <code>indexOrModel</code> is a number, then move the model at that index. If it is a model then only whose first instance of the model in the collection will be moved.</dd>
@@ -489,6 +492,12 @@ $(document.body).grab(new EmployeeIdView(existingEmployeeModel));</code>
       </dl>
     </article>
 
+    <script>
+    /* Modernizr 2.7.1 (Custom Build) | MIT & BSD
+     * Build: http://modernizr.com/download/#-csstransforms-cssclasses-testprop-testallprops-domprefixes
+     */
+    ;window.Modernizr=function(a,b,c){function x(a){j.cssText=a}function y(a,b){return x(prefixes.join(a+";")+(b||""))}function z(a,b){return typeof a===b}function A(a,b){return!!~(""+a).indexOf(b)}function B(a,b){for(var d in a){var e=a[d];if(!A(e,"-")&&j[e]!==c)return b=="pfx"?e:!0}return!1}function C(a,b,d){for(var e in a){var f=b[a[e]];if(f!==c)return d===!1?a[e]:z(f,"function")?f.bind(d||b):f}return!1}function D(a,b,c){var d=a.charAt(0).toUpperCase()+a.slice(1),e=(a+" "+n.join(d+" ")+d).split(" ");return z(b,"string")||z(b,"undefined")?B(e,b):(e=(a+" "+o.join(d+" ")+d).split(" "),C(e,b,c))}var d="2.7.1",e={},f=!0,g=b.documentElement,h="modernizr",i=b.createElement(h),j=i.style,k,l={}.toString,m="Webkit Moz O ms",n=m.split(" "),o=m.toLowerCase().split(" "),p={},q={},r={},s=[],t=s.slice,u,v={}.hasOwnProperty,w;!z(v,"undefined")&&!z(v.call,"undefined")?w=function(a,b){return v.call(a,b)}:w=function(a,b){return b in a&&z(a.constructor.prototype[b],"undefined")},Function.prototype.bind||(Function.prototype.bind=function(b){var c=this;if(typeof c!="function")throw new TypeError;var d=t.call(arguments,1),e=function(){if(this instanceof e){var a=function(){};a.prototype=c.prototype;var f=new a,g=c.apply(f,d.concat(t.call(arguments)));return Object(g)===g?g:f}return c.apply(b,d.concat(t.call(arguments)))};return e}),p.csstransforms=function(){return!!D("transform")};for(var E in p)w(p,E)&&(u=E.toLowerCase(),e[u]=p[E](),s.push((e[u]?"":"no-")+u));return e.addTest=function(a,b){if(typeof a=="object")for(var d in a)w(a,d)&&e.addTest(d,a[d]);else{a=a.toLowerCase();if(e[a]!==c)return e;b=typeof b=="function"?b():b,typeof f!="undefined"&&f&&(g.className+=" "+(b?"":"no-")+a),e[a]=b}return e},x(""),i=k=null,e._version=d,e._domPrefixes=o,e._cssomPrefixes=n,e.testProp=function(a){return B([a])},e.testAllProps=D,g.className=g.className.replace(/(^|\s)no-js(\s|$)/,"$1$2")+(f?" js "+s.join(" "):""),e}(this,this.document);
+    </script>
     <script src="http://cdnjs.cloudflare.com/ajax/libs/mootools/1.4.5/mootools-core-full-compat-yc.js"></script>
     <script src="./js/mooveestar.js"></script>
     <script src="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/7.3/highlight.min.js"></script>
