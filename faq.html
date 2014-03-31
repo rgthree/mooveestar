@@ -1,0 +1,48 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>MooVeeStar: Put Your App in the Spotlight</title>
+    <meta name="description" content="MooVeeStar is a client-side MV* Framework built ontop of MooTools.">
+    <meta name="viewport" content="width=device-width">
+
+    <link rel="icon" type="image/ico" href="./favicon.ico"/>
+    <link rel="stylesheet" href="./css/screen.css?20140329" />
+  </head>
+  <body id="faq">
+    <header>
+      <h1>MooVeeStar</h1>
+      <p>A client-side MV* Framework built ontop of MooTools</p>
+      <p>by Regis Gaughan, III</p>
+    </header>
+
+    <article>
+      <h2>Frequently Asked Questions</h2>
+
+
+      <h3>Why do we need another framework?</h3>
+      <p>We certainly don't need one, but MVS came from a desire to fill a void that seemed to be missing. We had piles of well-written, structured JavaScript components built from MooTools classes. After working with the fabulous <a href="http://backbonejs.org/" target="_blank">Backbone.js</a> framework we found that even our well structured components were missing something. We also found that MooTools gave us most of the functionality that the bulk of Backbone.js (and its dependency on <a href="http://underscorejs.org/" target="_blank">Underscore.js</a>) was bringing. We already had structured code, we only really needed a light-weight glue to bring it together using the same techniques we were familiar with. Thus, MooVeeStar was born.</p>
+
+
+      <h3>What browsers does MooVeeStar support?</h3>
+      <p>MooVeeStar should run in any browser MooTools supports, though we'd stick to modern browsers including IE9+.</p>
+
+
+      <h3>Why doesn't MooVeeStar provide a router?</h3>
+      <p>MooVeeStar is built to be a framework to organize and speed your front end development while still keeping most of the major decisions of your application up to you. A router is one of those pieces and there are already great cross browser libraries and polyfills to do exactly what you want it didn't seem necessary to attempt to bundle those in with MVS, adding bloat and less flexibility. <i>(In the least, you can add a <code>'window:hashchange'</code> event to your main view controller's event map.)</i></p>
+
+
+      <h3>What's up with the MooVeeStar templates?</h3>
+      <p>Ah, the templates. We love the templates! We found that most "logic-less" templating systems ended up injecting code right into their templates anyway, which was something we wanted to avoid completely. We believe that if you need to put conditions, loops, functions, etc. in your templates then they are not logic-less! With MooVeeStar, since the view classes already control so much about the output and display, we believe it's its job to manipulate the output data to the templates desire.</p>
+
+      <h3></h3>
+      <p></p>
+
+
+    </article>
+
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/mootools/1.4.5/mootools-core-full-compat-yc.js"></script>
+    <script src="./js/mooveestar.js"></script>
+  </body>
+</html>
