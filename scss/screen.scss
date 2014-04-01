@@ -27,45 +27,102 @@ p {margin:0px 0px 15px;}
 
 * {@include border-box;}
 
+/* Shooting Star */
+.star {position:absolute; z-index:1;}
+.star > span {
+  display:inline-block;
+  @include cross-browser(animation, fly 0.3s 0s  ease-in normal forwards);
+}
+.star > span > span {
+  display:inline-block;
+  width: 50px;
+  height:10px;
+  background: url(../media/shootingstar.png) no-repeat left top;
+  @include cross-browser(animation, play 0.3s steps(11) 0s 1 normal forwards);
+}
+
+@-webkit-keyframes fly {
+  from {-webkit-transform:translateX(0px);}
+  to   {-webkit-transform:translateX(-200px);}
+}
+@-moz-keyframes fly {
+  from {-moz-transform:translateX(0px);}
+  to   {-moz-transform:translateX(-200px);}
+}
+@-ms-keyframes fly {
+  from {-ms-transform:translateX(0px);}
+  to   {-ms-transform:translateX(-200px);}
+}
+@-o-keyframes fly {
+  from {-o-transform:translateX(0px);}
+  to   {-o-transform:translateX(-200px);}
+}
+@keyframes fly {
+  from {transform:translateX(0px);}
+  to   {transform:translateX(-200px);}
+}
+
+@-webkit-keyframes play {
+  from {background-position: 0px    0px;}
+  to   {background-position: 0px -110px;}
+}
+@-moz-keyframes play {
+  from {background-position: 0px    0px;}
+  to   {background-position: 0px -110px;}
+}
+@-ms-keyframes play {
+  from {background-position: 0px    0px;}
+  to   {background-position: 0px -110px;}
+}
+@-o-keyframes play {
+  from {background-position: 0px    0px;}
+  to   {background-position: 0px -110px;}
+}
+@keyframes play {
+  from {background-position: 0px    0px;}
+  to   {background-position: 0px -110px;}
+}
+
+
 @-webkit-keyframes spotlight-left {
   from {-webkit-transform:rotate(-15deg);}
-  to {-webkit-transform:rotate(10deg);}
+  to   {-webkit-transform:rotate(10deg);}
 }
 @-webkit-keyframes spotlight-right {
   from {-webkit-transform:rotate(20deg);}
-  to {-webkit-transform:rotate(-5deg);}
+  to   {-webkit-transform:rotate(-5deg);}
 }
 @-moz-keyframes spotlight-left {
-  from {-webkit-transform:rotate(-15deg);}
-  to {-webkit-transform:rotate(10deg);}
+  from {-moz-transform:rotate(-15deg);}
+  to   {-moz-transform:rotate(10deg);}
 }
 @-moz-keyframes spotlight-right {
-  from {-webkit-transform:rotate(20deg);}
-  to {-webkit-transform:rotate(-5deg);}
+  from {-moz-transform:rotate(20deg);}
+  to   {-moz-transform:rotate(-5deg);}
 }
 @-ms-keyframes spotlight-left {
-  from {-webkit-transform:rotate(-15deg);}
-  to {-webkit-transform:rotate(10deg);}
+  from {-ms-transform:rotate(-15deg);}
+  to   {-ms-transform:rotate(10deg);}
 }
 @-ms-keyframes spotlight-right {
-  from {-webkit-transform:rotate(20deg);}
-  to {-webkit-transform:rotate(-5deg);}
+  from {-ms-transform:rotate(20deg);}
+  to   {-ms-transform:rotate(-5deg);}
 }
 @-o-keyframes spotlight-left {
-  from {-webkit-transform:rotate(-15deg);}
-  to {-webkit-transform:rotate(10deg);}
+  from {-o-transform:rotate(-15deg);}
+  to   {-o-transform:rotate(10deg);}
 }
 @-o-keyframes spotlight-right {
-  from {-webkit-transform:rotate(20deg);}
-  to {-webkit-transform:rotate(-5deg);}
+  from {-o-transform:rotate(20deg);}
+  to   {-o-transform:rotate(-5deg);}
 }
 @keyframes spotlight-left {
-  from {-webkit-transform:rotate(-15deg);}
-  to {-webkit-transform:rotate(10deg);}
+  from {transform:rotate(-15deg);}
+  to   {transform:rotate(10deg);}
 }
 @keyframes spotlight-right {
-  from {-webkit-transform:rotate(20deg);}
-  to {-webkit-transform:rotate(-5deg);}
+  from {transform:rotate(20deg);}
+  to   {transform:rotate(-5deg);}
 }
 
 body > header {
