@@ -3,3 +3,5 @@
 config.rb
 *.sublime*
 node_modules
+Gem*
+_site
