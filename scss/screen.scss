@@ -254,15 +254,15 @@ code {
     &:last-child {margin-bottom:0px;}
 
     &.javascript {
-      .keyword  { color:#65d9ee; } /* keyword #65d9ee #f62d73 */
-      .comment  { color:#75715E ;} /* comment */
-      .number   { color:#7FB347; } /* number */
-      .literal  { color:#ad85fc; } /* special literal: "true", "false" and "null" */
-      .string   { color:#E6DB74; } /* string */
-      .regexp   { color:#e5da7a; } /* regular expression */
-      .function { color:#6bd9ed; } /* header of a function */
-      .title    { color:#a7e040; } /* name of a function inside a header */
-      .params   { color:#79ABFF; } /* parentheses and everything inside them in a function's header */
+      .hljs-keyword  { color:#65d9ee; } /* keyword #65d9ee #f62d73 */
+      .hljs-comment  { color:#75715E ;} /* comment */
+      .hljs-number   { color:#7FB347; } /* number */
+      .hljs-literal  { color:#ad85fc; } /* special literal: "true", "false" and "null" */
+      .hljs-string   { color:#E6DB74; } /* string */
+      .hljs-regexp   { color:#e5da7a; } /* regular expression */
+      .hljs-function { color:#6bd9ed; } /* header of a function */
+      .hljs-title    { color:#a7e040; } /* name of a function inside a header */
+      .hljs-params   { color:#79ABFF; } /* parentheses and everything inside them in a function's header */
     }
   }
 }
