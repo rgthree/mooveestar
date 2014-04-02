@@ -8,7 +8,7 @@ var requirejs,require,define;
 // Config Options done before (rather than after) so data-main uses it correctly
 require = {
   urlArgs: 'v='+(typeof(window) !== 'undefined' && window.cacheversion || 1),
-  baseUrl: '/js',
+  baseUrl: './js',
 
   // We us paths here to setup the paths relative to the baseUrl
   paths: {
