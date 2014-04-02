@@ -507,7 +507,7 @@ $(document.body).grab(new EmployeeIdView(existingEmployeeModel));</code>
             clearTimeout(headerShootTimer);
             headerShootTimer = headerView.shoot.delay(Number.random(20000,60000), headerView);
           });
-          headerView.shoot.delay(Number.random(500,5000), headerView);
+          headerShootTimer = headerView.shoot.delay(Number.random(500,5000), headerView);
 
           // Defer Animation
           setTimeout(function(){

@@ -20,7 +20,7 @@ define(['Highlight'], function(hljs){
             btn.addEventListener('click', function(){
               eval(code);
             });
-            codeBlocks[i].appendChild(btn);
+            codeBlocks[i].parentNode.insertBefore(btn, codeBlocks[i]);
           })(code)
         }
       }
