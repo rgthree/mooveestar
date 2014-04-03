@@ -18,7 +18,7 @@
 
 
 body {
-  font-size:14px; line-height:22px; margin:0px; padding:0px;
+  font-size:14px; line-height:1.5; margin:0px; padding:0px;
   font-family:"Source Sans Pro", "Gill Sans", Helvetica, Arial;
   background:#dddce2; color:#333; text-shadow:0px 1px 0px rgba(255,255,255,0.25);
 }
@@ -128,6 +128,11 @@ p {margin:0px 0px 15px;}
 body > header {
   position:relative; height:210px; overflow:hidden;
   background:#130526;
+  /* IE11 uses final gradient ("to bottom") */
+  background:linear-gradient(to bottom, rgba(19,5,38,0.0001), rgba(52,21,49,0.25) 50%, rgba(127,15,55,1)),
+      url(../media/stars.png) repeat center top,
+      linear-gradient(to bottom, #130526, #341531 50%, #7f0f37),
+      #130526;
   @include background(
       linear-gradient(top center, rgba(19,5,38,0.0001), rgba(52,21,49,0.25) 50%, rgba(127,15,55,1)),
       url(../media/stars.png) repeat center top,
@@ -166,6 +171,12 @@ body > article {
     content:" "; position:absolute; left:0px; top:210px; right:0px; height:200px; z-index:-1;
     background:-webkit-gradient(linear, center top, center bottom, color-stop(0%, rgba(255,255,255,0.33)), color-stop(100%, rgba(255,255,255,0)));
   }
+}
+
+body > footer {
+  font-size:12px; line-height:1.2;
+  iframe {display:inline-block; height:20px; border:0px;}
+  ul , ul > li {padding:0px; margin:10px; list-style:none; text-align:center;}
 }
 
 h2 {font-family:"Gill Sans", Helvetica, Arial; font-weight:300; }

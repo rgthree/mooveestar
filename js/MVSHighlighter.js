@@ -12,7 +12,7 @@ define(['Highlight'], function(hljs){
       for(i = 0, l = codeBlocks.length; i < l; i++){
         code = codeBlocks[i].textContent || codeBlocks[i].innerText;
         codeBlocks[i].innerHTML = hljs.highlight('javascript', code).value;
-        if(codeBlocks[i].className.indexOf('-evalable') && Element.prototype.addEventListener){
+        if(codeBlocks[i].className.indexOf('-evalable') > -1 && Element.prototype.addEventListener){
           (function(code){
             var btn = document.createElement('button');
             btn.className = 'evaler';
