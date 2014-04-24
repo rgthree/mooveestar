@@ -80,12 +80,10 @@
         var error, errorFgColor;
         error = errorFgColor = false;
         model.addEvent('error', function(e){
-          console.log(e);
           if(e.model === model && e.errors.fgColor && e.errors.fgColor.value && e.errors.fgColor.from && e.errors.fgColor.error)
             error = true;
         });
         model.addEvent('error:fgColor', function(e){
-          console.log(e);
           if(e.model === model && e.key === 'fgColor' && e.value && e.from && e.error)
             errorFgColor = true;
         });
@@ -634,28 +632,95 @@
     var itemHtml = '  <li>  <!-- cool list item! --> \n\n    </li> \n\t ';
 
     describe('.register()', function(){
-      it('should register a template html to a key', function(){
 
+      it('should register a template html to a key', function(){
         MooVeeStar.templates.register('section-tpl', sectionHtml);
         MooVeeStar.templates.register('list-tpl', listHtml);
-
-        assert.isNotNull(MooVeeStar.templates._templates['section-tpl']);
-        assert.equal(MooVeeStar.templates._templates['section-tpl'].markup, sectionHtml);
-
-        assert.isNotNull(MooVeeStar.templates._templates['list-tpl']);
-        assert.equal(MooVeeStar.templates._templates['list-tpl'].markup, listHtml);
-
-      });
-
-      it('should strip out comment, newlines, and excess whitespace', function(){
         MooVeeStar.templates.register('item-tpl', itemHtml);
 
-        assert.isNotNull(MooVeeStar.templates._templates['item-tpl']);
-        assert.equal(MooVeeStar.templates._templates['item-tpl'].markup, '<li> </li>');
+        assert.isNotNull(MooVeeStar.templates._templates['section-tpl'].fragment);
+        assert.isNotNull(MooVeeStar.templates._templates['list-tpl'].fragment);
+        assert.isNotNull(MooVeeStar.templates._templates['item-tpl'].fragment);
       });
 
-    });
+      it('should allow table tags appropriately', function(){
 
+        MooVeeStar.templates.register('table', '<table><tr><td>1</td><td>2</td></tr></table>');
+        MooVeeStar.templates.register('thead', '<thead><tr><td>1</td><td>2</td></tr></thead>');
+        MooVeeStar.templates.register('tbody', '<tbody><tr><td>1</td><td>2</td></tr></tbody>');
+        MooVeeStar.templates.register('tfoot', '<tfoot><tr><td>1</td><td>2</td></tr></tfoot>');
+        MooVeeStar.templates.register('tr', '<tr><td>1</td><td>2</td></tr>');
+        MooVeeStar.templates.register('td', '<td>1</td>');
+
+        ['table', 'thead', 'tbody', 'tfoot', 'tr', 'td'].forEach(function(type){
+          assert.isNotNull(MooVeeStar.templates._templates[type].fragment);
+          assert.equal(MooVeeStar.templates.inflate(type, {}).get('tag'), type);
+        });
+
+        MooVeeStar.templates.register('table', new Element('table[html="<tr><td>1</td><td>2</td></tr>"]'));
+        MooVeeStar.templates.register('thead', new Element('thead[html="<tr><td>1</td><td>2</td></tr>"]'));
+        MooVeeStar.templates.register('tbody', new Element('tbody[html="<tr><td>1</td><td>2</td></tr>"]'));
+        MooVeeStar.templates.register('tfoot', new Element('tfoot[html="<tr><td>1</td><td>2</td></tr>"]'));
+        MooVeeStar.templates.register('tr', new Element('tr[html="<td>1</td><td>2</td>"]'));
+        MooVeeStar.templates.register('td', new Element('td[html="1"]'));
+
+        ['table', 'thead', 'tbody', 'tfoot', 'tr', 'td'].forEach(function(type){
+          assert.isNotNull(MooVeeStar.templates._templates[type].fragment);
+          assert.equal(MooVeeStar.templates.inflate(type, {}).get('tag'), type);
+        });
+
+        MooVeeStar.templates.register('table', new Element('script[type="text/x-tpl"][text="<table><tr><td>1</td><td>2</td></tr></table>"]'));
+        MooVeeStar.templates.register('thead', new Element('script[type="text/x-tpl"][text="<thead><tr><td>1</td><td>2</td></tr></thead>"]'));
+        MooVeeStar.templates.register('tbody', new Element('script[type="text/x-tpl"][text="<tbody><tr><td>1</td><td>2</td></tr></tbody>"]'));
+        MooVeeStar.templates.register('tfoot', new Element('script[type="text/x-tpl"][text="<tfoot><tr><td>1</td><td>2</td></tr></tfoot>"]'));
+        MooVeeStar.templates.register('tr', new Element('script[type="text/x-tpl"][text="<tr><td>1</td><td>2</td></tr>"]'));
+        MooVeeStar.templates.register('td', new Element('script[type="text/x-tpl"][text="<td>1</td>"]'));
+
+        ['table', 'thead', 'tbody', 'tfoot', 'tr', 'td'].forEach(function(type){
+          assert.isNotNull(MooVeeStar.templates._templates[type].fragment);
+          assert.equal(MooVeeStar.templates.inflate(type, {}).get('tag'), type);
+        });
+
+
+        var supports = MooVeeStar.templates.supportsTemplate;
+
+        if(supports === true){
+          // Force pseudo HTML5 template support
+          MooVeeStar.templates.register('table', new Element('template[html="<table><tr><td>1</td><td>2</td></tr></table>"]'));
+          MooVeeStar.templates.register('thead', new Element('template[html="<thead><tr><td>1</td><td>2</td></tr></thead>"]'));
+          MooVeeStar.templates.register('tbody', new Element('template[html="<tbody><tr><td>1</td><td>2</td></tr></tbody>"]'));
+          MooVeeStar.templates.register('tfoot', new Element('template[html="<tfoot><tr><td>1</td><td>2</td></tr></tfoot>"]'));
+          MooVeeStar.templates.register('tr', new Element('template[html="<tr><td>1</td><td>2</td></tr>"]'));
+          MooVeeStar.templates.register('td', new Element('template[html="<td>1</td>"]'));
+
+          ['table', 'thead', 'tbody', 'tfoot', 'tr', 'td'].forEach(function(type){
+            assert.isNotNull(MooVeeStar.templates._templates[type].fragment);
+            console.log(type);
+            console.log(typeOf(MooVeeStar.templates.inflate(type, {})));
+            assert.equal(MooVeeStar.templates.inflate(type, {}).get('tag'), type);
+          });
+
+
+          MooVeeStar.templates.supportsTemplate = false;
+          MooVeeStar.templates.register('table', new Element('template[html="<table><tr><td>1</td><td>2</td></tr></table>"]'));
+          MooVeeStar.templates.register('thead', new Element('template[html="<thead><tr><td>1</td><td>2</td></tr></thead>"]'));
+          MooVeeStar.templates.register('tbody', new Element('template[html="<tbody><tr><td>1</td><td>2</td></tr></tbody>"]'));
+          MooVeeStar.templates.register('tfoot', new Element('template[html="<tfoot><tr><td>1</td><td>2</td></tr></tfoot>"]'));
+          MooVeeStar.templates.register('tr', new Element('template[html="<tr><td>1</td><td>2</td></tr>"]'));
+          MooVeeStar.templates.register('td', new Element('template[html="<td>1</td>"]'));
+
+          ['table', 'thead', 'tbody', 'tfoot', 'tr', 'td'].forEach(function(type){
+            assert.isNotNull(MooVeeStar.templates._templates[type].fragment);
+            assert.equal(MooVeeStar.templates.inflate(type, {}).get('tag'), type);
+          });
+
+          MooVeeStar.templates.supportsTemplate = supports;
+        }
+
+      });
+
+
+    });
 
     describe('.scrape()', function(){
 
@@ -723,17 +788,15 @@
     describe('.inflate()', function(){
 
       it('should bind the data correctly', function(){
-
         var el = MooVeeStar.templates.inflate('section-tpl', { id:123, 'class':'box red', title:'My Title' });
 
         assert.equal(el.get('data-id'), '123');
         assert.equal(el.get('class'), 'box red');
         assert.equal(el.getElement('[data-bind*="title"]').get('text'), 'My Title');
-
       });
 
-      it('should set html as default, or when set to html', function(){
 
+      it('should set html as default, or when set to html', function(){
         MooVeeStar.templates.register('test-inflate-html', '<h1 data-bind="title"></h1>');
         var el = MooVeeStar.templates.inflate('test-inflate-html', { title:'<strong>My Title</strong>' });
 
@@ -747,14 +810,11 @@
         assert.equal(el2.getChildren().length, 1);
         assert.equal(el2.getFirst().get('tag'), 'strong');
         assert.equal(el2.getFirst().get('text'), 'My Title');
-        
       });
 
-      it('should strip text when value is text', function(){
-
+      it('should strip html when value is text', function(){
         MooVeeStar.templates.register('test-inflate-text', '<h1 data-bind="title" data-bind-title="text"></h1>');
         var el = MooVeeStar.templates.inflate('test-inflate-text', { title:'<strong>My Title</strong>' });
-
         assert.equal(el.getChildren().length, 0);
         assert.equal(el.get('text'), '<strong>My Title</strong>');
         assert.equal(el.get('html'), '&lt;strong&gt;My Title&lt;/strong&gt;');
@@ -762,18 +822,15 @@
       });
 
       it('should empty and grab an element', function(){
-
         MooVeeStar.templates.register('test-inflate-text2', '<h1 data-bind="title"><span>gone</span></h1>');
         var el = MooVeeStar.templates.inflate('test-inflate-text2', { title:new Element('strong[text="My Title"]') });
 
         assert.equal(el.getChildren().length, 1);
         assert.equal(el.getFirst().get('tag'), 'strong');
         assert.equal(el.getFirst().get('text'), 'My Title');
-        
       });
 
       it('should empty and grab all Elements collection', function(){
-
         MooVeeStar.templates.register('test-inflate-html3', '<h1 data-bind="title"><span>gone</span></h1>');
         var els, el;
         els = new Elements();
@@ -787,7 +844,6 @@
         assert.equal(el.getFirst().get('text'), 'My Title');
         assert.equal(el.getLast().get('tag'), 'aside');
         assert.equal(el.getLast().get('text'), 'Subtitle');
-        
       });
 
       it('should bind not change the value (style/url)', function(){
@@ -808,6 +864,22 @@
         assert.equal(el.get('title'), data.title);
         assert.equal(el.getElement('img').getStyle('background-image'), 'url('+data.src+')');
         assert.equal(el.getElement('img').get('src'), data.src);
+      });
+
+      it('should inflate inner templates', function(){
+        MooVeeStar.templates.register('_inner1', '<span data-bind="firstname"></span>');
+        MooVeeStar.templates.register('_inner2', '<span data-bind="tel:(text title)"></span>');
+        MooVeeStar.templates.register('_inner3', '<span data-bind="zip"></span><span data-bind="sex"></span>');
+        MooVeeStar.templates.register('outer', '<div><span data-bind="lastname"></span><tpl template="_inner1"></tpl><div data-template="_inner2"></div><section class="test" data-templateid="_inner3"></div></div>');
+        
+        var el, data;
+        data = { firstname:'Al', lastname:'Bundy', tel:'555-123-4567', zip:'12345', sex:'Male' };
+        el = MooVeeStar.templates.inflate('outer', data);
+        assert.equal(el.getChildren().length, 5);
+        assert.equal(el.getChildren('span').length, 5);
+        assert.equal(el.getChildren()[4].innerHTML, 'Male');
+        assert.equal(el.getChildren()[2].innerHTML, '555-123-4567');
+        assert.equal(el.getChildren()[2].get('title'), '555-123-4567');
       });
 
     });

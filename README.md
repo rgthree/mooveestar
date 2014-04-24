@@ -37,3 +37,10 @@ MooVeeStar uses grunt to automate linting, testing and compressing.
         
 6. If all goes well, commit with a thought out message
 7. If you have contributions, send a [pull request](https://help.github.com/articles/using-pull-requests)
+
+
+## Breaking Changelog
+
+**0.1.1+20140423**
+
+- [Private] We will now use `<template>` tags and their shadowDom. This means we only store the fragment now, and do not _need_ to parse an HTML string. Now, templates may not strip comments & whitespace and only store a `DocumentFragment` under the template data's `fragment` key (removing the `markup` and `dom` keys respectively).

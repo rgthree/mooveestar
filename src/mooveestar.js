@@ -1,4 +1,4 @@
-// > MooVeeStar v0.1.0+20140330 - https://rgthree.github.io/mooveestar/
+// > MooVeeStar v0.1.1+20140423 - https://rgthree.github.io/mooveestar/
 // > by Regis Gaughan, III <regis.gaughan@gmail.com> http://regisgaughan.com
 // > MooVeeStar may be freely distributed under the MIT license.
 
@@ -379,6 +379,8 @@
 
      // The internal list of models
     _models: [],
+    // A map of model's by their `id` (`getId()`), with a map of `count` and `model`
+    _modelsById: {},
 
 
     // ### Collection Constructor
@@ -441,9 +443,15 @@
           model = new self.modelClass(model);
 
         // If we don't find the model in our list already, or we allowDuplicates
-        if(!self.findFirst(model.getId()) || self.options.allowDuplicates){
+        if(self.options.allowDuplicates || !self.findFirst(model.getId())){
           model.addEvent('*', self._onModelEvent);
           added.push(model);
+          // Add/or increase the count of the model's id
+          if(self._modelsById[model.getId()])
+            self._modelsById[model.getId()].count += 1;
+          else
+            self._modelsById[model.getId()] = { count:1, model:model};
+
           if(options.at != null)
             self._models.splice(options.at+addedCount, 0, model);
           else
@@ -472,7 +480,7 @@
     // Fires `Collection#change` and `Collection#remove`
     // 
     remove: function(indexOrModels, options){
-      var self, modelsRemoved, model;
+      var self, modelsRemoved, model, toRemove, i, l;
       self = this;
       options = options || {};
       modelsRemoved = [];
@@ -481,25 +489,29 @@
       // even if that model exists elsewhere
       if(typeof(indexOrModels) === 'number'){
         model = self.at(indexOrModels);
-        if(self._models.contains(model)){
+        if(self._modelsById[model.getId()] && self._modelsById[model.getId()].count > 0){
           modelsRemoved.include(model);
           Array.splice(self._models, indexOrModels, 1);
+          self._modelsById[model.getId()].count -= 1;
           // Only remove the event listener when there's no more instances of the model in the collection
-          if(!self._models.contains(model))
+          if(self._modelsById[model.getId()].count === 0){
             model.removeEvent('*', self._onModelEvent);
+            delete self._modelsById[model.getId()];
+          }
         }
 
       // Otherwise, remove all occurrences of the model(s) passed in
       }else{
-        indexOrModels = Array.from(indexOrModels);
-        // Loop over inversely so we do not mess with order if `indexOrModels === this._model` when `removeAll()`
-        for(var i = indexOrModels.length-1, l = 0; i >= 0; i--){
-          model = typeof(indexOrModels[i]) !== 'object' ? self.findFirst(indexOrModels[i]) : indexOrModels[i];
+        toRemove = [];
+        Array.from(indexOrModels).forEach(function(item){ toRemove.include(item); });
+        for(i = toRemove.length-1, l = 0; i >= 0; i--){
+          model = typeof(toRemove[i]) !== 'object' ? self.findFirst(toRemove[i]) : toRemove[i];
           if(self._models.contains(model)){
             model.removeEvent('*', self._onModelEvent);
             modelsRemoved.include(model);
             // Array.erase removes all instances of the model
             self._models.erase(model);
+            delete self._modelsById[model.getId()];
           }
         }
       }
@@ -620,10 +632,19 @@
 
     // ### Collection#findFirst
     //     
-    // Returns the first model whos `idProperty` (or `keyToFind` value) matches the passed value
+    // Returns the first model whose `idProperty` (or `keyToFind` value) matches the passed value
     // 
-    findFirst: function(value, keyToFind){
-      var models = this.find(value, keyToFind);
+    findFirst: function(valueOrObj, keyToFind){
+      //if(valueOrObj == null)
+        //return null;
+
+      // If there's no keyToFind, then we can assume we're looking up by the model's id
+      if(!keyToFind){
+        var found = this._modelsById[valueOrObj] || (valueOrObj instanceof MooVeeStar.Model && this._modelsById(valueOrObj.getId())) || this._modelsById[valueOrObj.id] || this._modelsById[valueOrObj.cid] || null;
+        return found && found.model || null;
+      }
+
+      var models = this.find(valueOrObj, keyToFind);
       return models.length ? models[0] : null;
     },
 
@@ -1162,7 +1183,7 @@
     // The templates registry
     _templates: {},
 
-    // Test if the browser supports HTML5 <template> tags
+    // Test if the browser supports HTML5 template tags
     supportsTemplate: ('content' in document.createElement('template')),
 
 
@@ -1182,15 +1203,14 @@
     //      // <li data-bind="name uuid:data-uuid accent:class privacy:(data-private class)" data-action="choose"></li>
     //      <li data-bind="name uuid accent privacy" data-bind-uuid="data-uuid" data-bind-accent="class" data-bind-privacy="data-private class" data-action="choose"></li>
     //
-    _parseShorthand: function(element){
-      var elements;
-      elements = element.getElements('[data-bind]');
-      if(element.get('data-bind'))
-        elements.unshift(element);
+    _parseShorthand: function(elementOrFragment){
+      var elements, dataBind;
+      elements = elementOrFragment.querySelectorAll('[data-bind]');
+      if(elementOrFragment.getAttribute && elementOrFragment.getAttribute('data-bind'))
+        elements.unshift(elementOrFragment);
 
-
-      elements.forEach(function(el){
-        var dataBind = el.get('data-bind');
+      Array.from(elements).forEach(function(el){
+        var dataBind = el.getAttribute('data-bind');
         if(dataBind && dataBind.contains(':')){
           [
             /\s*([^\s]+?)(?!\\):\(([^\)]+)\)/,  // Capture bindings with parens
@@ -1199,50 +1219,60 @@
             var match;
             while((match = regex.exec(dataBind))){
               dataBind = dataBind.replace(match[0], ' '+match[1]);
-              el.set('data-bind-'+match[1], match[2]);
+              el.setAttribute('data-bind-'+match[1], match[2]);
             }
           });
-          el.set('data-bind', dataBind.trim());
+          el.setAttribute('data-bind', dataBind.trim());
         }
       });
-      return element;
+      return elementOrFragment;
     },
 
 
     // ### templates::register
     // 
-    // Register a template to an html string and create a dom from it
+    // Register a template to it's key and a DocumentFragment to store the markup. Uses `<template>` shadow DOM if possible.
     // Overloaded to accept a register a script as second param
     // 
     register: function(key, htmlOrElementOrFunction){
-      var html, type;
+      var html, type, tag, parentTag, fragment;
       key = mvstpl._cleanKey(key);
       type = typeOf(htmlOrElementOrFunction);
+      tag = type === 'element' && htmlOrElementOrFunction.get('tag') || null;
 
       if(type === 'function')
         return mvstpl.registerScript(key, htmlOrElementOrFunction);
 
-
-      // If it's an element, use it's inner HTML (ior text content if a `<script>`)
-      
-      if(type === 'element'){
-        if(htmlOrElementOrFunction.get('tag') === 'script')
-          html = htmlOrElementOrFunction.get('text');
-        else if(htmlOrElementOrFunction.get('tag') === 'template')
-          html = htmlOrElementOrFunction.get('html');
-        else
-          html = new Element('tpl').grab(htmlOrElementOrFunction).get('html');
-      }else if(type === 'string'){
-        html = htmlOrElementOrFunction;
-      }else{
-        throw new Error('A registered script must pass an element or a string. (key:"'+key+'")');
-      }
-
-      html = html.replace(/<\!\-\-.*?\-\->/g, '').trim().replace(/\n/g,' ').replace(/\s+/g,' ');
+      if(type !== 'element' && (type !== 'string' || !htmlOrElementOrFunction.length))
+        throw new Error('A registered script must pass an element or an html string. (key:"'+key+'")');
 
       mvstpl._templates[key] = mvstpl._templates[key] || {};
-      mvstpl._templates[key].tpl = mvstpl._parseShorthand(new Element('tpl[html="'+html+'"]'));
-      mvstpl._templates[key].markup = mvstpl._templates[key].tpl.innerHTML;
+
+      // If we support HTML5 template tags, then use them wholesale
+      if(mvstpl.supportsTemplate && tag === 'template' && htmlOrElementOrFunction.content){
+        fragment = htmlOrElementOrFunction.content;
+      }else{
+        // If we don't support HTML5 templates, then scrape their html (or script tag text)
+        if(type === 'element'){
+          if(tag === 'script' || tag === 'template'){
+            html = htmlOrElementOrFunction.get(tag === 'script' ? 'text' : 'html');
+          }else{
+            parentTag = tag === 'tr' ? 'tbody' : (/^t(body|head|foot)/.test(tag) ? 'table' : (/^t(d|h)/.test(tag) ? 'tr' : 'tpl'));
+            html = new Element(parentTag).grab(htmlOrElementOrFunction).get('html');
+          }
+        }else{
+          html = htmlOrElementOrFunction;
+        }
+
+        // Create our fragment and append each child to it.
+        fragment = document.createDocumentFragment();
+        html = html.replace(/<\!\-\-.*?\-\->/g, '').trim().replace(/\n/g,' ').replace(/\s+/g,' ');
+        parentTag = parentTag || (html.indexOf('<tr') === 0 && 'tbody') || (/^<t(body|head|foot)/.test(html) && 'table') || (/^<t(d|h)/i.test(html) && 'tr') || 'tpl';
+        new Element(parentTag+'[html="'+html+'"]').getChildren().forEach(function(el){
+         fragment.appendChild(el);
+        });
+      }
+      mvstpl._templates[key].fragment = mvstpl._parseShorthand(fragment);
     },
 
 
@@ -1287,15 +1317,14 @@
       var data, markupEl, els, childrenTemplates;
       key = mvstpl._cleanKey(key);
       data = mvstpl._templates[key];
-      if(data){
-        // If html5Shiv is installed, and we need to go around cloneNode for HTML5 elements
-        if(!mvstpl.supportsTemplate && window.html5 && window.html5.supportsUnknownElements === false){
-          var node = html5.createElement('template');
-          node.innerHTML = data.markup;
-          return $(node).set('data-templateid', key);  
-        }else{
-          return data.tpl.clone().set('data-templateid', key);
-        }       
+      if(data && data.fragment){
+        var node;
+        if(document.importNode)
+          node = document.importNode(data.fragment, true);
+        else
+          node = data.fragment.cloneNode(true);
+        node._templateid = key;
+        return node;
       }else{
         throw new Error('Ain\'t no template called '+key+' ('+typeOf(mvstpl._templates[key])+')');
       }
@@ -1330,23 +1359,26 @@
       }
       if(dom){
         var markups, children, script;
-        // Attach any markup templates
-        (dom.getElements('markup')).each(function(child){
-          var tpls, markupClass;
-          // If there's a class name specified on the <markup> tag, add it to the children
-          markupClass = child.get('class') || null;
+        // Check for nested templates by way of a [data-template] attribute
+        Array.from(dom.querySelectorAll('[data-template], [data-templateid], [template]')).each(function(child){
+          var tpls, className;
+          // If there's a class name specified on the template call, then we want to add it
+          className = child.className || null;
           // If we passed in skipInit, use it, otherwise set to true assuming this pass is initializing final markup
-          tpls = mvstpl.inflate(child.get('template'), scriptData, skipInit != null ? skipInit : true);
+          tpls = mvstpl.inflate(child.get('data-template') || child.get('data-templateid') || child.get('template'), scriptData, skipInit != null ? skipInit : true);
           tpls = typeOf(tpls) !== 'array' ? [tpls] : tpls;
           tpls.reverse().each(function(tplChild){
             tplChild.inject(child, 'after');
-            markupClass && tplChild.addClass(markupClass);
-          });    
+            className && tplChild.addClass(className);
+          });
           child.destroy();
         });
-        children = dom.getChildren();
-        children.each(function(child){
-          child.set('data-tpl', (child.get('data-tpl') || '').split(' ').include(dom.get('data-templateid')).join(' ').clean());
+        children = [];
+        Array.from(dom.childNodes).each(function(child){
+          if(child.nodeType === 1){
+            child.setAttribute('data-tpl', (child.getAttribute('data-tpl') || '').split(' ').include(dom._templateid).join(' ').clean());
+            children.push(child);
+          }
         });
         children = children.length === 1 ? children[0] : children;
         !skipInit && mvstpl.init(children, scriptData);
@@ -1479,11 +1511,15 @@
                 }else if(field === 'class' || (binding === 'class' && field === 'default')){
                   val && child.addClass(val);
 
-                }else if((field === 'html' || field === 'default') && /^element/.test(typeOf(val))) {
+                }else if((field === 'html' || field === 'default') && (/^element/.test(typeOf(val)) || val instanceof DocumentFragment)) {
                   child.empty();
-                  Array.from(val).forEach(function(val){
-                    child.grab(val);
-                  });
+                  if(val instanceof DocumentFragment){
+                    child.appendChild(val);
+                  }else{
+                    Array.from(val).forEach(function(val){
+                      child.grab(val);
+                    });
+                  }
                    
                 }else if(field === 'default'){
                   field = /input|textarea|select/.test(child.get('tag')) ? 'value' : 'html';
@@ -1533,7 +1569,7 @@
 
     // ### templates::scrape
     // 
-    // Scrape the dom and register any templates as `<template id="xxx">`, `<template data-id="xxx">` or `<script type="text/x-tpl" data-id="xxx">`
+    // Scrape the dom and register any templates as `template id="xxx"`, `template data-id="xxx"` or `script type="text/x-tpl" data-id="xxx"`
     scrape: function(htmlOrEl){
       var el = document.html;
       if(typeOf(htmlOrEl) === 'string')
