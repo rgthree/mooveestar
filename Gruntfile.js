@@ -62,7 +62,8 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-mocha-phantomjs');
   grunt.loadNpmTasks('grunt-text-replace');
 
-  grunt.registerTask('default', ['jshint','mocha_phantomjs','uglify','concat','replace']);
-  grunt.registerTask('test', ['mocha_phantomjs']);
+  grunt.registerTask('build', ['jshint','mocha_phantomjs','uglify','concat','replace']);
+  grunt.registerTask('test', ['jshint','mocha_phantomjs']);
+  grunt.registerTask('default', ['build']);
 
 };
