@@ -29,7 +29,9 @@
     "grunt-mocha-phantomjs":"latest",
     "grunt-contrib-concat":"latest",
     "grunt-text-replace":"latest",
-    "chai":"latest"
+    "chai":"latest",
+    "grunt-contrib-connect":"latest",
+    "grunt-saucelabs":"latest"
   },
   "scripts": {
     "test": "grunt test --verbose",

@@ -6,6 +6,18 @@ module.exports = function(grunt) {
   v = pkg.version.split('+');
   pkg.version = (v[0] || '0.0.1')+'+'+(grunt.template.today("yyyymmdd"));
 
+  var browsers = [
+    { browserName: 'Firefox', platform: 'Linux', version: '28' },
+    { browserName: 'Firefox', platform: 'Windows 7', version: '7' },
+    { browserName: 'Chrome', platform: 'Windows 7' },
+    { browserName: 'Internet Explorer', platform: 'Windows 8.1', version: '11' },
+    { browserName: 'Internet Explorer', platform: 'Windows 8', version: '10' },
+    { browserName: 'Internet Explorer', platform: 'Windows 7', version: '9' },
+    { browserName: 'Internet Explorer', platform: 'Windows 7', version: '8' },
+    { browserName: 'Safari', platform:'OS X 10.8', version:'6' },
+    { browserName: 'Safari', platform:'OS X 10.9', version:'7' }
+  ];
+
   grunt.initConfig({
 
     pkg: pkg, // the package file to use
@@ -52,18 +64,36 @@ module.exports = function(grunt) {
       }
     },
 
+    'saucelabs-mocha': {
+      all: {
+        options: {
+          urls: ['http://127.0.0.1:9999/test/index.html'],
+          build: process.env.TRAVIS_JOB_ID,
+          tunnelTimeout: 5,
+          concurrency: 3,
+          browsers: browsers,
+          testname: 'MooVeeStar'
+        }
+      }
+    },
+    connect: {
+      server: {
+        options: { base:'', port:9999 }
+      }
+    },
 
   });
 
-  // Load the plugin that provides the "uglify" task.
-  grunt.loadNpmTasks('grunt-contrib-uglify');
-  grunt.loadNpmTasks('grunt-contrib-jshint');
-  grunt.loadNpmTasks('grunt-contrib-concat');
-  grunt.loadNpmTasks('grunt-mocha-phantomjs');
-  grunt.loadNpmTasks('grunt-text-replace');
+  // Loading grunt dependencies in our package.json
+  for(var key in pkg.devDependencies){
+    if(key.indexOf('grunt-') === 0)
+      grunt.loadNpmTasks(key);
+  }
 
   grunt.registerTask('build', ['jshint','mocha_phantomjs','uglify','concat','replace']);
   grunt.registerTask('test', ['jshint','mocha_phantomjs']);
   grunt.registerTask('default', ['build']);
+
+  grunt.registerTask('sauce', ['connect','saucelabs-mocha']);
 
 };

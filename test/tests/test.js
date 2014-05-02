@@ -1,5 +1,4 @@
 (function() {
-  var expect;
 
   var assert = chai.assert;
 
@@ -695,8 +694,6 @@
 
           ['table', 'thead', 'tbody', 'tfoot', 'tr', 'td'].forEach(function(type){
             assert.isNotNull(MooVeeStar.templates._templates[type].fragment);
-            console.log(type);
-            console.log(typeOf(MooVeeStar.templates.inflate(type, {})));
             assert.equal(MooVeeStar.templates.inflate(type, {}).get('tag'), type);
           });
 
@@ -849,20 +846,22 @@
       it('should bind not change the value (style/url)', function(){
         MooVeeStar.templates.register('test-inflate-valuechange', '<div data-bind="title" data-bind-title="title"><img data-bind="src" data-bind-src="style:background-image src" /></div>');
         var el, data;
-        data = { title:'puppy', src:'http://test.com/puppy.jpg'};
+        data = { title:'A Test Image', src:'http://lorempixel.com/5/5/'};
         el = MooVeeStar.templates.inflate('test-inflate-valuechange', data);
         assert.equal(el.get('title'), data.title);
-        assert.equal(el.getElement('img').getStyle('background-image'), 'url('+data.src+')');
+        // Need to check for quotes for Firefox
+        assert.isTrue(new RegExp('^\\s*url\\([\'"]?'+data.src+'[\'"]?\\)\\s*$', 'gi').test(el.getElement('img').getStyle('background-image')));
         assert.equal(el.getElement('img').get('src'), data.src);
       });
 
       it('should bind the data via shorthand', function(){
         MooVeeStar.templates.register('test-inflate-valuechange', '<div data-bind="title:title"><img data-bind="src:(style:background-image src)" /></div>');
         var el, data;
-        data = { title:'puppy', src:'http://test.com/puppy.jpg'};
+        data = { title:'A Test Image', src:'http://lorempixel.com/5/5/'};
         el = MooVeeStar.templates.inflate('test-inflate-valuechange', data);
         assert.equal(el.get('title'), data.title);
-        assert.equal(el.getElement('img').getStyle('background-image'), 'url('+data.src+')');
+        // Need to check for quotes for Firefox
+        assert.isTrue(new RegExp('^\\s*url\\([\'"]?'+data.src+'[\'"]?\\)\\s*$', 'gi').test(el.getElement('img').getStyle('background-image')));
         assert.equal(el.getElement('img').get('src'), data.src);
       });
 
