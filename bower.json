@@ -1,6 +1,6 @@
 {
   "name": "MooVeeStar",
-  "version": "0.1.1+20140430",
+  "version": "0.1.1+20140502",
   "main": [
     "mooveestar-min.js",
     "src/mooveestar.js"

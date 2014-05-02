@@ -1,4 +1,4 @@
-// > MooVeeStar v0.1.1+20140423 - https://rgthree.github.io/mooveestar/
+// > MooVeeStar v0.1.1+20140502 - https://rgthree.github.io/mooveestar/
 // > by Regis Gaughan, III <regis.gaughan@gmail.com> http://regisgaughan.com
 // > MooVeeStar may be freely distributed under the MIT license.
 
@@ -1486,7 +1486,8 @@
                 var val = value; // Reassign the value in case we change it below
                 // If it's a style binding
                 if(field.indexOf('style:') === 0){
-                  val = val && String(val).indexOf('http') === 0 ? 'url('+val+')' : val;
+                  if(val && !String(val).contains('url(') && (field.contains('background-image') && (String(val) !== 'none')) || String(val).indexOf('http') === 0)
+                    val = 'url('+val+')';
                   child.setStyle(field.replace('style:',''), val);
 
                 // tpl:[array] will inflate the specified template for each item
