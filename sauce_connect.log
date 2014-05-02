@@ -1,0 +1,412 @@
+2014-05-02 14:51:21,585 - sauce_connect:601 - INFO - / Starting \
+2014-05-02 14:51:21,588 - sauce_connect:602 - INFO - Please wait for "You may start your tests" to start your tests.
+2014-05-02 14:51:21,594 - sauce_connect:614 - DEBUG - System is -4.0 hours off UTC
+2014-05-02 14:51:21,595 - sauce_connect:616 - DEBUG - options: {'proxy_tunnel': False, 'proxy_host': '', 'no_ssl_bump_domains': '', 'allow_unclean_exit': False, 'logfile': 'sauce_connect.log', 'squid_opts': '', 'user': 'rgthree', 'ports': ['52623'], 'domains': None, 'proxy_port': '', 'debug_ssh': False, 'tunnel_ports': ['80'], 'rest_url': 'https://saucelabs.com/rest/v1', 'proxy_user': '', 'logfilesize': '31457280', 'proxy_password': '', 'boost_mode': True, 'tunnel_identifier': '168288675', 'fast_fail_regexps': '', 'vm_version': '', 'quiet': False, 'latency_log': 150, 'use_ssh_config': False, 'ssh': False, 'se_port': '4445', 'readyfile': None, 'shared_tunnel': False, 'ssh_port': 443, 'direct_domains': '', 'host': '127.0.0.1'}
+2014-05-02 14:51:21,595 - sauce_connect:617 - DEBUG - metadata: {'PythonVersion': '2.5.1', 'OwnerHost': '127.0.0.1', 'Release': '3.1-r32', 'OwnerPorts': ['52623'], 'Ports': ['80'], 'Platform': 'Java-1.6.0_65-Java_HotSpot-TM-_64-Bit_Server_VM,_20.65-b04-462,_Apple_Inc.-on-Mac_OS_X-10.9.2-x86_64', 'Build': '50', 'ScriptRelease': 50, 'ScriptName': 'sauce_connect'}
+2014-05-02 14:51:21,596 - sauce_connect:619 - INFO - Forwarding: None:['80'] -> 127.0.0.1:['52623']
+2014-05-02 14:51:21,611 - sauce_connect:401 - INFO - Succesfully connected to local server 127.0.0.1:52623 in 6ms
+2014-05-02 14:51:21,818 - sauce_connect:265 - INFO - {"squid_config":null,"no_ssl_bump_domains":null,"use_caching_proxy":true,"metadata":{"PythonVersion":"2.5.1","OwnerHost":"127.0.0.1","Release":"3.1-r32","OwnerPorts":["52623"],"Ports":["80"],"Platform":"Java-1.6.0_65-Java_HotSpot-TM-_64-Bit_Server_VM,_20.65-b04-462,_Apple_Inc.-on-Mac_OS_X-10.9.2-x86_64","Build":"50","ScriptRelease":50,"ScriptName":"sauce_connect"},"use_kgp":true,"tunnel_identifier":"168288675","shared_tunnel":false,"fast_fail_regexps":null,"ssh_port":443,"direct_domains":null,"vm_version":"","domain_names":[]}
+2014-05-02 14:51:26,691 - sauce_connect:276 - INFO - Tunnel remote VM is provisioned (2864633277704900ad435fde93b3899b)
+2014-05-02 14:51:26,888 - sauce_connect:294 - INFO - Tunnel remote VM is booting ..
+2014-05-02 14:51:46,190 - sauce_connect:298 - INFO - Tunnel remote VM is running at maki76237.miso.saucelabs.com
+2014-05-02 14:51:46,210 - sauce_connect:401 - INFO - Succesfully connected to local server 127.0.0.1:52623 in 0ms
+2014-05-02 14:51:46,213 - sauce_connect:696 - INFO - Starting connection to tunnel host...
+2014-05-02 14:51:46,216 - sauce_connect:696 - INFO - Connecting to tunnel host maki76237.miso.saucelabs.com as rgthree
+2014-05-02 14:51:46,368 - sauce_connect:696 - INFO - Forwarding Selenium with ephemeral port 52635
+2014-05-02 14:51:46,374 - sauce_connect:696 - INFO - Selenium HTTP proxy listening on port 4445
+2014-05-02 14:51:46,951 - sauce_connect:0 - INFO - Successful handshake with Sauce Connect server
+2014-05-02 14:51:46,959 - sauce_connect:0 - INFO - Tunnel host version: 0.1.0, remote endpoint ID: c8ff05b0aec94105bda960b2954f9c10
+2014-05-02 14:51:46,963 - sauce_connect:696 - INFO - Connected! You may start your tests.
+2014-05-02 14:51:53,142 - sauce_connect:0 - INFO - Request started: GET http://127.0.0.1:8080/test/index.html
+2014-05-02 14:51:53,174 - sauce_connect:0 - INFO - GET http://127.0.0.1:8080/test/index.html -> 404 (31ms, 1380 bytes)
+2014-05-02 14:51:53,346 - sauce_connect:0 - INFO - Request started: GET http://127.0.0.1:8080/favicon.ico
+2014-05-02 14:51:53,355 - sauce_connect:0 - INFO - GET http://127.0.0.1:8080/favicon.ico -> 200 (8ms, 1150 bytes)
+2014-05-02 14:51:59,552 - sauce_connect:0 - INFO - Request started: GET http://127.0.0.1:8080/test/index.html
+2014-05-02 14:51:59,559 - sauce_connect:0 - INFO - GET http://127.0.0.1:8080/test/index.html -> 404 (6ms, 1380 bytes)
+2014-05-02 14:51:59,752 - sauce_connect:0 - INFO - Request started: GET http://127.0.0.1:8080/favicon.ico
+2014-05-02 14:51:59,757 - sauce_connect:0 - INFO - GET http://127.0.0.1:8080/favicon.ico -> 200 (6ms, 1150 bytes)
+2014-05-02 14:52:00,303 - sauce_connect:0 - INFO - Request started: GET http://127.0.0.1:8080/test/index.html
+2014-05-02 14:52:00,311 - sauce_connect:0 - INFO - GET http://127.0.0.1:8080/test/index.html -> 404 (7ms, 1380 bytes)
+2014-05-02 14:53:38,089 - sauce_connect:0 - INFO - Request started: GET http://127.0.0.1:8080/test/index.html
+2014-05-02 14:53:38,098 - sauce_connect:0 - INFO - GET http://127.0.0.1:8080/test/index.html -> 404 (8ms, 1380 bytes)
+2014-05-02 14:53:41,624 - sauce_connect:0 - INFO - Request started: GET http://127.0.0.1:8080/test/index.html
+2014-05-02 14:53:41,630 - sauce_connect:0 - INFO - GET http://127.0.0.1:8080/test/index.html -> 404 (6ms, 1380 bytes)
+2014-05-02 14:53:41,822 - sauce_connect:0 - INFO - Request started: GET http://127.0.0.1:8080/favicon.ico
+2014-05-02 14:53:41,828 - sauce_connect:0 - INFO - GET http://127.0.0.1:8080/favicon.ico -> 200 (6ms, 1150 bytes)
+2014-05-02 14:54:37,436 - sauce_connect:0 - INFO - Request started: GET http://ie9cvlist.ie.microsoft.com/IE9CompatViewList.xml
+2014-05-02 14:54:37,795 - sauce_connect:0 - INFO - GET http://ie9cvlist.ie.microsoft.com/IE9CompatViewList.xml -> 200 (359ms, 147043 bytes)
+2014-05-02 14:55:38,937 - sauce_connect:0 - INFO - received SIGTERM
+2014-05-02 15:14:23,707 - sauce_connect:601 - INFO - / Starting \
+2014-05-02 15:14:23,710 - sauce_connect:602 - INFO - Please wait for "You may start your tests" to start your tests.
+2014-05-02 15:14:23,716 - sauce_connect:614 - DEBUG - System is -4.0 hours off UTC
+2014-05-02 15:14:23,717 - sauce_connect:616 - DEBUG - options: {'proxy_tunnel': False, 'proxy_host': '', 'no_ssl_bump_domains': '', 'allow_unclean_exit': False, 'logfile': 'sauce_connect.log', 'squid_opts': '', 'user': 'rgthree', 'ports': ['53567'], 'domains': None, 'proxy_port': '', 'debug_ssh': False, 'tunnel_ports': ['80'], 'rest_url': 'https://saucelabs.com/rest/v1', 'proxy_user': '', 'logfilesize': '31457280', 'proxy_password': '', 'boost_mode': True, 'tunnel_identifier': '168290057', 'fast_fail_regexps': '', 'vm_version': '', 'quiet': False, 'latency_log': 150, 'use_ssh_config': False, 'ssh': False, 'se_port': '4445', 'readyfile': None, 'shared_tunnel': False, 'ssh_port': 443, 'direct_domains': '', 'host': '127.0.0.1'}
+2014-05-02 15:14:23,717 - sauce_connect:617 - DEBUG - metadata: {'PythonVersion': '2.5.1', 'OwnerHost': '127.0.0.1', 'Release': '3.1-r32', 'OwnerPorts': ['53567'], 'Ports': ['80'], 'Platform': 'Java-1.6.0_65-Java_HotSpot-TM-_64-Bit_Server_VM,_20.65-b04-462,_Apple_Inc.-on-Mac_OS_X-10.9.2-x86_64', 'Build': '50', 'ScriptRelease': 50, 'ScriptName': 'sauce_connect'}
+2014-05-02 15:14:23,719 - sauce_connect:619 - INFO - Forwarding: None:['80'] -> 127.0.0.1:['53567']
+2014-05-02 15:14:23,729 - sauce_connect:401 - INFO - Succesfully connected to local server 127.0.0.1:53567 in 5ms
+2014-05-02 15:14:23,950 - sauce_connect:265 - INFO - {"squid_config":null,"no_ssl_bump_domains":null,"use_caching_proxy":true,"metadata":{"PythonVersion":"2.5.1","OwnerHost":"127.0.0.1","Release":"3.1-r32","OwnerPorts":["53567"],"Ports":["80"],"Platform":"Java-1.6.0_65-Java_HotSpot-TM-_64-Bit_Server_VM,_20.65-b04-462,_Apple_Inc.-on-Mac_OS_X-10.9.2-x86_64","Build":"50","ScriptRelease":50,"ScriptName":"sauce_connect"},"use_kgp":true,"tunnel_identifier":"168290057","shared_tunnel":false,"fast_fail_regexps":null,"ssh_port":443,"direct_domains":null,"vm_version":"","domain_names":[]}
+2014-05-02 15:14:28,549 - sauce_connect:276 - INFO - Tunnel remote VM is provisioned (466344add54047d5b5971270132ea5dc)
+2014-05-02 15:14:28,742 - sauce_connect:294 - INFO - Tunnel remote VM is booting ..
+2014-05-02 15:14:54,243 - sauce_connect:298 - INFO - Tunnel remote VM is running at maki76064.miso.saucelabs.com
+2014-05-02 15:14:54,263 - sauce_connect:401 - INFO - Succesfully connected to local server 127.0.0.1:53567 in 0ms
+2014-05-02 15:14:54,266 - sauce_connect:696 - INFO - Starting connection to tunnel host...
+2014-05-02 15:14:54,267 - sauce_connect:696 - INFO - Connecting to tunnel host maki76064.miso.saucelabs.com as rgthree
+2014-05-02 15:14:54,414 - sauce_connect:696 - INFO - Forwarding Selenium with ephemeral port 53593
+2014-05-02 15:14:54,421 - sauce_connect:696 - INFO - Selenium HTTP proxy listening on port 4445
+2014-05-02 15:14:54,950 - sauce_connect:0 - INFO - Successful handshake with Sauce Connect server
+2014-05-02 15:14:54,960 - sauce_connect:0 - INFO - Tunnel host version: 0.1.0, remote endpoint ID: 71cf341c7f2548eb96fd2f180b99bb04
+2014-05-02 15:14:54,963 - sauce_connect:696 - INFO - Connected! You may start your tests.
+2014-05-02 15:15:02,187 - sauce_connect:0 - INFO - Request started: GET http://127.0.0.1:8080/test/index.html
+2014-05-02 15:15:02,217 - sauce_connect:0 - INFO - GET http://127.0.0.1:8080/test/index.html -> 404 (32ms, 1380 bytes)
+2014-05-02 15:15:02,413 - sauce_connect:0 - INFO - Request started: GET http://127.0.0.1:8080/favicon.ico
+2014-05-02 15:15:02,420 - sauce_connect:0 - INFO - GET http://127.0.0.1:8080/favicon.ico -> 200 (6ms, 1150 bytes)
+2014-05-02 15:16:54,405 - sauce_connect:0 - INFO - received SIGTERM
+2014-05-02 15:19:58,801 - sauce_connect:601 - INFO - / Starting \
+2014-05-02 15:19:58,805 - sauce_connect:602 - INFO - Please wait for "You may start your tests" to start your tests.
+2014-05-02 15:19:58,809 - sauce_connect:614 - DEBUG - System is -4.0 hours off UTC
+2014-05-02 15:19:58,811 - sauce_connect:616 - DEBUG - options: {'proxy_tunnel': False, 'proxy_host': '', 'no_ssl_bump_domains': '', 'allow_unclean_exit': False, 'logfile': 'sauce_connect.log', 'squid_opts': '', 'user': 'rgthree', 'ports': ['53756'], 'domains': None, 'proxy_port': '', 'debug_ssh': False, 'tunnel_ports': ['80'], 'rest_url': 'https://saucelabs.com/rest/v1', 'proxy_user': '', 'logfilesize': '31457280', 'proxy_password': '', 'boost_mode': True, 'tunnel_identifier': '168290392', 'fast_fail_regexps': '', 'vm_version': '', 'quiet': False, 'latency_log': 150, 'use_ssh_config': False, 'ssh': False, 'se_port': '4445', 'readyfile': None, 'shared_tunnel': False, 'ssh_port': 443, 'direct_domains': '', 'host': '127.0.0.1'}
+2014-05-02 15:19:58,812 - sauce_connect:617 - DEBUG - metadata: {'PythonVersion': '2.5.1', 'OwnerHost': '127.0.0.1', 'Release': '3.1-r32', 'OwnerPorts': ['53756'], 'Ports': ['80'], 'Platform': 'Java-1.6.0_65-Java_HotSpot-TM-_64-Bit_Server_VM,_20.65-b04-462,_Apple_Inc.-on-Mac_OS_X-10.9.2-x86_64', 'Build': '50', 'ScriptRelease': 50, 'ScriptName': 'sauce_connect'}
+2014-05-02 15:19:58,812 - sauce_connect:619 - INFO - Forwarding: None:['80'] -> 127.0.0.1:['53756']
+2014-05-02 15:19:58,825 - sauce_connect:401 - INFO - Succesfully connected to local server 127.0.0.1:53756 in 5ms
+2014-05-02 15:19:59,036 - sauce_connect:265 - INFO - {"squid_config":null,"no_ssl_bump_domains":null,"use_caching_proxy":true,"metadata":{"PythonVersion":"2.5.1","OwnerHost":"127.0.0.1","Release":"3.1-r32","OwnerPorts":["53756"],"Ports":["80"],"Platform":"Java-1.6.0_65-Java_HotSpot-TM-_64-Bit_Server_VM,_20.65-b04-462,_Apple_Inc.-on-Mac_OS_X-10.9.2-x86_64","Build":"50","ScriptRelease":50,"ScriptName":"sauce_connect"},"use_kgp":true,"tunnel_identifier":"168290392","shared_tunnel":false,"fast_fail_regexps":null,"ssh_port":443,"direct_domains":null,"vm_version":"","domain_names":[]}
+2014-05-02 15:20:03,256 - sauce_connect:276 - INFO - Tunnel remote VM is provisioned (ad591cf797ac4a8ba54c0c78221d03d5)
+2014-05-02 15:20:03,470 - sauce_connect:294 - INFO - Tunnel remote VM is booting ..
+2014-05-02 15:20:41,819 - sauce_connect:298 - INFO - Tunnel remote VM is running at maki76211.miso.saucelabs.com
+2014-05-02 15:20:41,838 - sauce_connect:401 - INFO - Succesfully connected to local server 127.0.0.1:53756 in 0ms
+2014-05-02 15:20:41,842 - sauce_connect:696 - INFO - Starting connection to tunnel host...
+2014-05-02 15:20:41,844 - sauce_connect:696 - INFO - Connecting to tunnel host maki76211.miso.saucelabs.com as rgthree
+2014-05-02 15:20:41,990 - sauce_connect:696 - INFO - Forwarding Selenium with ephemeral port 53778
+2014-05-02 15:20:41,996 - sauce_connect:696 - INFO - Selenium HTTP proxy listening on port 4445
+2014-05-02 15:20:42,492 - sauce_connect:0 - INFO - Successful handshake with Sauce Connect server
+2014-05-02 15:20:42,497 - sauce_connect:0 - INFO - Tunnel host version: 0.1.0, remote endpoint ID: bda7eedb10e34242a3e7db95ab5b47bc
+2014-05-02 15:20:42,500 - sauce_connect:696 - INFO - Connected! You may start your tests.
+2014-05-02 15:20:47,108 - sauce_connect:0 - INFO - Request started: GET http://127.0.0.1:9999/test/index.html
+2014-05-02 15:20:47,124 - sauce_connect:0 - INFO - Could not proxy http://127.0.0.1:9999/test/index.html, exception: java.net.ConnectException: Connection refused
+2014-05-02 15:20:47,384 - sauce_connect:0 - INFO - Request started: GET http://127.0.0.1:9999/favicon.ico
+2014-05-02 15:20:47,388 - sauce_connect:0 - INFO - Could not proxy http://127.0.0.1:9999/favicon.ico, exception: java.net.ConnectException: Connection refused
+2014-05-02 15:22:35,594 - sauce_connect:0 - INFO - received SIGTERM
+2014-05-02 15:24:08,914 - sauce_connect:601 - INFO - / Starting \
+2014-05-02 15:24:08,918 - sauce_connect:602 - INFO - Please wait for "You may start your tests" to start your tests.
+2014-05-02 15:24:08,924 - sauce_connect:614 - DEBUG - System is -4.0 hours off UTC
+2014-05-02 15:24:08,926 - sauce_connect:616 - DEBUG - options: {'proxy_tunnel': False, 'proxy_host': '', 'no_ssl_bump_domains': '', 'allow_unclean_exit': False, 'logfile': 'sauce_connect.log', 'squid_opts': '', 'user': 'rgthree', 'ports': ['53982'], 'domains': None, 'proxy_port': '', 'debug_ssh': False, 'tunnel_ports': ['80'], 'rest_url': 'https://saucelabs.com/rest/v1', 'proxy_user': '', 'logfilesize': '31457280', 'proxy_password': '', 'boost_mode': True, 'tunnel_identifier': '168290642', 'fast_fail_regexps': '', 'vm_version': '', 'quiet': False, 'latency_log': 150, 'use_ssh_config': False, 'ssh': False, 'se_port': '4445', 'readyfile': None, 'shared_tunnel': False, 'ssh_port': 443, 'direct_domains': '', 'host': '127.0.0.1'}
+2014-05-02 15:24:08,927 - sauce_connect:617 - DEBUG - metadata: {'PythonVersion': '2.5.1', 'OwnerHost': '127.0.0.1', 'Release': '3.1-r32', 'OwnerPorts': ['53982'], 'Ports': ['80'], 'Platform': 'Java-1.6.0_65-Java_HotSpot-TM-_64-Bit_Server_VM,_20.65-b04-462,_Apple_Inc.-on-Mac_OS_X-10.9.2-x86_64', 'Build': '50', 'ScriptRelease': 50, 'ScriptName': 'sauce_connect'}
+2014-05-02 15:24:08,927 - sauce_connect:619 - INFO - Forwarding: None:['80'] -> 127.0.0.1:['53982']
+2014-05-02 15:24:08,941 - sauce_connect:401 - INFO - Succesfully connected to local server 127.0.0.1:53982 in 6ms
+2014-05-02 15:24:09,157 - sauce_connect:265 - INFO - {"squid_config":null,"no_ssl_bump_domains":null,"use_caching_proxy":true,"metadata":{"PythonVersion":"2.5.1","OwnerHost":"127.0.0.1","Release":"3.1-r32","OwnerPorts":["53982"],"Ports":["80"],"Platform":"Java-1.6.0_65-Java_HotSpot-TM-_64-Bit_Server_VM,_20.65-b04-462,_Apple_Inc.-on-Mac_OS_X-10.9.2-x86_64","Build":"50","ScriptRelease":50,"ScriptName":"sauce_connect"},"use_kgp":true,"tunnel_identifier":"168290642","shared_tunnel":false,"fast_fail_regexps":null,"ssh_port":443,"direct_domains":null,"vm_version":"","domain_names":[]}
+2014-05-02 15:24:13,055 - sauce_connect:276 - INFO - Tunnel remote VM is provisioned (0164fe0c8d3d45aea617b57371f0330a)
+2014-05-02 15:24:13,240 - sauce_connect:294 - INFO - Tunnel remote VM is booting ..
+2014-05-02 15:24:20,936 - sauce_connect:0 - INFO - received SIGINT
+2014-05-02 15:24:38,788 - sauce_connect:601 - INFO - / Starting \
+2014-05-02 15:24:38,792 - sauce_connect:602 - INFO - Please wait for "You may start your tests" to start your tests.
+2014-05-02 15:24:38,796 - sauce_connect:614 - DEBUG - System is -4.0 hours off UTC
+2014-05-02 15:24:38,796 - sauce_connect:616 - DEBUG - options: {'proxy_tunnel': False, 'proxy_host': '', 'no_ssl_bump_domains': '', 'allow_unclean_exit': False, 'logfile': 'sauce_connect.log', 'squid_opts': '', 'user': 'rgthree', 'ports': ['54005'], 'domains': None, 'proxy_port': '', 'debug_ssh': False, 'tunnel_ports': ['80'], 'rest_url': 'https://saucelabs.com/rest/v1', 'proxy_user': '', 'logfilesize': '31457280', 'proxy_password': '', 'boost_mode': True, 'tunnel_identifier': '168290673', 'fast_fail_regexps': '', 'vm_version': '', 'quiet': False, 'latency_log': 150, 'use_ssh_config': False, 'ssh': False, 'se_port': '4445', 'readyfile': None, 'shared_tunnel': False, 'ssh_port': 443, 'direct_domains': '', 'host': '127.0.0.1'}
+2014-05-02 15:24:38,798 - sauce_connect:617 - DEBUG - metadata: {'PythonVersion': '2.5.1', 'OwnerHost': '127.0.0.1', 'Release': '3.1-r32', 'OwnerPorts': ['54005'], 'Ports': ['80'], 'Platform': 'Java-1.6.0_65-Java_HotSpot-TM-_64-Bit_Server_VM,_20.65-b04-462,_Apple_Inc.-on-Mac_OS_X-10.9.2-x86_64', 'Build': '50', 'ScriptRelease': 50, 'ScriptName': 'sauce_connect'}
+2014-05-02 15:24:38,799 - sauce_connect:619 - INFO - Forwarding: None:['80'] -> 127.0.0.1:['54005']
+2014-05-02 15:24:38,809 - sauce_connect:401 - INFO - Succesfully connected to local server 127.0.0.1:54005 in 4ms
+2014-05-02 15:24:39,016 - sauce_connect:265 - INFO - {"squid_config":null,"no_ssl_bump_domains":null,"use_caching_proxy":true,"metadata":{"PythonVersion":"2.5.1","OwnerHost":"127.0.0.1","Release":"3.1-r32","OwnerPorts":["54005"],"Ports":["80"],"Platform":"Java-1.6.0_65-Java_HotSpot-TM-_64-Bit_Server_VM,_20.65-b04-462,_Apple_Inc.-on-Mac_OS_X-10.9.2-x86_64","Build":"50","ScriptRelease":50,"ScriptName":"sauce_connect"},"use_kgp":true,"tunnel_identifier":"168290673","shared_tunnel":false,"fast_fail_regexps":null,"ssh_port":443,"direct_domains":null,"vm_version":"","domain_names":[]}
+2014-05-02 15:24:43,186 - sauce_connect:276 - INFO - Tunnel remote VM is provisioned (06a4245a3a904d6f80f01c4f0c9962a8)
+2014-05-02 15:24:43,381 - sauce_connect:294 - INFO - Tunnel remote VM is booting ..
+2014-05-02 15:25:21,845 - sauce_connect:298 - INFO - Tunnel remote VM is running at maki76118.miso.saucelabs.com
+2014-05-02 15:25:21,858 - sauce_connect:401 - INFO - Succesfully connected to local server 127.0.0.1:54005 in 0ms
+2014-05-02 15:25:21,861 - sauce_connect:696 - INFO - Starting connection to tunnel host...
+2014-05-02 15:25:21,864 - sauce_connect:696 - INFO - Connecting to tunnel host maki76118.miso.saucelabs.com as rgthree
+2014-05-02 15:25:21,956 - sauce_connect:696 - INFO - Forwarding Selenium with ephemeral port 54018
+2014-05-02 15:25:21,961 - sauce_connect:696 - INFO - Selenium HTTP proxy listening on port 4445
+2014-05-02 15:25:22,436 - sauce_connect:0 - INFO - Successful handshake with Sauce Connect server
+2014-05-02 15:25:22,443 - sauce_connect:0 - INFO - Tunnel host version: 0.1.0, remote endpoint ID: 63589999480d444e8a766851bb93872b
+2014-05-02 15:25:22,446 - sauce_connect:696 - INFO - Connected! You may start your tests.
+2014-05-02 15:25:29,322 - sauce_connect:0 - INFO - Request started: GET http://127.0.0.1:9999/index.html
+2014-05-02 15:25:29,354 - sauce_connect:0 - INFO - GET http://127.0.0.1:9999/index.html -> 200 (32ms, 1548 bytes)
+2014-05-02 15:25:29,480 - sauce_connect:0 - INFO - Request started: GET http://127.0.0.1:9999/node_modules/grunt-mocha-phantomjs/node_modules/mocha-phantomjs/node_modules/mocha/mocha.css
+2014-05-02 15:25:29,480 - sauce_connect:0 - INFO - Request started: GET http://127.0.0.1:9999/node_modules/grunt-mocha-phantomjs/node_modules/mocha-phantomjs/node_modules/mocha/mocha.js
+2014-05-02 15:25:29,487 - sauce_connect:0 - INFO - GET http://127.0.0.1:9999/node_modules/grunt-mocha-phantomjs/node_modules/mocha-phantomjs/node_modules/mocha/mocha.css -> 404 (7ms, 105 bytes)
+2014-05-02 15:25:29,487 - sauce_connect:0 - INFO - GET http://127.0.0.1:9999/node_modules/grunt-mocha-phantomjs/node_modules/mocha-phantomjs/node_modules/mocha/mocha.js -> 404 (7ms, 104 bytes)
+2014-05-02 15:25:29,576 - sauce_connect:0 - INFO - Request started: GET http://127.0.0.1:9999/node_modules/chai/chai.js
+2014-05-02 15:25:29,578 - sauce_connect:0 - INFO - Request started: GET http://ajax.googleapis.com/ajax/libs/mootools/1.4.5/mootools.js
+2014-05-02 15:25:29,578 - sauce_connect:0 - INFO - Request started: GET http://127.0.0.1:9999/src/mooveestar.js
+2014-05-02 15:25:29,588 - sauce_connect:0 - INFO - GET http://127.0.0.1:9999/src/mooveestar.js -> 404 (9ms, 30 bytes)
+2014-05-02 15:25:29,588 - sauce_connect:0 - INFO - GET http://127.0.0.1:9999/node_modules/chai/chai.js -> 404 (13ms, 38 bytes)
+2014-05-02 15:25:29,670 - sauce_connect:0 - INFO - Request started: GET http://127.0.0.1:9999/tests/test.js
+2014-05-02 15:25:29,676 - sauce_connect:0 - INFO - GET http://127.0.0.1:9999/tests/test.js -> 200 (7ms, 39670 bytes)
+2014-05-02 15:25:29,711 - sauce_connect:0 - INFO - GET http://ajax.googleapis.com/ajax/libs/mootools/1.4.5/mootools.js -> 200 (133ms, 42404 bytes)
+2014-05-02 15:25:30,740 - sauce_connect:0 - INFO - Request started: GET http://127.0.0.1:9999/favicon.ico
+2014-05-02 15:25:30,746 - sauce_connect:0 - INFO - GET http://127.0.0.1:9999/favicon.ico -> 404 (4ms, 24 bytes)
+2014-05-02 15:26:29,489 - sauce_connect:0 - INFO - received SIGINT
+2014-05-02 15:26:46,230 - sauce_connect:601 - INFO - / Starting \
+2014-05-02 15:26:46,233 - sauce_connect:602 - INFO - Please wait for "You may start your tests" to start your tests.
+2014-05-02 15:26:46,239 - sauce_connect:614 - DEBUG - System is -4.0 hours off UTC
+2014-05-02 15:26:46,240 - sauce_connect:616 - DEBUG - options: {'proxy_tunnel': False, 'proxy_host': '', 'no_ssl_bump_domains': '', 'allow_unclean_exit': False, 'logfile': 'sauce_connect.log', 'squid_opts': '', 'user': 'rgthree', 'ports': ['54111'], 'domains': None, 'proxy_port': '', 'debug_ssh': False, 'tunnel_ports': ['80'], 'rest_url': 'https://saucelabs.com/rest/v1', 'proxy_user': '', 'logfilesize': '31457280', 'proxy_password': '', 'boost_mode': True, 'tunnel_identifier': '168290799', 'fast_fail_regexps': '', 'vm_version': '', 'quiet': False, 'latency_log': 150, 'use_ssh_config': False, 'ssh': False, 'se_port': '4445', 'readyfile': None, 'shared_tunnel': False, 'ssh_port': 443, 'direct_domains': '', 'host': '127.0.0.1'}
+2014-05-02 15:26:46,242 - sauce_connect:617 - DEBUG - metadata: {'PythonVersion': '2.5.1', 'OwnerHost': '127.0.0.1', 'Release': '3.1-r32', 'OwnerPorts': ['54111'], 'Ports': ['80'], 'Platform': 'Java-1.6.0_65-Java_HotSpot-TM-_64-Bit_Server_VM,_20.65-b04-462,_Apple_Inc.-on-Mac_OS_X-10.9.2-x86_64', 'Build': '50', 'ScriptRelease': 50, 'ScriptName': 'sauce_connect'}
+2014-05-02 15:26:46,243 - sauce_connect:619 - INFO - Forwarding: None:['80'] -> 127.0.0.1:['54111']
+2014-05-02 15:26:46,253 - sauce_connect:401 - INFO - Succesfully connected to local server 127.0.0.1:54111 in 4ms
+2014-05-02 15:26:46,460 - sauce_connect:265 - INFO - {"squid_config":null,"no_ssl_bump_domains":null,"use_caching_proxy":true,"metadata":{"PythonVersion":"2.5.1","OwnerHost":"127.0.0.1","Release":"3.1-r32","OwnerPorts":["54111"],"Ports":["80"],"Platform":"Java-1.6.0_65-Java_HotSpot-TM-_64-Bit_Server_VM,_20.65-b04-462,_Apple_Inc.-on-Mac_OS_X-10.9.2-x86_64","Build":"50","ScriptRelease":50,"ScriptName":"sauce_connect"},"use_kgp":true,"tunnel_identifier":"168290799","shared_tunnel":false,"fast_fail_regexps":null,"ssh_port":443,"direct_domains":null,"vm_version":"","domain_names":[]}
+2014-05-02 15:26:50,740 - sauce_connect:276 - INFO - Tunnel remote VM is provisioned (2eb50bbd86574675b79986cdcf4e9f8b)
+2014-05-02 15:26:50,924 - sauce_connect:294 - INFO - Tunnel remote VM is booting ..
+2014-05-02 15:27:29,878 - sauce_connect:298 - INFO - Tunnel remote VM is running at maki76055.miso.saucelabs.com
+2014-05-02 15:27:29,891 - sauce_connect:401 - INFO - Succesfully connected to local server 127.0.0.1:54111 in 1ms
+2014-05-02 15:27:29,894 - sauce_connect:696 - INFO - Starting connection to tunnel host...
+2014-05-02 15:27:29,895 - sauce_connect:696 - INFO - Connecting to tunnel host maki76055.miso.saucelabs.com as rgthree
+2014-05-02 15:27:29,990 - sauce_connect:696 - INFO - Forwarding Selenium with ephemeral port 54156
+2014-05-02 15:27:29,996 - sauce_connect:696 - INFO - Selenium HTTP proxy listening on port 4445
+2014-05-02 15:27:30,516 - sauce_connect:0 - INFO - Successful handshake with Sauce Connect server
+2014-05-02 15:27:30,522 - sauce_connect:0 - INFO - Tunnel host version: 0.1.0, remote endpoint ID: 6d0976dae18b4d80a8e77574b6e5e879
+2014-05-02 15:27:30,525 - sauce_connect:696 - INFO - Connected! You may start your tests.
+2014-05-02 15:27:36,915 - sauce_connect:0 - INFO - Request started: GET http://127.0.0.1:9999/test/index.html
+2014-05-02 15:27:36,944 - sauce_connect:0 - INFO - GET http://127.0.0.1:9999/test/index.html -> 200 (28ms, 1548 bytes)
+2014-05-02 15:27:37,091 - sauce_connect:0 - INFO - Request started: GET http://127.0.0.1:9999/node_modules/grunt-mocha-phantomjs/node_modules/mocha-phantomjs/node_modules/mocha/mocha.css
+2014-05-02 15:27:37,095 - sauce_connect:0 - INFO - Request started: GET http://127.0.0.1:9999/node_modules/grunt-mocha-phantomjs/node_modules/mocha-phantomjs/node_modules/mocha/mocha.js
+2014-05-02 15:27:37,095 - sauce_connect:0 - INFO - Request started: GET http://127.0.0.1:9999/node_modules/chai/chai.js
+2014-05-02 15:27:37,096 - sauce_connect:0 - INFO - Request started: GET http://ajax.googleapis.com/ajax/libs/mootools/1.4.5/mootools.js
+2014-05-02 15:27:37,098 - sauce_connect:0 - INFO - Request started: GET http://127.0.0.1:9999/src/mooveestar.js
+2014-05-02 15:27:37,101 - sauce_connect:0 - INFO - GET http://127.0.0.1:9999/node_modules/grunt-mocha-phantomjs/node_modules/mocha-phantomjs/node_modules/mocha/mocha.css -> 200 (12ms, 4007 bytes)
+2014-05-02 15:27:37,112 - sauce_connect:0 - INFO - GET http://127.0.0.1:9999/node_modules/grunt-mocha-phantomjs/node_modules/mocha-phantomjs/node_modules/mocha/mocha.js -> 200 (18ms, 116039 bytes)
+2014-05-02 15:27:37,114 - sauce_connect:0 - INFO - GET http://127.0.0.1:9999/node_modules/chai/chai.js -> 200 (19ms, 119983 bytes)
+2014-05-02 15:27:37,115 - sauce_connect:0 - INFO - GET http://127.0.0.1:9999/src/mooveestar.js -> 200 (16ms, 59013 bytes)
+2014-05-02 15:27:37,121 - sauce_connect:0 - INFO - Request started: GET http://127.0.0.1:9999/test/tests/test.js
+2014-05-02 15:27:37,128 - sauce_connect:0 - INFO - GET http://127.0.0.1:9999/test/tests/test.js -> 200 (7ms, 39670 bytes)
+2014-05-02 15:27:37,242 - sauce_connect:0 - INFO - GET http://ajax.googleapis.com/ajax/libs/mootools/1.4.5/mootools.js -> 200 (145ms, 42404 bytes)
+2014-05-02 15:27:39,138 - sauce_connect:0 - INFO - Request started: GET http://127.0.0.1:9999/favicon.ico
+2014-05-02 15:27:39,138 - sauce_connect:0 - INFO - Request started: GET http://test.com/puppy.jpg
+2014-05-02 15:27:39,142 - sauce_connect:0 - INFO - GET http://127.0.0.1:9999/favicon.ico -> 404 (5ms, 24 bytes)
+2014-05-02 15:27:39,489 - sauce_connect:0 - INFO - GET http://test.com/puppy.jpg -> 302 (351ms, 143 bytes)
+2014-05-02 15:27:39,607 - sauce_connect:0 - INFO - Request started: GET http://www.test.com/
+2014-05-02 15:27:46,038 - sauce_connect:0 - INFO - GET http://www.test.com/ -> 200 (6432ms, 15174 bytes)
+2014-05-02 15:27:48,358 - sauce_connect:0 - INFO - received SIGTERM
+2014-05-02 15:39:26,111 - sauce_connect:601 - INFO - / Starting \
+2014-05-02 15:39:26,115 - sauce_connect:602 - INFO - Please wait for "You may start your tests" to start your tests.
+2014-05-02 15:39:26,119 - sauce_connect:614 - DEBUG - System is -4.0 hours off UTC
+2014-05-02 15:39:26,121 - sauce_connect:616 - DEBUG - options: {'proxy_tunnel': False, 'proxy_host': '', 'no_ssl_bump_domains': '', 'allow_unclean_exit': False, 'logfile': 'sauce_connect.log', 'squid_opts': '', 'user': 'rgthree', 'ports': ['54622'], 'domains': None, 'proxy_port': '', 'debug_ssh': False, 'tunnel_ports': ['80'], 'rest_url': 'https://saucelabs.com/rest/v1', 'proxy_user': '', 'logfilesize': '31457280', 'proxy_password': '', 'boost_mode': True, 'tunnel_identifier': '168291559', 'fast_fail_regexps': '', 'vm_version': '', 'quiet': False, 'latency_log': 150, 'use_ssh_config': False, 'ssh': False, 'se_port': '4445', 'readyfile': None, 'shared_tunnel': False, 'ssh_port': 443, 'direct_domains': '', 'host': '127.0.0.1'}
+2014-05-02 15:39:26,121 - sauce_connect:617 - DEBUG - metadata: {'PythonVersion': '2.5.1', 'OwnerHost': '127.0.0.1', 'Release': '3.1-r32', 'OwnerPorts': ['54622'], 'Ports': ['80'], 'Platform': 'Java-1.6.0_65-Java_HotSpot-TM-_64-Bit_Server_VM,_20.65-b04-462,_Apple_Inc.-on-Mac_OS_X-10.9.2-x86_64', 'Build': '50', 'ScriptRelease': 50, 'ScriptName': 'sauce_connect'}
+2014-05-02 15:39:26,122 - sauce_connect:619 - INFO - Forwarding: None:['80'] -> 127.0.0.1:['54622']
+2014-05-02 15:39:26,138 - sauce_connect:401 - INFO - Succesfully connected to local server 127.0.0.1:54622 in 4ms
+2014-05-02 15:39:26,368 - sauce_connect:265 - INFO - {"squid_config":null,"no_ssl_bump_domains":null,"use_caching_proxy":true,"metadata":{"PythonVersion":"2.5.1","OwnerHost":"127.0.0.1","Release":"3.1-r32","OwnerPorts":["54622"],"Ports":["80"],"Platform":"Java-1.6.0_65-Java_HotSpot-TM-_64-Bit_Server_VM,_20.65-b04-462,_Apple_Inc.-on-Mac_OS_X-10.9.2-x86_64","Build":"50","ScriptRelease":50,"ScriptName":"sauce_connect"},"use_kgp":true,"tunnel_identifier":"168291559","shared_tunnel":false,"fast_fail_regexps":null,"ssh_port":443,"direct_domains":null,"vm_version":"","domain_names":[]}
+2014-05-02 15:39:31,414 - sauce_connect:276 - INFO - Tunnel remote VM is provisioned (1c171e497a5b40418631a39966df6c21)
+2014-05-02 15:39:31,622 - sauce_connect:294 - INFO - Tunnel remote VM is booting ..
+2014-05-02 15:39:44,388 - sauce_connect:298 - INFO - Tunnel remote VM is running at maki76055.miso.saucelabs.com
+2014-05-02 15:39:44,407 - sauce_connect:401 - INFO - Succesfully connected to local server 127.0.0.1:54622 in 0ms
+2014-05-02 15:39:44,410 - sauce_connect:696 - INFO - Starting connection to tunnel host...
+2014-05-02 15:39:44,411 - sauce_connect:696 - INFO - Connecting to tunnel host maki76055.miso.saucelabs.com as rgthree
+2014-05-02 15:39:44,553 - sauce_connect:696 - INFO - Forwarding Selenium with ephemeral port 54638
+2014-05-02 15:39:44,561 - sauce_connect:696 - INFO - Selenium HTTP proxy listening on port 4445
+2014-05-02 15:39:45,276 - sauce_connect:0 - INFO - Successful handshake with Sauce Connect server
+2014-05-02 15:39:45,285 - sauce_connect:0 - INFO - Tunnel host version: 0.1.0, remote endpoint ID: 86cbb4915b7345838f84b8c6441e5942
+2014-05-02 15:39:45,288 - sauce_connect:696 - INFO - Connected! You may start your tests.
+2014-05-02 15:39:52,700 - sauce_connect:0 - INFO - Request started: GET http://127.0.0.1:9999/test/index.html
+2014-05-02 15:39:52,730 - sauce_connect:0 - INFO - GET http://127.0.0.1:9999/test/index.html -> 200 (30ms, 1619 bytes)
+2014-05-02 15:39:52,849 - sauce_connect:0 - INFO - Request started: GET http://127.0.0.1:9999/node_modules/grunt-mocha-phantomjs/node_modules/mocha-phantomjs/node_modules/mocha/mocha.css
+2014-05-02 15:39:52,849 - sauce_connect:0 - INFO - Request started: GET http://127.0.0.1:9999/node_modules/grunt-mocha-phantomjs/node_modules/mocha-phantomjs/node_modules/mocha/mocha.js
+2014-05-02 15:39:52,855 - sauce_connect:0 - INFO - GET http://127.0.0.1:9999/node_modules/grunt-mocha-phantomjs/node_modules/mocha-phantomjs/node_modules/mocha/mocha.css -> 200 (7ms, 4007 bytes)
+2014-05-02 15:39:52,858 - sauce_connect:0 - INFO - GET http://127.0.0.1:9999/node_modules/grunt-mocha-phantomjs/node_modules/mocha-phantomjs/node_modules/mocha/mocha.js -> 200 (8ms, 116039 bytes)
+2014-05-02 15:39:52,920 - sauce_connect:0 - INFO - Request started: GET http://127.0.0.1:9999/src/mooveestar.js
+2014-05-02 15:39:52,920 - sauce_connect:0 - INFO - Request started: GET http://ajax.googleapis.com/ajax/libs/mootools/1.4.5/mootools.js
+2014-05-02 15:39:52,921 - sauce_connect:0 - INFO - Request started: GET http://127.0.0.1:9999/test/tests/test.js
+2014-05-02 15:39:52,920 - sauce_connect:0 - INFO - Request started: GET http://127.0.0.1:9999/node_modules/chai/chai.js
+2014-05-02 15:39:52,926 - sauce_connect:0 - INFO - GET http://127.0.0.1:9999/src/mooveestar.js -> 200 (6ms, 59013 bytes)
+2014-05-02 15:39:52,927 - sauce_connect:0 - INFO - GET http://127.0.0.1:9999/test/tests/test.js -> 200 (8ms, 39656 bytes)
+2014-05-02 15:39:52,937 - sauce_connect:0 - INFO - GET http://127.0.0.1:9999/node_modules/chai/chai.js -> 200 (17ms, 119983 bytes)
+2014-05-02 15:39:53,053 - sauce_connect:0 - INFO - GET http://ajax.googleapis.com/ajax/libs/mootools/1.4.5/mootools.js -> 200 (134ms, 42404 bytes)
+2014-05-02 15:39:54,243 - sauce_connect:0 - INFO - Request started: GET http://127.0.0.1:9999/favicon.ico
+2014-05-02 15:39:54,249 - sauce_connect:0 - INFO - GET http://127.0.0.1:9999/favicon.ico -> 404 (6ms, 24 bytes)
+2014-05-02 15:39:54,335 - sauce_connect:0 - INFO - Request started: GET http://test.com/puppy.jpg
+2014-05-02 15:39:54,701 - sauce_connect:0 - INFO - GET http://test.com/puppy.jpg -> 302 (366ms, 143 bytes)
+2014-05-02 15:39:54,802 - sauce_connect:0 - INFO - Request started: GET http://www.test.com/
+2014-05-02 15:39:55,493 - sauce_connect:0 - INFO - GET http://www.test.com/ -> 200 (690ms, 15174 bytes)
+2014-05-02 15:39:58,239 - sauce_connect:0 - INFO - received SIGTERM
+2014-05-02 15:59:54,124 - sauce_connect:601 - INFO - / Starting \
+2014-05-02 15:59:54,128 - sauce_connect:602 - INFO - Please wait for "You may start your tests" to start your tests.
+2014-05-02 15:59:54,134 - sauce_connect:614 - DEBUG - System is -4.0 hours off UTC
+2014-05-02 15:59:54,134 - sauce_connect:616 - DEBUG - options: {'proxy_tunnel': False, 'proxy_host': '', 'no_ssl_bump_domains': '', 'allow_unclean_exit': False, 'logfile': 'sauce_connect.log', 'squid_opts': '', 'user': 'rgthree', 'ports': ['56061'], 'domains': None, 'proxy_port': '', 'debug_ssh': False, 'tunnel_ports': ['80'], 'rest_url': 'https://saucelabs.com/rest/v1', 'proxy_user': '', 'logfilesize': '31457280', 'proxy_password': '', 'boost_mode': True, 'tunnel_identifier': '168292787', 'fast_fail_regexps': '', 'vm_version': '', 'quiet': False, 'latency_log': 150, 'use_ssh_config': False, 'ssh': False, 'se_port': '4445', 'readyfile': None, 'shared_tunnel': False, 'ssh_port': 443, 'direct_domains': '', 'host': '127.0.0.1'}
+2014-05-02 15:59:54,135 - sauce_connect:617 - DEBUG - metadata: {'PythonVersion': '2.5.1', 'OwnerHost': '127.0.0.1', 'Release': '3.1-r32', 'OwnerPorts': ['56061'], 'Ports': ['80'], 'Platform': 'Java-1.6.0_65-Java_HotSpot-TM-_64-Bit_Server_VM,_20.65-b04-462,_Apple_Inc.-on-Mac_OS_X-10.9.2-x86_64', 'Build': '50', 'ScriptRelease': 50, 'ScriptName': 'sauce_connect'}
+2014-05-02 15:59:54,137 - sauce_connect:619 - INFO - Forwarding: None:['80'] -> 127.0.0.1:['56061']
+2014-05-02 15:59:54,148 - sauce_connect:401 - INFO - Succesfully connected to local server 127.0.0.1:56061 in 4ms
+2014-05-02 15:59:54,351 - sauce_connect:265 - INFO - {"squid_config":null,"no_ssl_bump_domains":null,"use_caching_proxy":true,"metadata":{"PythonVersion":"2.5.1","OwnerHost":"127.0.0.1","Release":"3.1-r32","OwnerPorts":["56061"],"Ports":["80"],"Platform":"Java-1.6.0_65-Java_HotSpot-TM-_64-Bit_Server_VM,_20.65-b04-462,_Apple_Inc.-on-Mac_OS_X-10.9.2-x86_64","Build":"50","ScriptRelease":50,"ScriptName":"sauce_connect"},"use_kgp":true,"tunnel_identifier":"168292787","shared_tunnel":false,"fast_fail_regexps":null,"ssh_port":443,"direct_domains":null,"vm_version":"","domain_names":[]}
+2014-05-02 15:59:58,286 - sauce_connect:276 - INFO - Tunnel remote VM is provisioned (2b3a349270f1454b817a06739db08961)
+2014-05-02 15:59:58,483 - sauce_connect:294 - INFO - Tunnel remote VM is booting ..
+2014-05-02 16:00:32,703 - sauce_connect:298 - INFO - Tunnel remote VM is running at maki77161.miso.saucelabs.com
+2014-05-02 16:00:32,720 - sauce_connect:401 - INFO - Succesfully connected to local server 127.0.0.1:56061 in 0ms
+2014-05-02 16:00:32,723 - sauce_connect:696 - INFO - Starting connection to tunnel host...
+2014-05-02 16:00:32,726 - sauce_connect:696 - INFO - Connecting to tunnel host maki77161.miso.saucelabs.com as rgthree
+2014-05-02 16:00:32,868 - sauce_connect:696 - INFO - Forwarding Selenium with ephemeral port 56074
+2014-05-02 16:00:32,871 - sauce_connect:696 - INFO - Selenium HTTP proxy listening on port 4445
+2014-05-02 16:00:33,410 - sauce_connect:0 - INFO - Successful handshake with Sauce Connect server
+2014-05-02 16:00:33,417 - sauce_connect:0 - INFO - Tunnel host version: 0.1.0, remote endpoint ID: f953b2fe7dca4dadba27132b1ce16fcf
+2014-05-02 16:00:33,420 - sauce_connect:696 - INFO - Connected! You may start your tests.
+2014-05-02 16:00:46,127 - sauce_connect:0 - INFO - Request started: GET http://127.0.0.1:9999/test/index.html
+2014-05-02 16:00:46,127 - sauce_connect:0 - INFO - Request started: GET http://127.0.0.1:9999/test/index.html
+2014-05-02 16:00:46,160 - sauce_connect:0 - INFO - GET http://127.0.0.1:9999/test/index.html -> 200 (32ms, 1619 bytes)
+2014-05-02 16:00:46,160 - sauce_connect:0 - INFO - GET http://127.0.0.1:9999/test/index.html -> 200 (33ms, 1619 bytes)
+2014-05-02 16:00:46,301 - sauce_connect:0 - INFO - Request started: GET http://127.0.0.1:9999/node_modules/grunt-mocha-phantomjs/node_modules/mocha-phantomjs/node_modules/mocha/mocha.css
+2014-05-02 16:00:46,306 - sauce_connect:0 - INFO - GET http://127.0.0.1:9999/node_modules/grunt-mocha-phantomjs/node_modules/mocha-phantomjs/node_modules/mocha/mocha.css -> 200 (6ms, 4007 bytes)
+2014-05-02 16:00:46,309 - sauce_connect:0 - INFO - Request started: GET http://127.0.0.1:9999/node_modules/chai/chai.js
+2014-05-02 16:00:46,309 - sauce_connect:0 - INFO - Request started: GET http://127.0.0.1:9999/node_modules/grunt-mocha-phantomjs/node_modules/mocha-phantomjs/node_modules/mocha/mocha.js
+2014-05-02 16:00:46,319 - sauce_connect:0 - INFO - GET http://127.0.0.1:9999/node_modules/grunt-mocha-phantomjs/node_modules/mocha-phantomjs/node_modules/mocha/mocha.js -> 200 (9ms, 116039 bytes)
+2014-05-02 16:00:46,319 - sauce_connect:0 - INFO - GET http://127.0.0.1:9999/node_modules/chai/chai.js -> 200 (9ms, 119983 bytes)
+2014-05-02 16:00:46,398 - sauce_connect:0 - INFO - Request started: GET http://127.0.0.1:9999/test/tests/test.js
+2014-05-02 16:00:46,398 - sauce_connect:0 - INFO - Request started: GET http://ajax.googleapis.com/ajax/libs/mootools/1.4.5/mootools.js
+2014-05-02 16:00:46,398 - sauce_connect:0 - INFO - Request started: GET http://127.0.0.1:9999/src/mooveestar.js
+2014-05-02 16:00:46,410 - sauce_connect:0 - INFO - GET http://127.0.0.1:9999/test/tests/test.js -> 200 (12ms, 39656 bytes)
+2014-05-02 16:00:46,411 - sauce_connect:0 - INFO - GET http://127.0.0.1:9999/src/mooveestar.js -> 200 (14ms, 59013 bytes)
+2014-05-02 16:00:46,430 - sauce_connect:0 - INFO - Request started: GET http://ajax.googleapis.com/ajax/libs/mootools/1.4.5/mootools.js
+2014-05-02 16:00:46,434 - sauce_connect:0 - INFO - Request started: GET http://127.0.0.1:9999/node_modules/grunt-mocha-phantomjs/node_modules/mocha-phantomjs/node_modules/mocha/mocha.css
+2014-05-02 16:00:46,437 - sauce_connect:0 - INFO - GET http://127.0.0.1:9999/node_modules/grunt-mocha-phantomjs/node_modules/mocha-phantomjs/node_modules/mocha/mocha.css -> 200 (5ms, 4007 bytes)
+2014-05-02 16:00:46,447 - sauce_connect:0 - INFO - Request started: GET http://127.0.0.1:9999/node_modules/grunt-mocha-phantomjs/node_modules/mocha-phantomjs/node_modules/mocha/mocha.js
+2014-05-02 16:00:46,447 - sauce_connect:0 - INFO - Request started: GET http://127.0.0.1:9999/node_modules/chai/chai.js
+2014-05-02 16:00:46,448 - sauce_connect:0 - INFO - Request started: GET http://127.0.0.1:9999/src/mooveestar.js
+2014-05-02 16:00:46,456 - sauce_connect:0 - INFO - GET http://127.0.0.1:9999/node_modules/grunt-mocha-phantomjs/node_modules/mocha-phantomjs/node_modules/mocha/mocha.js -> 200 (10ms, 116039 bytes)
+2014-05-02 16:00:46,457 - sauce_connect:0 - INFO - GET http://127.0.0.1:9999/src/mooveestar.js -> 200 (7ms, 59013 bytes)
+2014-05-02 16:00:46,456 - sauce_connect:0 - INFO - GET http://127.0.0.1:9999/node_modules/chai/chai.js -> 200 (10ms, 119983 bytes)
+2014-05-02 16:00:46,496 - sauce_connect:0 - INFO - Request started: GET http://127.0.0.1:9999/test/tests/test.js
+2014-05-02 16:00:46,505 - sauce_connect:0 - INFO - GET http://127.0.0.1:9999/test/tests/test.js -> 200 (9ms, 39656 bytes)
+2014-05-02 16:00:46,505 - sauce_connect:0 - INFO - Request started: GET http://ajax.googleapis.com/ajax/libs/mootools/1.4.5/mootools.js
+2014-05-02 16:00:46,505 - sauce_connect:0 - INFO - Request started: GET http://127.0.0.1:9999/node_modules/grunt-mocha-phantomjs/node_modules/mocha-phantomjs/node_modules/mocha/mocha.css
+2014-05-02 16:00:46,506 - sauce_connect:0 - INFO - Request started: GET http://127.0.0.1:9999/node_modules/grunt-mocha-phantomjs/node_modules/mocha-phantomjs/node_modules/mocha/mocha.js
+2014-05-02 16:00:46,512 - sauce_connect:0 - INFO - GET http://127.0.0.1:9999/node_modules/grunt-mocha-phantomjs/node_modules/mocha-phantomjs/node_modules/mocha/mocha.css -> 200 (6ms, 4007 bytes)
+2014-05-02 16:00:46,513 - sauce_connect:0 - INFO - GET http://127.0.0.1:9999/node_modules/grunt-mocha-phantomjs/node_modules/mocha-phantomjs/node_modules/mocha/mocha.js -> 200 (9ms, 116039 bytes)
+2014-05-02 16:00:46,581 - sauce_connect:0 - INFO - GET http://ajax.googleapis.com/ajax/libs/mootools/1.4.5/mootools.js -> 200 (183ms, 42404 bytes)
+2014-05-02 16:00:46,582 - sauce_connect:0 - INFO - GET http://ajax.googleapis.com/ajax/libs/mootools/1.4.5/mootools.js -> 200 (153ms, 42404 bytes)
+2014-05-02 16:00:46,598 - sauce_connect:0 - INFO - Request started: GET http://127.0.0.1:9999/node_modules/chai/chai.js
+2014-05-02 16:00:46,601 - sauce_connect:0 - INFO - Request started: GET http://127.0.0.1:9999/test/tests/test.js
+2014-05-02 16:00:46,601 - sauce_connect:0 - INFO - Request started: GET http://127.0.0.1:9999/src/mooveestar.js
+2014-05-02 16:00:46,605 - sauce_connect:0 - INFO - GET http://127.0.0.1:9999/node_modules/chai/chai.js -> 200 (7ms, 119983 bytes)
+2014-05-02 16:00:46,607 - sauce_connect:0 - INFO - GET http://127.0.0.1:9999/test/tests/test.js -> 200 (7ms, 39656 bytes)
+2014-05-02 16:00:46,608 - sauce_connect:0 - INFO - GET http://127.0.0.1:9999/src/mooveestar.js -> 200 (9ms, 59013 bytes)
+2014-05-02 16:00:46,641 - sauce_connect:0 - INFO - GET http://ajax.googleapis.com/ajax/libs/mootools/1.4.5/mootools.js -> 200 (137ms, 42404 bytes)
+2014-05-02 16:00:48,973 - sauce_connect:0 - INFO - Request started: GET http://127.0.0.1:9999/test/index.html
+2014-05-02 16:00:48,976 - sauce_connect:0 - INFO - GET http://127.0.0.1:9999/test/index.html -> 200 (4ms, 1619 bytes)
+2014-05-02 16:00:50,033 - sauce_connect:0 - INFO - Request started: GET http://127.0.0.1:9999/favicon.ico
+2014-05-02 16:00:50,039 - sauce_connect:0 - INFO - GET http://127.0.0.1:9999/favicon.ico -> 404 (6ms, 24 bytes)
+2014-05-02 16:00:50,392 - sauce_connect:0 - INFO - Request started: GET http://127.0.0.1:9999/node_modules/grunt-mocha-phantomjs/node_modules/mocha-phantomjs/node_modules/mocha/mocha.js
+2014-05-02 16:00:50,392 - sauce_connect:0 - INFO - Request started: GET http://127.0.0.1:9999/node_modules/grunt-mocha-phantomjs/node_modules/mocha-phantomjs/node_modules/mocha/mocha.css
+2014-05-02 16:00:50,401 - sauce_connect:0 - INFO - GET http://127.0.0.1:9999/node_modules/grunt-mocha-phantomjs/node_modules/mocha-phantomjs/node_modules/mocha/mocha.css -> 200 (8ms, 4007 bytes)
+2014-05-02 16:00:50,401 - sauce_connect:0 - INFO - GET http://127.0.0.1:9999/node_modules/grunt-mocha-phantomjs/node_modules/mocha-phantomjs/node_modules/mocha/mocha.js -> 200 (9ms, 116039 bytes)
+2014-05-02 16:00:50,440 - sauce_connect:0 - INFO - Request started: GET http://127.0.0.1:9999/test/tests/test.js
+2014-05-02 16:00:50,440 - sauce_connect:0 - INFO - Request started: GET http://127.0.0.1:9999/node_modules/chai/chai.js
+2014-05-02 16:00:50,440 - sauce_connect:0 - INFO - Request started: GET http://127.0.0.1:9999/src/mooveestar.js
+2014-05-02 16:00:50,447 - sauce_connect:0 - INFO - GET http://127.0.0.1:9999/test/tests/test.js -> 200 (7ms, 39656 bytes)
+2014-05-02 16:00:50,448 - sauce_connect:0 - INFO - GET http://127.0.0.1:9999/src/mooveestar.js -> 200 (7ms, 59013 bytes)
+2014-05-02 16:00:50,448 - sauce_connect:0 - INFO - GET http://127.0.0.1:9999/node_modules/chai/chai.js -> 200 (9ms, 119983 bytes)
+2014-05-02 16:00:50,538 - sauce_connect:0 - INFO - Request started: GET http://test.com/puppy.jpg
+2014-05-02 16:00:50,538 - sauce_connect:0 - INFO - Request started: GET http://127.0.0.1:9999/favicon.ico
+2014-05-02 16:00:50,542 - sauce_connect:0 - INFO - GET http://127.0.0.1:9999/favicon.ico -> 404 (4ms, 24 bytes)
+2014-05-02 16:00:50,655 - sauce_connect:0 - INFO - Request started: GET http://127.0.0.1:9999/favicon.ico
+2014-05-02 16:00:50,660 - sauce_connect:0 - INFO - GET http://127.0.0.1:9999/favicon.ico -> 404 (4ms, 24 bytes)
+2014-05-02 16:00:50,881 - sauce_connect:0 - INFO - GET http://test.com/puppy.jpg -> 302 (344ms, 143 bytes)
+2014-05-02 16:00:51,117 - sauce_connect:0 - INFO - Request started: GET http://127.0.0.1:9999/favicon.ico
+2014-05-02 16:00:51,117 - sauce_connect:0 - INFO - Request started: GET http://www.test.com/
+2014-05-02 16:00:51,121 - sauce_connect:0 - INFO - GET http://127.0.0.1:9999/favicon.ico -> 404 (4ms, 24 bytes)
+2014-05-02 16:00:51,430 - sauce_connect:0 - INFO - Request started: GET http://127.0.0.1:9999/favicon.ico
+2014-05-02 16:00:51,434 - sauce_connect:0 - INFO - GET http://127.0.0.1:9999/favicon.ico -> 404 (4ms, 24 bytes)
+2014-05-02 16:00:51,630 - sauce_connect:0 - INFO - Request started: GET http://test.com/puppy.jpg
+2014-05-02 16:00:51,851 - sauce_connect:0 - INFO - GET http://www.test.com/ -> 200 (734ms, 15174 bytes)
+2014-05-02 16:00:51,877 - sauce_connect:0 - INFO - GET http://test.com/puppy.jpg -> 302 (248ms, 143 bytes)
+2014-05-02 16:00:52,009 - sauce_connect:0 - INFO - Request started: GET http://www.test.com/
+2014-05-02 16:00:52,411 - sauce_connect:0 - INFO - GET http://www.test.com/ -> 200 (402ms, 15174 bytes)
+2014-05-02 16:01:06,390 - sauce_connect:0 - INFO - Request started: GET http://127.0.0.1:9999/test/index.html
+2014-05-02 16:01:06,394 - sauce_connect:0 - INFO - GET http://127.0.0.1:9999/test/index.html -> 200 (4ms, 1619 bytes)
+2014-05-02 16:01:06,565 - sauce_connect:0 - INFO - Request started: GET http://127.0.0.1:9999/src/mooveestar.js
+2014-05-02 16:01:06,565 - sauce_connect:0 - INFO - Request started: GET http://127.0.0.1:9999/node_modules/chai/chai.js
+2014-05-02 16:01:06,565 - sauce_connect:0 - INFO - Request started: GET http://127.0.0.1:9999/node_modules/grunt-mocha-phantomjs/node_modules/mocha-phantomjs/node_modules/mocha/mocha.css
+2014-05-02 16:01:06,572 - sauce_connect:0 - INFO - GET http://127.0.0.1:9999/src/mooveestar.js -> 200 (7ms, 59013 bytes)
+2014-05-02 16:01:06,575 - sauce_connect:0 - INFO - GET http://127.0.0.1:9999/node_modules/grunt-mocha-phantomjs/node_modules/mocha-phantomjs/node_modules/mocha/mocha.css -> 200 (9ms, 4007 bytes)
+2014-05-02 16:01:06,575 - sauce_connect:0 - INFO - GET http://127.0.0.1:9999/node_modules/chai/chai.js -> 200 (11ms, 119983 bytes)
+2014-05-02 16:01:06,601 - sauce_connect:0 - INFO - Request started: GET http://127.0.0.1:9999/node_modules/grunt-mocha-phantomjs/node_modules/mocha-phantomjs/node_modules/mocha/mocha.js
+2014-05-02 16:01:06,601 - sauce_connect:0 - INFO - Request started: GET http://127.0.0.1:9999/test/tests/test.js
+2014-05-02 16:01:06,609 - sauce_connect:0 - INFO - GET http://127.0.0.1:9999/test/tests/test.js -> 200 (9ms, 39656 bytes)
+2014-05-02 16:01:06,609 - sauce_connect:0 - INFO - GET http://127.0.0.1:9999/node_modules/grunt-mocha-phantomjs/node_modules/mocha-phantomjs/node_modules/mocha/mocha.js -> 200 (9ms, 116039 bytes)
+2014-05-02 16:01:08,927 - sauce_connect:0 - INFO - Request started: GET http://127.0.0.1:9999/favicon.ico
+2014-05-02 16:01:08,930 - sauce_connect:0 - INFO - GET http://127.0.0.1:9999/favicon.ico -> 404 (4ms, 24 bytes)
+2014-05-02 16:01:09,312 - sauce_connect:0 - INFO - Request started: GET http://test.com/puppy.jpg
+2014-05-02 16:01:09,653 - sauce_connect:0 - INFO - GET http://test.com/puppy.jpg -> 302 (340ms, 143 bytes)
+2014-05-02 16:01:09,756 - sauce_connect:0 - INFO - Request started: GET http://www.test.com/
+2014-05-02 16:01:10,358 - sauce_connect:0 - INFO - GET http://www.test.com/ -> 200 (601ms, 15174 bytes)
+2014-05-02 16:01:13,476 - sauce_connect:0 - INFO - Request started: GET http://127.0.0.1:9999/test/index.html
+2014-05-02 16:01:13,480 - sauce_connect:0 - INFO - GET http://127.0.0.1:9999/test/index.html -> 200 (5ms, 1619 bytes)
+2014-05-02 16:01:13,617 - sauce_connect:0 - INFO - Request started: GET http://127.0.0.1:9999/src/mooveestar.js
+2014-05-02 16:01:13,617 - sauce_connect:0 - INFO - Request started: GET http://127.0.0.1:9999/node_modules/grunt-mocha-phantomjs/node_modules/mocha-phantomjs/node_modules/mocha/mocha.js
+2014-05-02 16:01:13,622 - sauce_connect:0 - INFO - GET http://127.0.0.1:9999/src/mooveestar.js -> 200 (7ms, 59013 bytes)
+2014-05-02 16:01:13,625 - sauce_connect:0 - INFO - GET http://127.0.0.1:9999/node_modules/grunt-mocha-phantomjs/node_modules/mocha-phantomjs/node_modules/mocha/mocha.js -> 200 (7ms, 116039 bytes)
+2014-05-02 16:01:13,674 - sauce_connect:0 - INFO - Request started: GET http://127.0.0.1:9999/test/tests/test.js
+2014-05-02 16:01:13,674 - sauce_connect:0 - INFO - Request started: GET http://127.0.0.1:9999/node_modules/grunt-mocha-phantomjs/node_modules/mocha-phantomjs/node_modules/mocha/mocha.css
+2014-05-02 16:01:13,674 - sauce_connect:0 - INFO - Request started: GET http://127.0.0.1:9999/node_modules/chai/chai.js
+2014-05-02 16:01:13,680 - sauce_connect:0 - INFO - GET http://127.0.0.1:9999/node_modules/grunt-mocha-phantomjs/node_modules/mocha-phantomjs/node_modules/mocha/mocha.css -> 200 (5ms, 4007 bytes)
+2014-05-02 16:01:13,680 - sauce_connect:0 - INFO - GET http://127.0.0.1:9999/test/tests/test.js -> 200 (6ms, 39656 bytes)
+2014-05-02 16:01:13,684 - sauce_connect:0 - INFO - GET http://127.0.0.1:9999/node_modules/chai/chai.js -> 200 (10ms, 119983 bytes)
+2014-05-02 16:01:15,944 - sauce_connect:0 - INFO - Request started: GET http://test.com/puppy.jpg
+2014-05-02 16:01:16,049 - sauce_connect:0 - INFO - Request started: GET http://127.0.0.1:9999/favicon.ico
+2014-05-02 16:01:16,052 - sauce_connect:0 - INFO - GET http://127.0.0.1:9999/favicon.ico -> 404 (5ms, 24 bytes)
+2014-05-02 16:01:16,290 - sauce_connect:0 - INFO - GET http://test.com/puppy.jpg -> 302 (346ms, 143 bytes)
+2014-05-02 16:01:16,395 - sauce_connect:0 - INFO - Request started: GET http://www.test.com/
+2014-05-02 16:01:16,999 - sauce_connect:0 - INFO - GET http://www.test.com/ -> 200 (604ms, 15174 bytes)
+2014-05-02 16:01:17,816 - sauce_connect:0 - INFO - Request started: POST https://albert.apple.com/WebObjects/ALUnbrick.woa/wa/deviceActivation?device=MacOS
+2014-05-02 16:01:18,153 - sauce_connect:0 - INFO - POST https://albert.apple.com/WebObjects/ALUnbrick.woa/wa/deviceActivation?device=MacOS -> 200 (336ms, 1104 bytes)
+2014-05-02 16:01:34,971 - sauce_connect:0 - INFO - Request started: GET http://127.0.0.1:9999/test/index.html
+2014-05-02 16:01:34,976 - sauce_connect:0 - INFO - GET http://127.0.0.1:9999/test/index.html -> 200 (4ms, 1619 bytes)
+2014-05-02 16:01:35,101 - sauce_connect:0 - INFO - Request started: GET http://127.0.0.1:9999/node_modules/grunt-mocha-phantomjs/node_modules/mocha-phantomjs/node_modules/mocha/mocha.css
+2014-05-02 16:01:35,108 - sauce_connect:0 - INFO - Request started: GET http://127.0.0.1:9999/src/mooveestar.js
+2014-05-02 16:01:35,108 - sauce_connect:0 - INFO - Request started: GET http://127.0.0.1:9999/node_modules/chai/chai.js
+2014-05-02 16:01:35,108 - sauce_connect:0 - INFO - Request started: GET http://127.0.0.1:9999/node_modules/grunt-mocha-phantomjs/node_modules/mocha-phantomjs/node_modules/mocha/mocha.js
+2014-05-02 16:01:35,109 - sauce_connect:0 - INFO - GET http://127.0.0.1:9999/node_modules/grunt-mocha-phantomjs/node_modules/mocha-phantomjs/node_modules/mocha/mocha.css -> 200 (8ms, 4007 bytes)
+2014-05-02 16:01:35,112 - sauce_connect:0 - INFO - GET http://127.0.0.1:9999/src/mooveestar.js -> 200 (5ms, 59013 bytes)
+2014-05-02 16:01:35,117 - sauce_connect:0 - INFO - GET http://127.0.0.1:9999/node_modules/chai/chai.js -> 200 (8ms, 119983 bytes)
+2014-05-02 16:01:35,118 - sauce_connect:0 - INFO - GET http://127.0.0.1:9999/node_modules/grunt-mocha-phantomjs/node_modules/mocha-phantomjs/node_modules/mocha/mocha.js -> 200 (10ms, 116039 bytes)
+2014-05-02 16:01:35,200 - sauce_connect:0 - INFO - Request started: GET http://127.0.0.1:9999/test/tests/test.js
+2014-05-02 16:01:35,203 - sauce_connect:0 - INFO - GET http://127.0.0.1:9999/test/tests/test.js -> 200 (4ms, 39656 bytes)
+2014-05-02 16:01:37,414 - sauce_connect:0 - INFO - Request started: GET http://127.0.0.1:9999/favicon.ico
+2014-05-02 16:01:37,417 - sauce_connect:0 - INFO - GET http://127.0.0.1:9999/favicon.ico -> 404 (5ms, 24 bytes)
+2014-05-02 16:01:37,607 - sauce_connect:0 - INFO - Request started: GET http://127.0.0.1:9999/favicon.ico
+2014-05-02 16:01:37,607 - sauce_connect:0 - INFO - Request started: GET http://test.com/puppy.jpg
+2014-05-02 16:01:37,611 - sauce_connect:0 - INFO - GET http://127.0.0.1:9999/favicon.ico -> 404 (4ms, 24 bytes)
+2014-05-02 16:01:37,947 - sauce_connect:0 - INFO - GET http://test.com/puppy.jpg -> 302 (340ms, 143 bytes)
+2014-05-02 16:01:38,049 - sauce_connect:0 - INFO - Request started: GET http://www.test.com/
+2014-05-02 16:01:38,680 - sauce_connect:0 - INFO - GET http://www.test.com/ -> 200 (632ms, 15174 bytes)
+2014-05-02 16:01:43,164 - sauce_connect:0 - INFO - Request started: GET https://sls.update.microsoft.com/SLS/%7B9482F4B4-E343-43B6-B170-9A65BC822C77%7D/x64/6.3.9600.0/0?CH=41&L=en-US&P=&PT=0x8&WUA=7.9.9600.16403
+2014-05-02 16:01:43,474 - sauce_connect:0 - INFO - GET https://sls.update.microsoft.com/SLS/%7B9482F4B4-E343-43B6-B170-9A65BC822C77%7D/x64/6.3.9600.0/0?CH=41&L=en-US&P=&PT=0x8&WUA=7.9.9600.16403 -> 200 (311ms, 27593 bytes)
+2014-05-02 16:01:44,776 - sauce_connect:0 - INFO - Request started: GET https://sls.update.microsoft.com/SLS/%7B9482F4B4-E343-43B6-B170-9A65BC822C77%7D/x64/6.3.9600.0/0?CH=41&L=en-US&P=&PT=0x8&WUA=7.9.9600.16403
+2014-05-02 16:01:44,809 - sauce_connect:0 - INFO - GET https://sls.update.microsoft.com/SLS/%7B9482F4B4-E343-43B6-B170-9A65BC822C77%7D/x64/6.3.9600.0/0?CH=41&L=en-US&P=&PT=0x8&WUA=7.9.9600.16403 -> 200 (34ms, 27593 bytes)
+2014-05-02 16:01:45,401 - sauce_connect:0 - INFO - Request started: GET http://ie9cvlist.ie.microsoft.com/IE9CompatViewList.xml
+2014-05-02 16:01:45,727 - sauce_connect:0 - INFO - GET http://ie9cvlist.ie.microsoft.com/IE9CompatViewList.xml -> 200 (326ms, 147043 bytes)
+2014-05-02 16:01:53,990 - sauce_connect:0 - INFO - Request started: GET http://127.0.0.1:9999/test/index.html
+2014-05-02 16:01:53,993 - sauce_connect:0 - INFO - GET http://127.0.0.1:9999/test/index.html -> 200 (4ms, 1619 bytes)
+2014-05-02 16:01:54,124 - sauce_connect:0 - INFO - Request started: GET http://127.0.0.1:9999/node_modules/grunt-mocha-phantomjs/node_modules/mocha-phantomjs/node_modules/mocha/mocha.css
+2014-05-02 16:01:54,128 - sauce_connect:0 - INFO - GET http://127.0.0.1:9999/node_modules/grunt-mocha-phantomjs/node_modules/mocha-phantomjs/node_modules/mocha/mocha.css -> 200 (3ms, 4007 bytes)
+2014-05-02 16:01:54,135 - sauce_connect:0 - INFO - Request started: GET http://127.0.0.1:9999/node_modules/grunt-mocha-phantomjs/node_modules/mocha-phantomjs/node_modules/mocha/mocha.js
+2014-05-02 16:01:54,137 - sauce_connect:0 - INFO - Request started: GET http://ajax.googleapis.com/ajax/libs/mootools/1.4.5/mootools.js
+2014-05-02 16:01:54,141 - sauce_connect:0 - INFO - GET http://127.0.0.1:9999/node_modules/grunt-mocha-phantomjs/node_modules/mocha-phantomjs/node_modules/mocha/mocha.js -> 200 (7ms, 116039 bytes)
+2014-05-02 16:01:54,223 - sauce_connect:0 - INFO - Request started: GET http://127.0.0.1:9999/node_modules/chai/chai.js
+2014-05-02 16:01:54,223 - sauce_connect:0 - INFO - Request started: GET http://127.0.0.1:9999/test/tests/test.js
+2014-05-02 16:01:54,223 - sauce_connect:0 - INFO - Request started: GET http://127.0.0.1:9999/src/mooveestar.js
+2014-05-02 16:01:54,230 - sauce_connect:0 - INFO - GET http://127.0.0.1:9999/node_modules/chai/chai.js -> 200 (5ms, 119983 bytes)
+2014-05-02 16:01:54,230 - sauce_connect:0 - INFO - GET http://127.0.0.1:9999/test/tests/test.js -> 200 (6ms, 39656 bytes)
+2014-05-02 16:01:54,232 - sauce_connect:0 - INFO - GET http://127.0.0.1:9999/src/mooveestar.js -> 200 (8ms, 59013 bytes)
+2014-05-02 16:01:54,292 - sauce_connect:0 - INFO - GET http://ajax.googleapis.com/ajax/libs/mootools/1.4.5/mootools.js -> 200 (157ms, 42404 bytes)
+2014-05-02 16:01:56,730 - sauce_connect:0 - INFO - Request started: GET http://127.0.0.1:9999/favicon.ico
+2014-05-02 16:01:56,736 - sauce_connect:0 - INFO - GET http://127.0.0.1:9999/favicon.ico -> 404 (4ms, 24 bytes)
+2014-05-02 16:01:56,871 - sauce_connect:0 - INFO - Request started: GET http://test.com/puppy.jpg
+2014-05-02 16:01:57,211 - sauce_connect:0 - INFO - GET http://test.com/puppy.jpg -> 302 (340ms, 143 bytes)
+2014-05-02 16:01:57,318 - sauce_connect:0 - INFO - Request started: GET http://www.test.com/
+2014-05-02 16:01:57,947 - sauce_connect:0 - INFO - GET http://www.test.com/ -> 200 (629ms, 15174 bytes)
+2014-05-02 16:02:12,415 - sauce_connect:0 - INFO - Request started: GET http://127.0.0.1:9999/test/index.html
+2014-05-02 16:02:12,420 - sauce_connect:0 - INFO - GET http://127.0.0.1:9999/test/index.html -> 200 (4ms, 1619 bytes)
+2014-05-02 16:02:12,611 - sauce_connect:0 - INFO - Request started: GET http://127.0.0.1:9999/node_modules/grunt-mocha-phantomjs/node_modules/mocha-phantomjs/node_modules/mocha/mocha.css
+2014-05-02 16:02:12,615 - sauce_connect:0 - INFO - GET http://127.0.0.1:9999/node_modules/grunt-mocha-phantomjs/node_modules/mocha-phantomjs/node_modules/mocha/mocha.css -> 200 (4ms, 4007 bytes)
+2014-05-02 16:02:12,700 - sauce_connect:0 - INFO - Request started: GET http://127.0.0.1:9999/node_modules/chai/chai.js
+2014-05-02 16:02:12,700 - sauce_connect:0 - INFO - Request started: GET http://127.0.0.1:9999/node_modules/grunt-mocha-phantomjs/node_modules/mocha-phantomjs/node_modules/mocha/mocha.js
+2014-05-02 16:02:12,700 - sauce_connect:0 - INFO - Request started: GET http://127.0.0.1:9999/src/mooveestar.js
+2014-05-02 16:02:12,704 - sauce_connect:0 - INFO - GET http://127.0.0.1:9999/node_modules/chai/chai.js -> 200 (6ms, 119983 bytes)
+2014-05-02 16:02:12,704 - sauce_connect:0 - INFO - GET http://127.0.0.1:9999/src/mooveestar.js -> 200 (6ms, 59013 bytes)
+2014-05-02 16:02:12,706 - sauce_connect:0 - INFO - GET http://127.0.0.1:9999/node_modules/grunt-mocha-phantomjs/node_modules/mocha-phantomjs/node_modules/mocha/mocha.js -> 200 (7ms, 116039 bytes)
+2014-05-02 16:02:12,710 - sauce_connect:0 - INFO - Request started: GET http://127.0.0.1:9999/test/tests/test.js
+2014-05-02 16:02:12,713 - sauce_connect:0 - INFO - GET http://127.0.0.1:9999/test/tests/test.js -> 200 (4ms, 39656 bytes)
+2014-05-02 16:02:14,385 - sauce_connect:0 - INFO - Request started: GET http://127.0.0.1:9999/favicon.ico
+2014-05-02 16:02:14,388 - sauce_connect:0 - INFO - GET http://127.0.0.1:9999/favicon.ico -> 404 (3ms, 24 bytes)
+2014-05-02 16:02:14,607 - sauce_connect:0 - INFO - Request started: GET http://test.com/puppy.jpg
+2014-05-02 16:02:14,948 - sauce_connect:0 - INFO - GET http://test.com/puppy.jpg -> 302 (342ms, 143 bytes)
+2014-05-02 16:02:15,105 - sauce_connect:0 - INFO - Request started: GET http://www.test.com/
+2014-05-02 16:02:15,657 - sauce_connect:0 - INFO - Request started: GET http://ctldl.windowsupdate.com/msdownload/update/v3/static/trustedr/en/disallowedcertstl.cab?ef4f725723f28776
+2014-05-02 16:02:15,729 - sauce_connect:0 - INFO - GET http://www.test.com/ -> 200 (623ms, 15174 bytes)
+2014-05-02 16:02:15,970 - sauce_connect:0 - INFO - GET http://ctldl.windowsupdate.com/msdownload/update/v3/static/trustedr/en/disallowedcertstl.cab?ef4f725723f28776 -> 304 (314ms, 0 bytes)
+2014-05-02 16:02:16,186 - sauce_connect:0 - INFO - Request started: GET http://crl.omniroot.com/PublicSureCodeSign.crl
+2014-05-02 16:02:16,680 - sauce_connect:0 - INFO - GET http://crl.omniroot.com/PublicSureCodeSign.crl -> 200 (495ms, 2795 bytes)
+2014-05-02 16:02:24,618 - sauce_connect:0 - INFO - Request started: GET http://log.client.akadns.net/cl/1a3101aa59aa4ecbbcc00611605ea801
+2014-05-02 16:02:24,690 - sauce_connect:0 - INFO - GET http://log.client.akadns.net/cl/1a3101aa59aa4ecbbcc00611605ea801 -> 200 (72ms, 0 bytes)
+2014-05-02 16:02:25,078 - sauce_connect:0 - INFO - Request started: PUT http://195.59.54.118/logs/1a3101aa59aa4ecbbcc00611605ea801.log
+2014-05-02 16:03:57,592 - sauce_connect:0 - INFO - received SIGTERM
