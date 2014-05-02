@@ -94,6 +94,6 @@ module.exports = function(grunt) {
   grunt.registerTask('test', ['jshint','mocha_phantomjs']);
   grunt.registerTask('default', ['build']);
 
-  grunt.registerTask('sauce', ['connect','saucelabs-mocha']);
+  grunt.registerTask('sauce', ['jshint','connect','saucelabs-mocha']);
 
 };
