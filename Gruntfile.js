@@ -13,10 +13,13 @@ module.exports = function(grunt) {
     { browserName: 'Internet Explorer', platform: 'Windows 8.1', version: '11' },
     { browserName: 'Internet Explorer', platform: 'Windows 8', version: '10' },
     { browserName: 'Internet Explorer', platform: 'Windows 7', version: '9' },
-    { browserName: 'Internet Explorer', platform: 'Windows 7', version: '8' },
+    // Chai does not support <IE9
+    //{ browserName: 'Internet Explorer', platform: 'Windows 7', version: '8' },
     { browserName: 'Safari', platform:'OS X 10.8', version:'6' },
     { browserName: 'Safari', platform:'OS X 10.9', version:'7' }
   ];
+
+  browsers = [{ browserName: 'Internet Explorer', platform: 'Windows 8.1', version: '11' }];
 
   grunt.initConfig({
 
